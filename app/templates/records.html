@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+        }
+        header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+        }
+        header span {
+            margin-right: 20px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid white;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+        main {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        button {
+            padding: 6px 12px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1a252f;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        {% if session.username %}
+            <span>Welcome, {{ session.username }}!</span>
+            <a href="{{ url_for('main.admin_home') }}">Admin Home</a>
+            <a href="{{ url_for('main.draw') }}">Draw Page</a>
+            <a href="{{ url_for('user.logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('user.login') }}">Login</a>
+        {% endif %}
+    </header>
+
+    <main>
+        <h2>Latest Records (Pacific Time)</h2>
+        <table id="recordsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Record</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div style="margin-top:20px; text-align:center;">
+            <button onclick="prevPage()">Prev</button>
+            <span id="pageInfo" style="margin:0 10px;"></span>
+            <button onclick="nextPage()">Next</button>
+        </div>
+
+        <!-- JSON data from backend -->
+        <script id="records-json" type="application/json">
+            {{ records | tojson | safe }}
+        </script>
+
+        <script>
+            const recordList = JSON.parse(document.getElementById('records-json').textContent || '[]');
+            const pageSize = 20;
+            let currentPage = 1;
+
+            function renderTable() {
+                const tbody = document.querySelector("#recordsTable tbody");
+                tbody.innerHTML = "";
+
+                const start = (currentPage - 1) * pageSize;
+                const end = Math.min(start + pageSize, recordList.length);
+
+                for (let i = start; i < end; i++) {
+                    let words = recordList[i].split(/\s+/);
+
+                    // indices: 第1 5 7个单词 → index: 0, 4, 6
+                    const redIndices = [0, 4, 6];
+
+                    for (let idx of redIndices) {
+                        if (idx < words.length) {
+                            words[idx] = `<span style="color:red; font-weight:bold;">${words[idx]}</span>`;
+                        }
+                    }
+
+                    let coloredText = words.join(" ");
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${coloredText}</td>
+                    `;
+                    tbody.appendChild(row);
+                }
+
+                document.getElementById("pageInfo").innerText =
+                    `Page ${currentPage} / ${Math.ceil(recordList.length / pageSize)}`;
+            }
+
+            function prevPage() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            }
+
+            function nextPage() {
+                if (currentPage < Math.ceil(recordList.length / pageSize)) {
+                    currentPage++;
+                    renderTable();
+                }
+            }
+
+            renderTable();
+        </script>
+    </main>
+</body>
+</html>
+

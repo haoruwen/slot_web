@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Main Page</title>
+  <style>
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        padding: 0; 
+        background-color: #fafafa; 
+    }
+    header {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #2c3e50;
+        color: white;
+        gap: 15px;
+    }
+    header span {
+        margin-right: 10px;
+    }
+    header a {
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+        border: 1px solid white;
+        border-radius: 3px;
+    }
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+    }
+    main {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    form {
+        width: 80%;
+        max-width: 800px;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+    h1 {
+        margin-bottom: 20px;
+    }
+    select, button {
+        width: 100%;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+    button {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #1a252f;
+    }
+    .result { 
+        margin-top: 16px; 
+        background: #f0fff0; 
+        padding: 12px; 
+        border: 1px solid #ccc; 
+        border-radius: 8px; 
+        width: 80%;
+        max-width: 800px;
+    }
+    .error { 
+        margin-top: 16px; 
+        background: #fff0f0; 
+        padding: 12px; 
+        border: 1px solid #f88; 
+        border-radius: 8px; 
+        color: #a00; 
+        width: 80%;
+        max-width: 800px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    {% if session.username %}
+        <span>Welcome, {{ session.username }} — {{ points }} pts</span>
+
+        {% if avatar_path %}
+            <img class="avatar" src="{{ url_for('static', filename='../'~avatar_path~'') }}" alt="avatar">
+        {% else %}
+            <img class="avatar" src="{{ url_for('static', filename='../static/avatars/default.png') }}" alt="avatar">
+        {% endif %}
+
+        
+
+        {% if session.role == 'administrator' %}
+            <a href="{{ url_for('main.admin_home') }}">Admin Home</a>
+            <a href="{{ url_for('main.draw') }}">Draw Home</a>
+        {% endif %}
+
+        {% if session.role == 'user' %}
+            <a href="{{ url_for('main.draw') }}">Home</a>
+        {% endif %}
+        <a href="{{ url_for('user.logout') }}">Logout</a>
+    {% else %}
+        <a href="{{ url_for('user.login') }}">Login</a>
+    {% endif %}
+  </header>
+
+  <main>
+      <h1>Main Page</h1>
+
+      <form method="POST">
+        <label for="user">Select user:</label>
+        <select name="user" id="user" required>
+          {% for u in users %}
+            <option value="{{ u }}">{{ u }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="tier">Select Tier:</label>
+        <select name="tier" id="tier" required>
+          {% for t in tiers %}
+            <option value="{{ t }}">{{ t }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">🎰 Run</button>
+      </form>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+
+      {% if result %}
+        <div class="result">{{ result }}</div>
+      {% endif %}
+  </main>
+</body>
+</html>
