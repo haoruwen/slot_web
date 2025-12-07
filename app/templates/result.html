@@ -3,33 +3,772 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>抽奖结果</title>
+  <title>Result</title>
   <style>
-    body { font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial; background: #f9fafb; text-align: center; padding-top: 100px; }
-    .card { display: inline-block; background: #fff; padding: 40px 60px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-    h1 { margin: 0 0 20px; font-size: 26px; color: #333; }
-    .prize { font-size: 36px; color: #2b8a3e; font-weight: 700; margin-bottom: 20px; }
-    .buttons { margin-top: 20px; }
-    a.button { display: inline-block; margin: 5px; padding: 10px 16px; background: #2563eb; color: white; text-decoration: none; border-radius: 8px; }
-    a.button:hover { background: #1d4ed8; }
+    html {
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+        margin: 0; 
+        padding: 0; 
+        background-color: #fafafa; 
+        background-image: url('../static/background/board.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 30%, rgba(220, 53, 69, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(40, 167, 69, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: 0;
+        animation: shimmer 10s ease-in-out infinite;
+    }
+    
+    body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+            radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.2), transparent),
+            radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.25), transparent),
+            radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.2), transparent),
+            radial-gradient(2px 2px at 90% 60%, rgba(255, 255, 255, 0.3), transparent),
+            radial-gradient(1px 1px at 33% 80%, rgba(255, 255, 255, 0.2), transparent);
+        background-size: 200% 200%, 180% 180%, 150% 150%, 220% 220%, 190% 190%, 160% 160%;
+        background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 50% 0%;
+        animation: snowdrift 20s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.6;
+    }
+    
+    @keyframes shimmer {
+        0%, 100% {
+            opacity: 0.4;
+        }
+        50% {
+            opacity: 0.8;
+        }
+    }
+    
+    @keyframes snowdrift {
+        0% {
+            background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 50% 0%;
+        }
+        100% {
+            background-position: 100% 100%, 0% 0%, 50% 50%, 100% 0%, 0% 100%, 50% 100%;
+        }
+    }
+    
+    /* 雪花飘落动画 */
+    .snowflakes {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2;
+        overflow: hidden;
+    }
+    
+    .snowflake {
+        position: absolute;
+        top: -10px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.5em;
+        font-family: Arial, sans-serif;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        animation: snowfall linear infinite;
+        opacity: 0.7;
+    }
+    
+    .snowflake:nth-child(1) {
+        left: 10%;
+        animation-duration: 10s;
+        animation-delay: 0s;
+        font-size: 1.2em;
+    }
+    
+    .snowflake:nth-child(2) {
+        left: 20%;
+        animation-duration: 12s;
+        animation-delay: 1s;
+        font-size: 1.5em;
+    }
+    
+    .snowflake:nth-child(3) {
+        left: 30%;
+        animation-duration: 14s;
+        animation-delay: 2s;
+        font-size: 1.3em;
+    }
+    
+    .snowflake:nth-child(4) {
+        left: 40%;
+        animation-duration: 11s;
+        animation-delay: 0.5s;
+        font-size: 1.4em;
+    }
+    
+    .snowflake:nth-child(5) {
+        left: 50%;
+        animation-duration: 13s;
+        animation-delay: 1.5s;
+        font-size: 1.6em;
+    }
+    
+    .snowflake:nth-child(6) {
+        left: 60%;
+        animation-duration: 15s;
+        animation-delay: 2.5s;
+        font-size: 1.2em;
+    }
+    
+    .snowflake:nth-child(7) {
+        left: 70%;
+        animation-duration: 12s;
+        animation-delay: 0.8s;
+        font-size: 1.5em;
+    }
+    
+    .snowflake:nth-child(8) {
+        left: 80%;
+        animation-duration: 14s;
+        animation-delay: 1.8s;
+        font-size: 1.3em;
+    }
+    
+    .snowflake:nth-child(9) {
+        left: 90%;
+        animation-duration: 11s;
+        animation-delay: 0.3s;
+        font-size: 1.4em;
+    }
+    
+    .snowflake:nth-child(10) {
+        left: 15%;
+        animation-duration: 13s;
+        animation-delay: 2.2s;
+        font-size: 1.3em;
+    }
+    
+    .snowflake:nth-child(11) {
+        left: 65%;
+        animation-duration: 15s;
+        animation-delay: 1.2s;
+        font-size: 1.5em;
+    }
+    
+    .snowflake:nth-child(12) {
+        left: 85%;
+        animation-duration: 12s;
+        animation-delay: 0.6s;
+        font-size: 1.2em;
+    }
+    
+    @keyframes snowfall {
+        0% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+            opacity: 0.7;
+        }
+        50% {
+            transform: translateY(50vh) translateX(20px) rotate(180deg);
+            opacity: 0.9;
+        }
+        100% {
+            transform: translateY(100vh) translateX(-20px) rotate(360deg);
+            opacity: 0.3;
+        }
+    }
+    
+    .card { 
+        display: inline-block; 
+        background: transparent;
+        backdrop-filter: none;
+        padding: clamp(2rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem); 
+        border-radius: 0; 
+        box-shadow: none;
+        border: none;
+        position: relative;
+        z-index: 1;
+    }
+    
+    h1 { 
+        margin: 0 0 clamp(1rem, 2vw, 1.5rem); 
+        font-size: clamp(1.5rem, 3vw, 2rem); 
+        color: #ffd700; 
+        text-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.8),
+            0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .prize { 
+        font-size: clamp(2rem, 4vw, 3rem); 
+        color: #ffd700; 
+        font-weight: 700; 
+        margin-bottom: clamp(1rem, 2vw, 1.5rem);
+        text-shadow: 
+            0 0 15px rgba(255, 215, 0, 0.9),
+            0 0 25px rgba(255, 193, 7, 0.7),
+            0 2px 6px rgba(0, 0, 0, 0.6);
+    }
+    
+    .congratulations-text {
+        text-align: center;
+        margin-bottom: clamp(1rem, 2vw, 1.5rem);
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.5s ease;
+    }
+    
+    .congratulations-text.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .congratulations-text h2 {
+        font-size: clamp(1.5rem, 3vw, 2.5rem);
+        color: #ffd700;
+        font-weight: 800;
+        margin: 0 0 clamp(0.5rem, 1vw, 0.75rem);
+        text-shadow: 
+            0 0 15px rgba(255, 215, 0, 0.9),
+            0 0 25px rgba(255, 193, 7, 0.7),
+            0 2px 6px rgba(0, 0, 0, 0.6),
+            0 1px 2px rgba(0, 0, 0, 0.8);
+        letter-spacing: 0.1em;
+        animation: textPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes textPulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.8;
+            transform: scale(1.02);
+        }
+    }
+    
+    .congratulations-text .prize-name {
+        font-size: clamp(1.25rem, 2.5vw, 2rem);
+        color: #fff8dc;
+        font-weight: 600;
+        text-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.8),
+            0 2px 4px rgba(0, 0, 0, 0.6);
+        letter-spacing: 0.05em;
+    }
+    
+    .congratulations-text .finding-text {
+        font-size: clamp(1.5rem, 3vw, 2.5rem);
+        color: #ffd700;
+        font-weight: 800;
+        margin: 0;
+        text-shadow: 
+            0 0 15px rgba(255, 215, 0, 0.9),
+            0 0 25px rgba(255, 193, 7, 0.7),
+            0 2px 6px rgba(0, 0, 0, 0.6),
+            0 1px 2px rgba(0, 0, 0, 0.8);
+        letter-spacing: 0.1em;
+        animation: textPulse 2s ease-in-out infinite;
+    }
+    
+    .prize-carousel {
+        width: clamp(250px, 30vw, 380px);
+        height: clamp(250px, 30vw, 380px);
+        aspect-ratio: 1;
+        margin: 0 auto clamp(1rem, 2vw, 1.5rem);
+        position: relative;
+        overflow: visible;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        transition: all 0.1s ease;
+    }
+    
+    .prize-carousel-item.winner {
+        opacity: 1 !important;
+    }
+    
+    .prize-carousel-item.winner img {
+        filter: 
+            drop-shadow(0 0 20px rgba(255, 215, 0, 0.9))
+            drop-shadow(0 0 35px rgba(255, 215, 0, 0.7))
+            drop-shadow(0 0 50px rgba(255, 215, 0, 0.5))
+            drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
+        animation: winnerGlow 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes winnerGlow {
+        0%, 100% {
+            filter: 
+                drop-shadow(0 0 20px rgba(255, 215, 0, 0.9))
+                drop-shadow(0 0 35px rgba(255, 215, 0, 0.7))
+                drop-shadow(0 0 50px rgba(255, 215, 0, 0.5))
+                drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
+        }
+        50% {
+            filter: 
+                drop-shadow(0 0 30px rgba(255, 215, 0, 1))
+                drop-shadow(0 0 50px rgba(255, 215, 0, 0.9))
+                drop-shadow(0 0 70px rgba(255, 215, 0, 0.7))
+                drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
+        }
+    }
+    
+    /* 彩带效果 */
+    .confetti-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+        overflow: hidden;
+    }
+    
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #ffd700;
+        top: -10px;
+        animation: confettiFall linear forwards;
+    }
+    
+    .confetti:nth-child(1) { left: 10%; background: #ffd700; animation-duration: 3s; animation-delay: 0s; }
+    .confetti:nth-child(2) { left: 20%; background: #ff6b6b; animation-duration: 3.5s; animation-delay: 0.2s; }
+    .confetti:nth-child(3) { left: 30%; background: #4ecdc4; animation-duration: 3.2s; animation-delay: 0.1s; }
+    .confetti:nth-child(4) { left: 40%; background: #ffd700; animation-duration: 3.8s; animation-delay: 0.3s; }
+    .confetti:nth-child(5) { left: 50%; background: #ff6b6b; animation-duration: 3.3s; animation-delay: 0s; }
+    .confetti:nth-child(6) { left: 60%; background: #4ecdc4; animation-duration: 3.6s; animation-delay: 0.2s; }
+    .confetti:nth-child(7) { left: 70%; background: #ffd700; animation-duration: 3.4s; animation-delay: 0.1s; }
+    .confetti:nth-child(8) { left: 80%; background: #ff6b6b; animation-duration: 3.7s; animation-delay: 0.3s; }
+    .confetti:nth-child(9) { left: 90%; background: #4ecdc4; animation-duration: 3.5s; animation-delay: 0s; }
+    .confetti:nth-child(10) { left: 15%; background: #ffd700; animation-duration: 3.3s; animation-delay: 0.2s; }
+    .confetti:nth-child(11) { left: 25%; background: #ff6b6b; animation-duration: 3.6s; animation-delay: 0.1s; }
+    .confetti:nth-child(12) { left: 35%; background: #4ecdc4; animation-duration: 3.4s; animation-delay: 0.3s; }
+    .confetti:nth-child(13) { left: 45%; background: #ffd700; animation-duration: 3.8s; animation-delay: 0s; }
+    .confetti:nth-child(14) { left: 55%; background: #ff6b6b; animation-duration: 3.2s; animation-delay: 0.2s; }
+    .confetti:nth-child(15) { left: 65%; background: #4ecdc4; animation-duration: 3.7s; animation-delay: 0.1s; }
+    .confetti:nth-child(16) { left: 75%; background: #ffd700; animation-duration: 3.5s; animation-delay: 0.3s; }
+    .confetti:nth-child(17) { left: 85%; background: #ff6b6b; animation-duration: 3.3s; animation-delay: 0s; }
+    .confetti:nth-child(18) { left: 95%; background: #4ecdc4; animation-duration: 3.6s; animation-delay: 0.2s; }
+    
+    @keyframes confettiFall {
+        0% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) translateX(calc(var(--drift) * 100px)) rotate(720deg);
+            opacity: 0;
+        }
+    }
+    
+    .confetti:nth-child(odd) {
+        --drift: 1;
+        border-radius: 50%;
+    }
+    
+    .confetti:nth-child(even) {
+        --drift: -1;
+        transform: rotate(45deg);
+    }
+    
+    .prize-carousel-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .prize-carousel-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        box-sizing: border-box;
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+        border: none;
+        background: transparent;
+    }
+    
+    .prize-carousel-item.active {
+        opacity: 1;
+    }
+    
+    .prize-carousel-item img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
+        border: none;
+        outline: none;
+        box-shadow: none;
+    }
+    
+    .buttons { 
+        margin-top: clamp(1rem, 2vw, 1.5rem); 
+    }
+    
+    a.button { 
+        display: inline-block; 
+        margin: 5px; 
+        padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 2rem); 
+        background: rgba(220, 53, 69, 0.85);
+        border: 2px solid rgba(255, 215, 0, 0.6);
+        color: white; 
+        text-decoration: none; 
+        border-radius: clamp(0.5rem, 1vw, 0.75rem);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 
+            0 4px 15px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(255, 215, 0, 0.2);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    a.button:hover { 
+        background: rgba(220, 53, 69, 0.95);
+        border-color: rgba(255, 215, 0, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 
+            0 6px 20px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(255, 215, 0, 0.4);
+    }
   </style>
 </head>
 <body>
+  <!-- 圣诞装饰元素 -->
+  <div class="snowflakes" aria-hidden="true">
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+  </div>
+  
+  <!-- 彩带容器 -->
+  <div class="confetti-container" id="confettiContainer"></div>
+  
   <div class="card">
-    <h1>恭喜抽中</h1>
     {% if prize %}
-      <div class="prize">{{ prize }}</div>
+      <div class="congratulations-text" id="congratulationsText">
+        <div class="finding-text" id="findingText">✨ Finding the perfect gift... ✨</div>
+        <h2 id="congratulationsTitle" style="display: none;">🎉 Congratulations! 🎉</h2>
+        <div class="prize-name" id="prizeName" style="display: none;">You won: <span id="prizeNameDisplay">{{ prize }}</span></div>
+      </div>
+      <div class="prize-carousel" id="prizeCarousel">
+        <div class="prize-carousel-container" id="prizeCarouselContainer">
+          <!-- Images will be loaded by JavaScript -->
+        </div>
+      </div>
+      <div class="prize" style="display: none;">{{ prize }}</div>
     {% else %}
-      <div class="prize" style="color:#888;">暂无结果</div>
+      <h1>No Result</h1>
+      <div class="prize" style="color:rgba(255, 248, 220, 0.6);">No Result</div>
     {% endif %}
 
     <div class="buttons">
         <a class="button"
         href="{% if mode == 'self' %}{{ url_for('main.draw_self') }}
              {% else %}{{ url_for('main.draw_others') }}{% endif %}">
-       再抽一次
+       Draw Again
      </a>
     </div>
   </div>
+  
+  <script>
+    {% if prize %}
+    // List of all prize images
+    const prizeImages = [
+      "{{ url_for('static', filename='prizes/BLESSING_OF_PHASE_SHOP.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_APOLOGIES.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_CHRISTMAS_JOLLY.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_MEMORY_LOSS.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_MINECRAFT_STREAM.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_NICENESS.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_NO_SWEARING.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_PASTA.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_PHASE_COFFEE_BOT.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_REINDEER.png') }}",
+      "{{ url_for('static', filename='prizes/CURSE_OF_SIMILISH.png') }}",
+      "{{ url_for('static', filename='prizes/CURSSE_OF_RICHMAN_10.png') }}",
+      "{{ url_for('static', filename='prizes/Dakimakura.png') }}",
+      "{{ url_for('static', filename='prizes/Gift_Card_100_Amazon.png') }}",
+      "{{ url_for('static', filename='prizes/Gift_Card_150_Best_Buy.png') }}",
+      "{{ url_for('static', filename='prizes/Gift_Card_25_Chipotle.png') }}",
+      "{{ url_for('static', filename='prizes/Gift_Card_25_Starbucks.png') }}",
+      "{{ url_for('static', filename='prizes/Graphic card.png') }}",
+      "{{ url_for('static', filename='prizes/headset.png') }}",
+      "{{ url_for('static', filename='prizes/keyboard.png') }}",
+      "{{ url_for('static', filename='prizes/laptop.png') }}",
+      "{{ url_for('static', filename='prizes/Mic.png') }}",
+      "{{ url_for('static', filename='prizes/Mouse.png') }}",
+      "{{ url_for('static', filename='prizes/Secret_lap_gaming_chair.png') }}",
+      "{{ url_for('static', filename='prizes/stream_deck.png') }}"
+    ];
+    
+    // Shuffle images randomly
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+    
+    // Get prize name from template
+    const prizeName = "{{ prize }}";
+    
+    // Find the prize image that matches the prize name
+    function findPrizeImageIndex(prizeName, imageSources) {
+      if (!prizeName) return -1;
+      
+      // Normalize prize name for matching
+      const normalizedPrizeName = prizeName.toLowerCase().trim();
+      
+      for (let i = 0; i < imageSources.length; i++) {
+        const imagePath = imageSources[i];
+        // Extract filename from path and normalize
+        const filename = imagePath.split('/').pop().replace('.png', '').toLowerCase();
+        
+        // Try different matching strategies
+        // 1. Direct match (filename equals prize name)
+        if (filename === normalizedPrizeName || 
+            filename === normalizedPrizeName.replace(/\s+/g, '_') ||
+            filename === normalizedPrizeName.replace(/\s+/g, '')) {
+          return i;
+        }
+        
+        // 2. Contains match (filename contains prize name or vice versa)
+        const filenameNoUnderscore = filename.replace(/_/g, ' ');
+        const prizeNameNoSpace = normalizedPrizeName.replace(/\s+/g, '');
+        const filenameNoUnderscoreNoSpace = filename.replace(/_/g, '').replace(/\s+/g, '');
+        
+        if (filename.includes(normalizedPrizeName.replace(/\s+/g, '_')) ||
+            filenameNoUnderscore.includes(normalizedPrizeName) ||
+            normalizedPrizeName.includes(filenameNoUnderscore) ||
+            filenameNoUnderscoreNoSpace.includes(prizeNameNoSpace) ||
+            prizeNameNoSpace.includes(filenameNoUnderscoreNoSpace)) {
+          return i;
+        }
+      }
+      
+      // If no match found, return -1
+      return -1;
+    }
+    
+    // Single cycle with random order, but ensure prize image is at the end
+    let shuffledImages = shuffleArray(prizeImages);
+    const prizeImageIndex = findPrizeImageIndex(prizeName, prizeImages);
+    
+    // If prize image found, move it to the end
+    if (prizeImageIndex !== -1) {
+      const prizeImagePath = prizeImages[prizeImageIndex];
+      // Remove prize image from shuffled array
+      shuffledImages = shuffledImages.filter(img => img !== prizeImagePath);
+      // Add it at the end
+      shuffledImages.push(prizeImagePath);
+    }
+    
+    const allImages = shuffledImages;
+    
+    // Preload all images before starting carousel
+    function preloadImages(imageSources, callback) {
+      let loadedCount = 0;
+      const totalImages = imageSources.length;
+      
+      if (totalImages === 0) {
+        callback();
+        return;
+      }
+      
+      imageSources.forEach((imageSrc, index) => {
+        const img = new Image();
+        img.onload = function() {
+          loadedCount++;
+          if (loadedCount === totalImages) {
+            callback();
+          }
+        };
+        img.onerror = function() {
+          loadedCount++;
+          if (loadedCount === totalImages) {
+            callback();
+          }
+        };
+        img.src = imageSrc;
+      });
+    }
+    
+    // Create carousel items
+    const container = document.getElementById('prizeCarouselContainer');
+    allImages.forEach((imageSrc, index) => {
+      const item = document.createElement('div');
+      item.className = 'prize-carousel-item';
+      const img = document.createElement('img');
+      img.src = imageSrc;
+      img.alt = `Prize ${index + 1}`;
+      img.onerror = function() {
+        this.style.display = 'none';
+      };
+      item.appendChild(img);
+      container.appendChild(item);
+    });
+    
+    // Wait for all images to load before starting carousel
+    preloadImages(allImages, function() {
+      // All images loaded, start carousel
+      startCarousel();
+    });
+    
+    function startCarousel() {
+      // Carousel animation with increasing speed
+      let currentIndex = 0;
+      const totalItems = allImages.length;
+      const carouselItems = document.querySelectorAll('.prize-carousel-item');
+      const prizeCarousel = document.getElementById('prizeCarousel');
+      let currentInterval = 150; // Start with 150ms
+      let carouselInterval;
+      const speedUpThreshold = Math.floor(totalItems * 0.7); // Speed up in last 30%
+      const finalSpeedThreshold = Math.floor(totalItems * 0.9); // Very fast in last 10%
+      
+      function moveCarousel() {
+        // Remove active class from all items
+        carouselItems.forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        if (currentIndex < totalItems) {
+          // Show current image
+          carouselItems[currentIndex].classList.add('active');
+          
+          // Speed up as we approach the end
+          if (currentIndex >= finalSpeedThreshold) {
+            // Very fast in last 10%
+            if (currentInterval > 50) {
+              clearInterval(carouselInterval);
+              currentInterval = 50;
+              carouselInterval = setInterval(moveCarousel, currentInterval);
+            }
+          } else if (currentIndex >= speedUpThreshold) {
+            // Speed up in last 30%
+            if (currentInterval > 80) {
+              clearInterval(carouselInterval);
+              currentInterval = 80;
+              carouselInterval = setInterval(moveCarousel, currentInterval);
+            }
+          }
+          
+          currentIndex++;
+        } else {
+          // After 1 cycle, stop and show the prize image (last image)
+          clearInterval(carouselInterval);
+          // The last image should be the prize image
+          const lastIndex = totalItems - 1;
+          
+          // Remove active from all items
+          carouselItems.forEach(item => {
+            item.classList.remove('active', 'winner');
+          });
+          
+          // Add active and winner class to prize image
+          carouselItems[lastIndex].classList.add('active', 'winner');
+          
+          // Create confetti effect
+          createConfetti();
+          
+          // Change text from "Finding..." to "Congratulations!"
+          const findingText = document.getElementById('findingText');
+          const congratulationsTitle = document.getElementById('congratulationsTitle');
+          const prizeName = document.getElementById('prizeName');
+          
+          if (findingText && congratulationsTitle && prizeName) {
+            setTimeout(() => {
+              findingText.style.display = 'none';
+              congratulationsTitle.style.display = 'block';
+              prizeName.style.display = 'block';
+            }, 300);
+          }
+        }
+        
+        function createConfetti() {
+          const confettiContainer = document.getElementById('confettiContainer');
+          if (!confettiContainer) return;
+          
+          // Create 18 confetti pieces
+          for (let i = 0; i < 18; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = (Math.random() * 100) + '%';
+            confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+            confetti.style.animationDuration = (3 + Math.random() * 1) + 's';
+            confettiContainer.appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+              if (confetti.parentNode) {
+                confetti.parentNode.removeChild(confetti);
+              }
+            }, 5000);
+          }
+        }
+      }
+      
+      // Start carousel
+      carouselInterval = setInterval(moveCarousel, currentInterval);
+      
+      // Initial display - show first image
+      if (carouselItems.length > 0) {
+        carouselItems[0].classList.add('active');
+      }
+    }
+    {% endif %}
+  </script>
 </body>
 </html>

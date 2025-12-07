@@ -2,19 +2,279 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f2f2f2; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .login-container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
-        button { width: 100%; padding: 10px; border: none; border-radius: 4px; background-color: #4CAF50; color: white; font-size: 16px; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        .error { color: red; margin-top: 10px; text-align: center; }
+        html {
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #fafafa; 
+            background-image: url('../static/background/warehouse.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(220, 53, 69, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(40, 167, 69, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+            animation: shimmer 10s ease-in-out infinite;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.25), transparent),
+                radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(2px 2px at 90% 60%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 33% 80%, rgba(255, 255, 255, 0.2), transparent);
+            background-size: 200% 200%, 180% 180%, 150% 150%, 220% 220%, 190% 190%, 160% 160%;
+            background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 50% 0%;
+            animation: snowdrift 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+        
+        @keyframes snowdrift {
+            0% {
+                background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 50% 0%;
+            }
+            100% {
+                background-position: 100% 100%, 0% 0%, 50% 50%, 100% 0%, 0% 100%, 50% 100%;
+            }
+        }
+        
+        .login-container { 
+            background: rgba(139, 69, 19, 0.85);
+            backdrop-filter: blur(15px);
+            padding: clamp(2rem, 4vw, 3rem) clamp(2.5rem, 5vw, 4rem); 
+            border-radius: clamp(1.5rem, 3vw, 2rem); 
+            box-shadow: 
+                0 8px 40px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(255, 215, 0, 0.3),
+                inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 215, 0, 0.8);
+            width: clamp(280px, 35vw, 400px);
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-container h2 {
+            color: #ffd700;
+            font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+            font-weight: 800;
+            margin: 0 0 clamp(1.5rem, 3vw, 2rem);
+            text-align: center;
+            text-shadow: 
+                0 0 15px rgba(255, 215, 0, 0.9),
+                0 0 25px rgba(255, 193, 7, 0.7),
+                0 2px 6px rgba(0, 0, 0, 0.6),
+                0 1px 2px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.1em;
+            position: relative;
+        }
+        
+        .login-container h2::before {
+            content: '🎄';
+            margin-right: 0.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .login-container h2::after {
+            content: '🎄';
+            margin-left: 0.5rem;
+            animation: float 3s ease-in-out infinite 1.5s;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+        
+        input { 
+            width: 100%;
+            padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
+            margin: clamp(0.75rem, 1.5vw, 1rem) 0;
+            border-radius: clamp(0.75rem, 1.5vw, 1rem);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            background: rgba(139, 69, 19, 0.4);
+            backdrop-filter: blur(8px);
+            color: #fff8dc;
+            font-size: clamp(0.875rem, 1.8vw, 1.125rem);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.3),
+                inset 0 2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+        }
+        
+        input::placeholder {
+            color: rgba(255, 248, 220, 0.6);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: rgba(255, 215, 0, 0.9);
+            background: rgba(139, 69, 19, 0.6);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.4),
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 -1px 2px rgba(255, 255, 255, 0.15),
+                0 0 25px rgba(255, 215, 0, 0.4);
+            transform: scale(1.02);
+        }
+        
+        button { 
+            width: 100%;
+            padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 2rem);
+            margin-top: clamp(1rem, 2vw, 1.5rem);
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            border-radius: clamp(0.75rem, 1.5vw, 1rem);
+            background: rgba(220, 53, 69, 0.85);
+            color: white;
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(255, 215, 0, 0.2);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: visible;
+        }
+        
+        button::before {
+            content: '✨';
+            position: absolute;
+            left: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9em;
+            opacity: 0.7;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        button::after {
+            content: '✨';
+            position: absolute;
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9em;
+            opacity: 0.7;
+            animation: sparkle 2s ease-in-out infinite 1s;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0.5;
+                transform: translateY(-50%) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50%) scale(1.2);
+            }
+        }
+        
+        button:hover { 
+            background: rgba(220, 53, 69, 0.95);
+            border-color: rgba(255, 215, 0, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 215, 0, 0.4);
+        }
+        
+        button:hover::before,
+        button:hover::after {
+            opacity: 1;
+        }
+        
+        .error { 
+            color: #ff6b6b;
+            margin-top: clamp(0.75rem, 1.5vw, 1rem);
+            text-align: center;
+            font-size: clamp(0.875rem, 1.8vw, 1rem);
+            font-weight: 600;
+            text-shadow: 
+                0 0 10px rgba(255, 107, 107, 0.8),
+                0 2px 4px rgba(0, 0, 0, 0.5);
+            padding: clamp(0.5rem, 1vw, 0.75rem);
+            background: rgba(220, 53, 69, 0.2);
+            border-radius: clamp(0.5rem, 1vw, 0.75rem);
+            border: 1px solid rgba(255, 107, 107, 0.5);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .login-container {
+                width: 90%;
+                max-width: 350px;
+                padding: clamp(1.5rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2rem);
+            }
+        }
     </style>
 </head>
 <body>
-
-<div class="login-container">
+  <div class="login-container">
     <h2>Login</h2>
 
     <!-- 显示错误信息 -->
@@ -27,7 +287,7 @@
         <input type="password" name="password" placeholder="Password" required />
         <button type="submit">Login</button>
     </form>
-</div>
+  </div>
 
 </body>
 </html>
