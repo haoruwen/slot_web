@@ -5,140 +5,860 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Main Page</title>
   <style>
+    html {
+        overflow: hidden;
+        height: 100%;
+    }
+    
     body { 
-        font-family: Arial, sans-serif; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
         margin: 0; 
         padding: 0; 
         background-color: #fafafa; 
+        background-image: url('../static/background/board.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
     }
-    header {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: #2c3e50;
-        color: white;
-        gap: 15px;
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(255, 193, 7, 0.03) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+        animation: shimmer 8s ease-in-out infinite;
     }
-    header span {
-        margin-right: 10px;
+    
+    @keyframes shimmer {
+        0%, 100% {
+            opacity: 0.5;
+        }
+        50% {
+            opacity: 1;
+        }
     }
-    header a {
+    .home-btn, .logout-btn {
+        position: fixed;
+        top: clamp(0.75rem, 2vw, 1rem);
+        z-index: 1000;
         color: white;
         text-decoration: none;
-        padding: 5px 10px;
-        border: 1px solid white;
-        border-radius: 3px;
+        padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(0.75rem, 2vw, 1rem);
+        border: 2px solid rgba(255, 215, 0, 0.8);
+        border-radius: clamp(0.5rem, 1.2vw, 0.75rem);
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        transition: all 0.3s ease;
+        font-weight: 600;
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.7), rgba(200, 35, 51, 0.7));
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.2);
     }
-    .avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid white;
+    
+    .home-btn {
+        right: clamp(7rem, 15vw, 10rem);
+    }
+    
+    .logout-btn {
+        right: clamp(1rem, 4vw, 1.25rem);
+    }
+    
+    .home-btn:hover, .logout-btn:hover {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(200, 35, 51, 0.9));
+        border-color: #ffc107;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.4);
     }
     main {
-        padding: 40px;
+        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+    }
+    form {
+        width: 100%;
+        max-width: 800px;
+        background: transparent;
+        padding: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
-    form {
-        width: 80%;
-        max-width: 800px;
-        background: white;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        border-radius: 8px;
-    }
-    h1 {
-        margin-bottom: 20px;
-    }
-    select, button {
+    .avatar-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: clamp(2rem, 7vw, 4rem);
+        margin-bottom: clamp(0.75rem, 1.75vw, 1.25rem);
+        position: relative;
+        padding: clamp(0.6rem, 1.2vw, 0.85rem);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        backdrop-filter: blur(10px);
+        border-radius: clamp(1rem, 2vw, 1.5rem);
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        box-shadow: 
+            0 8px 30px rgba(0, 0, 0, 0.2),
+            inset 0 0 30px rgba(255, 215, 0, 0.05);
         width: 100%;
-        padding: 8px 12px;
-        margin-bottom: 12px;
-        font-size: 16px;
+        max-width: clamp(300px, 50vw, 400px);
     }
-    button {
-        background-color: #2c3e50;
+    
+    .main-avatar {
+        width: 12vw;
+        height: 12vw;
+        max-width: 140px;
+        max-height: 140px;
+        min-width: 100px;
+        min-height: 100px;
+        object-fit: contain;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 215, 0, 0.9);
+        box-shadow: 
+            0 0 0 2px rgba(255, 255, 255, 0.3),
+            0 8px 30px rgba(0, 0, 0, 0.4),
+            0 0 40px rgba(255, 215, 0, 0.4);
+        filter: drop-shadow(0 4px 15px rgba(255, 215, 0, 0.3));
+        animation: float 4s ease-in-out infinite;
+        transition: all 0.4s ease;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px;
+    }
+    
+    .main-avatar:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 
+            0 0 0 3px rgba(255, 255, 255, 0.5),
+            0 15px 50px rgba(0, 0, 0, 0.5),
+            0 0 70px rgba(255, 215, 0, 0.6);
+        border-color: rgba(255, 215, 0, 1);
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-12px);
+        }
+    }
+    
+    .points-display {
+        margin-top: clamp(0.4rem, 0.75vw, 0.65rem);
+        font-size: clamp(1.2rem, 2vw, 1.8rem);
+        font-weight: 800;
+        text-align: center;
+        color: #ffc107;
+        text-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.8),
+            0 0 20px rgba(255, 193, 7, 0.6),
+            0 4px 8px rgba(0, 0, 0, 0.5);
+        position: relative;
+        padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(1rem, 2vw, 1.5rem);
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+        border-radius: clamp(1rem, 1.5vw, 1.25rem);
+        backdrop-filter: blur(15px);
+        border: 2px solid rgba(255, 215, 0, 0.5);
+        box-shadow: 
+            0 8px 30px rgba(0, 0, 0, 0.4),
+            inset 0 0 30px rgba(255, 215, 0, 0.15),
+            0 0 40px rgba(255, 215, 0, 0.2);
+        letter-spacing: 0.1em;
+    }
+    
+    .points-display::before {
+        content: '⭐';
+        position: absolute;
+        left: clamp(0.5rem, 1.5vw, 1rem);
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+        animation: twinkle 2s ease-in-out infinite;
+    }
+    
+    .points-display::after {
+        content: '⭐';
+        position: absolute;
+        right: clamp(0.5rem, 1.5vw, 1rem);
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+        animation: twinkle 2s ease-in-out infinite 1s;
+    }
+    
+    @keyframes twinkle {
+        0%, 100% {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+        50% {
+            opacity: 0.7;
+            transform: translateY(-50%) scale(1.2);
+        }
+    }
+    
+    select {
+        width: 100%;
+        padding: clamp(0.75rem, 1.5vw, 1rem) clamp(2.5rem, 5vw, 3.5rem) clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
+        margin-bottom: 0;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        border-radius: clamp(0.75rem, 1.5vw, 1rem);
         color: white;
-        border: none;
-        border-radius: 4px;
         cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 
+            0 4px 15px rgba(0, 0, 0, 0.2),
+            inset 0 0 20px rgba(255, 215, 0, 0.05);
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23ffc107' d='M8 12L2 6h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right clamp(0.75rem, 1.5vw, 1rem) center;
+        background-size: clamp(0.875rem, 1.8vw, 1.125rem);
     }
+    
+    select:hover {
+        border-color: rgba(255, 215, 0, 0.5);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+        box-shadow: 
+            0 6px 20px rgba(0, 0, 0, 0.3),
+            inset 0 0 20px rgba(255, 215, 0, 0.1);
+    }
+    
+    select:focus {
+        outline: none;
+        border-color: rgba(255, 215, 0, 0.9);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath fill='%23ffc107' d='M9 13L3 7h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right clamp(0.75rem, 1.5vw, 1rem) center;
+        background-size: clamp(1rem, 2vw, 1.25rem);
+        box-shadow: 
+            0 8px 25px rgba(0, 0, 0, 0.4),
+            0 0 40px rgba(255, 215, 0, 0.5),
+            inset 0 0 30px rgba(255, 215, 0, 0.15);
+        transform: scale(1.02);
+    }
+    
+    select:active {
+        transform: scale(0.98);
+    }
+    
+    select option {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(26, 37, 47, 0.95));
+        color: white;
+        padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.75rem, 1.5vw, 1rem);
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        font-weight: 500;
+    }
+    
+    select option:hover {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.8), rgba(200, 35, 51, 0.8));
+        color: #ffc107;
+    }
+    
+    select option:checked {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.3));
+        color: #ffc107;
+        font-weight: 700;
+    }
+    
+    .user-select-container {
+        width: 100%;
+        max-width: 100%;
+        margin: clamp(0.4rem, 0.75vw, 0.65rem) 0;
+        position: relative;
+    }
+    
+    .user-select-container label {
+        display: block;
+        color: #ffc107;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        font-weight: 700;
+        margin-bottom: clamp(0.4rem, 0.75vw, 0.65rem);
+        text-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.8),
+            0 0 20px rgba(255, 193, 7, 0.6),
+            0 2px 8px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        position: relative;
+        padding: clamp(0.25rem, 0.5vw, 0.5rem) 0;
+        letter-spacing: 0.05em;
+    }
+    
+    .tier-selection {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+        position: relative;
+        width: 55vw;
+        max-width: 550px;
+        min-width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: clamp(1rem, 2vw, 1.5rem);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        backdrop-filter: blur(10px);
+        border-radius: clamp(1rem, 2vw, 1.5rem);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        box-shadow: 
+            0 8px 30px rgba(0, 0, 0, 0.3),
+            inset 0 0 30px rgba(255, 215, 0, 0.1);
+    }
+    
+    .tier-selection::before {
+        content: '🎄';
+        position: absolute;
+        left: -2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        animation: swing 3s ease-in-out infinite;
+        opacity: 0.6;
+    }
+    
+    .tier-selection::after {
+        content: '🎄';
+        position: absolute;
+        right: -2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        animation: swing 3s ease-in-out infinite 1.5s;
+        opacity: 0.6;
+    }
+    
+    @keyframes swing {
+        0%, 100% {
+            transform: translateY(-50%) rotate(-10deg);
+        }
+        50% {
+            transform: translateY(-50%) rotate(10deg);
+        }
+    }
+    
+    .tier-image {
+        width: 28%;
+        height: auto;
+        aspect-ratio: 1;
+        flex: 0 0 28%;
+        object-fit: contain;
+        cursor: pointer;
+        transition: 
+            transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.15s ease,
+            filter 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.15s ease;
+        opacity: 0.8;
+        filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
+        position: relative;
+        max-width: 10vw;
+        max-height: 10vw;
+        min-width: 70px;
+        min-height: 70px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.5rem;
+    }
+    
+    .tier-image::before {
+        content: '✨';
+        position: absolute;
+        top: -25%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(0.75rem, 2vw, 1rem);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+    }
+    
+    .tier-image:hover {
+        opacity: 1;
+        transform: scale(1.15) translateY(-5px);
+        filter: drop-shadow(0 8px 25px rgba(255, 215, 0, 0.6));
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 
+            0 8px 25px rgba(0, 0, 0, 0.3),
+            0 0 30px rgba(255, 215, 0, 0.4);
+    }
+    
+    .tier-image:hover::before {
+        opacity: 1;
+        animation: twinkle 1.5s ease-in-out infinite;
+    }
+    
+    .tier-image.selected {
+        opacity: 1 !important;
+        transform: scale(1.2) translateY(-8px) !important;
+        filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.9)) !important;
+        background: rgba(255, 215, 0, 0.15) !important;
+        box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.4),
+            0 0 50px rgba(255, 215, 0, 0.7),
+            inset 0 0 20px rgba(255, 215, 0, 0.2) !important;
+        animation: selectedPulse 1.5s ease-in-out infinite;
+        transition: 
+            transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+            filter 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.15s ease;
+    }
+    
+    .tier-image.selected::before {
+        opacity: 1 !important;
+        animation: twinkle 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes selectedPulse {
+        0%, 100% {
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 50px rgba(255, 215, 0, 0.7),
+                inset 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        50% {
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 70px rgba(255, 215, 0, 0.9),
+                inset 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+    }
+    
+    @keyframes twinkle {
+        0%, 100% {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+        50% {
+            opacity: 0.7;
+            transform: translateY(-50%) scale(1.2);
+        }
+    }
+    
+    button {
+        width: 52vw;
+        max-width: 400px;
+        min-width: 265px;
+        padding: 0;
+        margin: 0 auto clamp(0.75rem, 1.5vw, 1rem);
+        font-size: 0;
+        background-image: url('../static/draw_button.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: transparent;
+        border: none;
+        border-radius: clamp(0.75rem, 1.5vw, 1rem);
+        cursor: pointer;
+        aspect-ratio: auto;
+        height: 10.5vw;
+        min-height: 58px;
+        max-height: 79px;
+        display: block;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        filter: drop-shadow(0 6px 20px rgba(255, 215, 0, 0.5));
+        position: relative;
+        overflow: visible;
+    }
+    
+    button::before {
+        content: '✨';
+        position: absolute;
+        top: -15%;
+        left: 10%;
+        font-size: clamp(0.75rem, 1.5vw, 1rem);
+        animation: sparkle 2s ease-in-out infinite;
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    button::after {
+        content: '✨';
+        position: absolute;
+        top: -15%;
+        right: 10%;
+        font-size: clamp(0.75rem, 1.5vw, 1rem);
+        animation: sparkle 2s ease-in-out infinite 1s;
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    @keyframes sparkle {
+        0%, 100% {
+            opacity: 0;
+            transform: translateY(0) scale(0.5);
+        }
+        50% {
+            opacity: 1;
+            transform: translateY(-10px) scale(1);
+        }
+    }
+    
     button:hover {
-        background-color: #1a252f;
+        opacity: 1;
+        transform: scale(1.12) translateY(-3px);
+        filter: drop-shadow(0 8px 25px rgba(255, 215, 0, 0.7));
+    }
+    
+    button:hover::before,
+    button:hover::after {
+        opacity: 1;
+    }
+    
+    button:active {
+        transform: scale(1.08) translateY(-1px);
+    }
+    
+    input[type="hidden"] {
+        display: none;
     }
     .result { 
-        margin-top: 16px; 
-        background: #f0fff0; 
-        padding: 12px; 
-        border: 1px solid #ccc; 
-        border-radius: 8px; 
-        width: 80%;
-        max-width: 800px;
+        margin-top: clamp(1rem, 3vw, 1.5rem); 
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.95), rgba(33, 136, 56, 0.95));
+        padding: clamp(1.25rem, 3vw, 1.5rem); 
+        border: 3px solid #ffc107; 
+        border-radius: clamp(1rem, 2vw, 1.25rem); 
+        color: white; 
+        width: 90%;
+        max-width: clamp(400px, 80vw, 800px);
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        box-shadow: 
+            0 8px 25px rgba(40, 167, 69, 0.5), 
+            0 0 40px rgba(255, 193, 7, 0.4),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        text-align: center;
+        font-weight: 700;
+        backdrop-filter: blur(15px);
+        position: relative;
+        overflow: hidden;
+        animation: slideIn 0.5s ease-out;
     }
+    
+    .result::before {
+        content: '🎉';
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        animation: bounce 2s ease-in-out infinite;
+    }
+    
+    .result::after {
+        content: '🎉';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        animation: bounce 2s ease-in-out infinite 1s;
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(-50%) scale(1);
+        }
+        50% {
+            transform: translateY(-50%) scale(1.2) rotate(10deg);
+        }
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     .error { 
-        margin-top: 16px; 
-        background: #fff0f0; 
-        padding: 12px; 
-        border: 1px solid #f88; 
-        border-radius: 8px; 
-        color: #a00; 
-        width: 80%;
-        max-width: 800px;
+        margin-top: clamp(1rem, 3vw, 1.5rem); 
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.95), rgba(200, 35, 51, 0.95));
+        padding: clamp(1.25rem, 3vw, 1.5rem); 
+        border: 3px solid #ffc107; 
+        border-radius: clamp(1rem, 2vw, 1.25rem); 
+        color: white; 
+        width: 90%;
+        max-width: clamp(400px, 80vw, 800px);
+        font-size: clamp(0.875rem, 2vw, 1rem);
+        box-shadow: 
+            0 8px 25px rgba(220, 53, 69, 0.5), 
+            0 0 40px rgba(255, 193, 7, 0.4),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        text-align: center;
+        font-weight: 700;
+        backdrop-filter: blur(15px);
+        position: relative;
+        overflow: hidden;
+        animation: slideIn 0.5s ease-out, shake 0.5s ease-in-out;
+    }
+    
+    .error::before {
+        content: '⚠️';
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        animation: shake 0.5s ease-in-out infinite;
+    }
+    
+    .error::after {
+        content: '❌';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        animation: shake 0.5s ease-in-out infinite 0.25s;
+    }
+    
+    @keyframes shake {
+        0%, 100% {
+            transform: translateY(-50%) translateX(0);
+        }
+        25% {
+            transform: translateY(-50%) translateX(-10px);
+        }
+        75% {
+            transform: translateY(-50%) translateX(10px);
+        }
+    }
+    
+    /* 响应式设计 - 移动设备 */
+    @media (max-width: 768px) {
+        html {
+            font-size: 14px;
+        }
+        
+        .points-display::before,
+        .points-display::after {
+            display: none;
+        }
+        
+        .tier-selection {
+            width: 70vw;
+            min-width: 350px;
+            max-width: 550px;
+        }
+        
+        .tier-image {
+            width: 28%;
+            flex: 0 0 28%;
+            max-width: 10vw;
+            max-height: 10vw;
+            min-width: 70px;
+            min-height: 70px;
+        }
+        
+        .user-select-container label::after {
+            display: none;
+        }
+    }
+    
+    /* 响应式设计 - 小屏幕设备 */
+    @media (max-width: 480px) {
+        html {
+            font-size: 12px;
+        }
+        
+        main {
+            padding: clamp(2rem, 8vw, 4rem) clamp(0.75rem, 3vw, 1rem);
+        }
+        
+        .tier-selection {
+            width: 80vw;
+            min-width: 280px;
+            max-width: 450px;
+        }
+        
+        .tier-image {
+            width: 28%;
+            flex: 0 0 28%;
+            min-width: 60px;
+            min-height: 60px;
+        }
+        
+        .avatar-container {
+            max-width: 90vw;
+        }
+        
+        .result::before,
+        .result::after,
+        .error::before,
+        .error::after {
+            display: none;
+        }
+    }
+    
+    /* 响应式设计 - 大屏幕设备 */
+    @media (min-width: 1200px) {
+        html {
+            font-size: 18px;
+        }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header>
+  <!-- Home and Logout Buttons -->
     {% if session.username %}
-        <span>Welcome, {{ session.username }} — {{ points }} pts</span>
-
-        {% if avatar_path %}
-            <img class="avatar" src="{{ url_for('static', filename='../'~avatar_path~'') }}" alt="avatar">
-        {% else %}
-            <img class="avatar" src="{{ url_for('static', filename='../static/avatars/default.png') }}" alt="avatar">
+      <a href="{{ url_for('main.draw') }}" class="home-btn">Home</a>
+      <a href="{{ url_for('user.logout') }}" class="logout-btn">Logout</a>
         {% endif %}
-
-        
-
-        {% if session.role == 'administrator' %}
-            <a href="{{ url_for('main.admin_home') }}">Admin Home</a>
-            <a href="{{ url_for('main.draw') }}">Draw Home</a>
-        {% endif %}
-
-        {% if session.role == 'user' %}
-            <a href="{{ url_for('main.draw') }}">Home</a>
-        {% endif %}
-        <a href="{{ url_for('user.logout') }}">Logout</a>
-    {% else %}
-        <a href="{{ url_for('user.login') }}">Login</a>
-    {% endif %}
-  </header>
 
   <main>
-      <h1>Main Page</h1>
+      {% if session.username %}
+          <div class="avatar-container">
+              <img class="main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/random.png') }}" alt="avatar">
 
-      <form method="POST">
-        <label for="user">Select user:</label>
-        <select name="user" id="user" required>
+              <div class="user-select-container">
+                  <label for="user">Select User</label>
+                  <select id="user" required>
           {% for u in users %}
-            <option value="{{ u }}">{{ u }}</option>
+                      <option value="{{ u }}" {% if u == 'random' %}selected{% endif %}>{{ u }}</option>
           {% endfor %}
         </select>
+              </div>
+              
+              <div class="points-display">{{ points }} pts</div>
+          </div>
+      {% endif %}
 
-        <label for="tier">Select Tier:</label>
-        <select name="tier" id="tier" required>
-          {% for t in tiers %}
-            <option value="{{ t }}">{{ t }}</option>
-          {% endfor %}
-        </select>
+      <form method="POST" id="tierForm">
+        <input type="hidden" name="user" id="userHidden" required>
+        <input type="hidden" name="tier" id="tier" required>
+        
+        <div class="tier-selection">
+          <img class="tier-image" src="{{ url_for('static', filename='tiers/tier3.png') }}" alt="Tier 3" data-tier="third" onclick="selectTier('third')">
+          <img class="tier-image" src="{{ url_for('static', filename='tiers/tier2.png') }}" alt="Tier 2" data-tier="second" onclick="selectTier('second')">
+          <img class="tier-image" src="{{ url_for('static', filename='tiers/tier1.png') }}" alt="Tier 1" data-tier="first" onclick="selectTier('first')">
+        </div>
 
-        <button type="submit">🎰 Run</button>
+        <button type="submit" aria-label="Run"></button>
       </form>
+      
+      <script>
+        function selectTier(tier) {
+          // 更新隐藏的input值
+          document.getElementById('tier').value = tier;
+          
+          // 移除所有选中状态
+          document.querySelectorAll('.tier-image').forEach(img => {
+            img.classList.remove('selected');
+          });
+          
+          // 添加选中状态到当前图片
+          const clickedImg = event.target;
+          clickedImg.classList.add('selected');
+        }
+        
+        // 等待 DOM 加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+          // 表单提交前检查是否选择了tier和user
+          const tierForm = document.getElementById('tierForm');
+          if (tierForm) {
+            tierForm.addEventListener('submit', function(e) {
+              const selectedTier = document.getElementById('tier').value;
+              const selectedUser = document.getElementById('userHidden').value;
+              
+              if (!selectedTier) {
+                e.preventDefault();
+                alert('Please select a tier first!');
+                return false;
+              }
+              
+              if (!selectedUser) {
+                e.preventDefault();
+                alert('Please select a user first!');
+                return false;
+              }
+            });
+          }
+          
+          // 监听用户选择变化，更新头像和隐藏字段
+          const userSelect = document.getElementById('user');
+          if (userSelect) {
+            userSelect.addEventListener('change', function() {
+              const selectedUser = this.value;
+              const avatarImg = document.getElementById('selectedUserAvatar');
+              const userHidden = document.getElementById('userHidden');
+              
+              // 更新隐藏字段
+              if (userHidden) {
+                userHidden.value = selectedUser;
+              }
+              
+              if (selectedUser && avatarImg) {
+                // 使用正确的路径格式
+                const basePath = "{{ url_for('static', filename='avatars/') }}";
+                const avatarPath = basePath + selectedUser + ".png";
+                const defaultAvatarPath = "{{ url_for('static', filename='avatars/default.png') }}";
+                
+                // 创建新的图片对象来测试头像是否存在
+                const testImg = new Image();
+                
+                testImg.onload = function() {
+                  // 头像存在，使用用户头像
+                  avatarImg.src = avatarPath;
+                };
+                
+                testImg.onerror = function() {
+                  // 头像不存在，使用默认头像
+                  avatarImg.src = defaultAvatarPath;
+                };
+                
+                // 尝试加载头像
+                testImg.src = avatarPath;
+              }
+            });
+            
+            // 初始化：设置隐藏字段，并处理头像加载失败
+            if (userSelect.value) {
+              // 初始化隐藏字段
+              const userHidden = document.getElementById('userHidden');
+              if (userHidden) {
+                userHidden.value = userSelect.value;
+              }
+              
+              // 处理初始头像加载失败的情况
+              const avatarImg = document.getElementById('selectedUserAvatar');
+              if (avatarImg) {
+                avatarImg.addEventListener('error', function() {
+                  const defaultAvatarPath = "{{ url_for('static', filename='avatars/default.png') }}";
+                  if (this.src !== defaultAvatarPath) {
+                    this.src = defaultAvatarPath;
+                  }
+                }, { once: true });
+              }
+            }
+          }
+        });
+      </script>
 
       {% if error %}
         <div class="error">{{ error }}</div>

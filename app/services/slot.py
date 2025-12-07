@@ -11,11 +11,12 @@ class Slot:
         self.user_id = user_id
     
     def get_users(self):
-        sql = "SELECT name FROM tbl_users WHERE id!=%s"
-        rows = self.db_proxy.run_sql_select(sql, params=(self.user_id,))
+        sql = "SELECT name FROM tbl_users WHERE id!=%s and role=%s"
+        rows = self.db_proxy.run_sql_select(sql, params=(self.user_id,"user",))
         users = []
         for row in rows:
             users.append(row['name'])
+        users.append('random')
         return users
 
     def get_points(self):
@@ -110,3 +111,11 @@ class Slot:
     def update_is_first(self):
         sql = "UPDATE tbl_users SET is_first = 0 WHERE id = %s"
         self.db_proxy.run_sql_update(sql, params=(self.user_id,))
+
+    def get_random_user(self):
+        sql = "SELECT name FROM tbl_users WHERE id!=%s and role=%s"
+        rows = self.db_proxy.run_sql_select(sql, params=(self.user_id,"user",))
+        users = []
+        for row in rows:
+            users.append(row['name'])
+        return random.choice(users)

@@ -52,6 +52,8 @@ def draw_others():
         return render_template('draw_others.html', users=user_names, points = user_points, tiers=TIERS, avatar_path = avatar_path)
     if request.method == 'POST':
         selected_user = request.form.get('user')
+        if selected_user == RANDOM_USER:
+            selected_user = slot.get_random_user()
         selected_tier = request.form.get('tier')
         prize = None
         if selected_tier == 'first':
