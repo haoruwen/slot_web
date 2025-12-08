@@ -1311,9 +1311,21 @@
           
           // 确保元素已经渲染
           if (element.offsetWidth === 0 || element.offsetHeight === 0) {
-            // 如果元素还没有尺寸，延迟计算
-            setTimeout(() => calculateElementPosition(element, targetX, targetY, anchorX, anchorY), 50);
+            // 如果元素还没有尺寸，延迟计算（最多重试3次）
+            const retryCount = parseInt(element.dataset.positionRetry || '0');
+            if (retryCount < 3) {
+              element.dataset.positionRetry = String(retryCount + 1);
+              setTimeout(() => calculateElementPosition(element, targetX, targetY, anchorX, anchorY), 50);
+            } else {
+              // 如果重试3次仍然没有尺寸，强制显示元素（位置可能不准确，但至少可见）
+              element.classList.add('positioned');
+            }
             return;
+          }
+          
+          // 清除重试计数
+          if (element.dataset.positionRetry) {
+            delete element.dataset.positionRetry;
           }
           
           const containerWidth = container.offsetWidth;
@@ -1526,82 +1538,54 @@
           });
         }
         
-        // 等待所有图片加载完成
-        function waitForImages() {
-          // 抽奖按钮也需要等待，标记为已定位
-          const images = document.querySelectorAll('.bg-container img');
-          const button = document.querySelector('button[type="submit"], .bg-container .element.gift-btn');
-          let loadedCount = 0;
-          const totalImages = images.length;
-          
-          if (totalImages === 0) {
-            updateAllElementPositions();
-            // 标记按钮为已定位
-            if (button) {
-              button.classList.add('positioned');
-            }
-            return;
+        // 初始位置计算（快速计算，不等待图片加载）
+        function calculateInitialPositions() {
+          // 使用配置的默认尺寸快速计算位置
+          const bgImg = document.querySelector('.bg-img');
+          if (bgImg && bgImg.naturalWidth > 0) {
+            // 如果背景图已加载，使用实际尺寸
+            bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
+            bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
           }
+          // 否则使用配置中的默认尺寸
           
-          images.forEach(img => {
-            if (img.complete) {
-              loadedCount++;
-              checkAllLoaded();
-            } else {
-              img.addEventListener('load', function() {
-                loadedCount++;
-                checkAllLoaded();
-              });
-              img.addEventListener('error', function() {
-                loadedCount++;
-                checkAllLoaded();
-              });
-            }
-          });
+          // 立即计算并显示元素位置
+          updateAllElementPositions();
           
-          function checkAllLoaded() {
-            if (loadedCount >= totalImages) {
-              // 所有图片加载完成，再等待一小段时间确保渲染完成
-              setTimeout(() => {
-                updateAllElementPositions();
-                // 标记按钮为已定位
-                if (button) {
-                  button.classList.add('positioned');
-                }
-              }, 100);
-            }
+          // 标记按钮为已定位
+          const button = document.querySelector('button[type="submit"], .bg-container .element.gift-btn');
+          if (button) {
+            button.classList.add('positioned');
           }
         }
         
         // 等待 DOM 加载完成
         document.addEventListener('DOMContentLoaded', function() {
-          // 等待背景图加载完成后再计算位置
+          // 立即计算初始位置（不等待图片加载）
+          // 使用 requestAnimationFrame 确保 DOM 已渲染
+          requestAnimationFrame(function() {
+            setTimeout(calculateInitialPositions, 0);
+          });
+          
+          // 如果背景图稍后加载完成，更新尺寸（但不再重新计算位置）
           const bgImg = document.querySelector('.bg-img');
-          if (bgImg) {
-            if (bgImg.complete && bgImg.naturalWidth > 0) {
-              // 图片已加载，获取实际尺寸
+          if (bgImg && !bgImg.complete) {
+            bgImg.addEventListener('load', function() {
+              // 更新配置中的实际尺寸，供 resize 时使用
               bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
               bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
-              waitForImages();
-            } else {
-              // 等待图片加载
-              bgImg.addEventListener('load', function() {
-                // 获取实际图片尺寸（如果与配置不同，可以自动更新）
-                bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
-                bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
-                waitForImages();
-              });
-              bgImg.addEventListener('error', function() {
-                // 即使加载失败也继续
-                waitForImages();
-              });
-            }
-          } else {
-            // 如果没有背景图，直接等待其他图片
-            waitForImages();
+              // 如果窗口大小已改变，重新计算一次
+              if (window.innerWidth !== window.initialWidth || window.innerHeight !== window.initialHeight) {
+                debouncedUpdatePositions();
+              }
+            }, { once: true });
           }
           
-          // 监听窗口大小变化
+          // 记录初始窗口尺寸
+          window.initialWidth = window.innerWidth;
+          window.initialHeight = window.innerHeight;
+          
+          // 只在窗口大小变化时重新计算位置
           window.addEventListener('resize', debouncedUpdatePositions);
           
           // 表单提交前检查是否选择了tier和user
