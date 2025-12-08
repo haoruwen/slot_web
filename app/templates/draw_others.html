@@ -988,6 +988,9 @@
             width: 100%;
             max-width: 600px;
             min-width: 400px;
+            margin-top: -2rem;
+            margin-left: -7rem;
+            gap: 0;
         }
         
         .tier-image {
@@ -998,9 +1001,12 @@
             min-height: 220px;
         }
         
-        .tier-selection {
-            gap: clamp(0.75rem, 1.5vw, 1.25rem);
-            padding: clamp(1rem, 2vw, 1.5rem) clamp(0.75rem, 1.5vw, 1rem);
+        .tier-item:nth-child(2) {
+            margin-left: 10px;
+        }
+        
+        .tier-item:nth-child(3) {
+            margin-left: 30px;
         }
         
         .user-select-container label::after {
@@ -1022,14 +1028,24 @@
             width: 80vw;
             min-width: 280px;
             max-width: 450px;
-            gap: clamp(0.5rem, 1vw, 1rem);
-            padding: clamp(0.75rem, 1.5vw, 1.25rem) clamp(0.5rem, 1vw, 0.75rem);
+            margin-top: -2rem;
+            margin-left: -7rem;
+            gap: 0;
+            padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1rem, 2vw, 1.5rem);
         }
         
         .tier-image {
             width: 100%;
             min-width: 180px;
             min-height: 180px;
+        }
+        
+        .tier-item:nth-child(2) {
+            margin-left: 10px;
+        }
+        
+        .tier-item:nth-child(3) {
+            margin-left: 30px;
         }
         
         button[type="submit"] {
