@@ -776,6 +776,62 @@
         }
     }
     
+    /* 分数显示样式 */
+    .bg-container .element.points-display {
+        font-size: clamp(1.2rem, 2.5vw, 2rem);
+        font-weight: 800;
+        text-align: center;
+        color: #ffd700;
+        text-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.9),
+            0 0 20px rgba(255, 193, 7, 0.7),
+            0 4px 8px rgba(0, 0, 0, 0.6),
+            0 1px 2px rgba(0, 0, 0, 0.8);
+        position: absolute;
+        padding: clamp(0.5rem, 1.2vw, 0.85rem) clamp(1rem, 2.5vw, 1.75rem);
+        background: rgba(139, 69, 19, 0.3);
+        border-radius: clamp(0.75rem, 1.5vw, 1.25rem);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 215, 0, 0.6);
+        box-shadow: 
+            0 4px 20px rgba(0, 0, 0, 0.4),
+            inset 0 2px 4px rgba(0, 0, 0, 0.2),
+            inset 0 -2px 4px rgba(255, 255, 255, 0.1),
+            0 0 25px rgba(255, 215, 0, 0.3);
+        letter-spacing: 0.1em;
+        white-space: nowrap;
+        pointer-events: auto;
+        z-index: 998;
+        transform: translate(-50%, -50%);
+        transition: all 0.3s ease;
+        min-width: clamp(120px, 20vw, 200px);
+    }
+    
+    .bg-container .element.points-display::before {
+        content: '⭐';
+        margin-right: clamp(0.3rem, 0.8vw, 0.5rem);
+        font-size: 0.9em;
+        animation: twinkle 2s ease-in-out infinite;
+    }
+    
+    .bg-container .element.points-display::after {
+        content: '⭐';
+        margin-left: clamp(0.3rem, 0.8vw, 0.5rem);
+        font-size: 0.9em;
+        animation: twinkle 2s ease-in-out infinite 1s;
+    }
+    
+    .bg-container .element.points-display:hover {
+        background: rgba(139, 69, 19, 0.45);
+        border-color: rgba(255, 215, 0, 0.9);
+        box-shadow: 
+            0 6px 25px rgba(0, 0, 0, 0.5),
+            inset 0 2px 4px rgba(0, 0, 0, 0.3),
+            inset 0 -2px 4px rgba(255, 255, 255, 0.15),
+            0 0 35px rgba(255, 215, 0, 0.5);
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+    
     
     input[type="hidden"] {
         display: none;
@@ -1033,6 +1089,10 @@
       {% if session.username %}
           <img class="element bell-button main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/random.png') }}" alt="avatar" onclick="openUserModal()">
           
+          {% if points is defined %}
+          <div class="element points-display" id="pointsDisplay">{{ points }} pts</div>
+          {% endif %}
+          
           <img class="element sock1 tier-image tier-image-1" src="{{ url_for('static', filename='tiers/tier3.png') }}" alt="Tier 3" data-tier="third" onclick="selectTier('third')">
           <img class="element sock2 tier-image tier-image-2" src="{{ url_for('static', filename='tiers/tier2.png') }}" alt="Tier 2" data-tier="second" onclick="selectTier('second')">
           <img class="element sock3 tier-image tier-image-3" src="{{ url_for('static', filename='tiers/tier1.png') }}" alt="Tier 1" data-tier="first" onclick="selectTier('first')">
@@ -1108,6 +1168,13 @@
             targetX: 1000,  // ⬅️ 修改这个值调整头像的X位置
             targetY: 1200,  // ⬅️ 修改这个值调整头像的Y位置
             anchorX: 0.5,  // 0.5 = 中心对齐
+            anchorY: 0.5
+          },
+          {
+            selector: '.element.points-display',
+            targetX: 2400,  // ⬅️ 修改这个值调整分数显示的X位置
+            targetY: 1900,  // ⬅️ 修改这个值调整分数显示的Y位置（在头像下方）
+            anchorX: 0.5,
             anchorY: 0.5
           },
           {
