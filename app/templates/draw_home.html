@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Main Page</title>
+  <!-- 预加载关键图片 -->
+  <link rel="preload" as="image" href="{{ url_for('static', filename='background/board.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='draw_button.png') }}">
   <style>
     * {
         box-sizing: border-box;

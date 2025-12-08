@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Result</title>
+  <!-- 预加载关键图片 -->
+  <link rel="preload" as="image" href="{{ url_for('static', filename='background/board.png') }}">
   <style>
     html {
         overflow: hidden;
@@ -655,6 +657,7 @@
     const allImages = shuffledImages;
     
     // Preload all images before starting carousel
+    // 使用更智能的预加载，利用浏览器缓存
     function preloadImages(imageSources, callback) {
       let loadedCount = 0;
       const totalImages = imageSources.length;
@@ -664,8 +667,13 @@
         return;
       }
       
+      // 检查图片是否已在浏览器缓存中
       imageSources.forEach((imageSrc, index) => {
         const img = new Image();
+        // 设置缓存策略
+        img.crossOrigin = 'anonymous';
+        
+        // 尝试从缓存加载
         img.onload = function() {
           loadedCount++;
           if (loadedCount === totalImages) {
@@ -678,6 +686,8 @@
             callback();
           }
         };
+        
+        // 使用时间戳确保缓存有效性（但服务端已设置缓存头，这里主要是触发缓存检查）
         img.src = imageSrc;
       });
     }

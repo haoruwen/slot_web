@@ -4,6 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Main Page</title>
+  <!-- 预加载关键图片 -->
+  <link rel="preload" as="image" href="{{ url_for('static', filename='background/board.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier1.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier2.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier3.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='draw_button.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='avatars/random.png') }}">
   <style>
     html {
         overflow: hidden;

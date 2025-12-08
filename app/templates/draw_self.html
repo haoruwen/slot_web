@@ -4,6 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Main Page</title>
+  <!-- 预加载关键图片 -->
+  <link rel="preload" as="image" href="{{ url_for('static', filename='background/board.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier1.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier2.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier3.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='draw_button.png') }}">
   <style>
     html {
         overflow: hidden;
@@ -139,6 +145,12 @@
         width: 100%;
         max-width: clamp(1200px, 98vw, 1400px);
         padding: 0 clamp(1.5rem, 4vw, 2.5rem);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .main-layout.loaded {
+        opacity: 1;
     }
     
     .main-avatar {
@@ -1116,8 +1128,8 @@
           clickedImg.classList.add('selected');
         }
         
-        // 等待 DOM 加载完成
-        document.addEventListener('DOMContentLoaded', function() {
+        // 等待 DOM 和资源加载完成
+        function initPage() {
           // 设置用户为当前登录用户
           const userHidden = document.getElementById('userHidden');
           if (userHidden) {
@@ -1147,6 +1159,39 @@
                 this.src = defaultAvatarPath;
               }
             }, { once: true });
+            
+            // 等待头像图片加载完成
+            if (avatarImg.complete && avatarImg.naturalWidth > 0) {
+              showLayout();
+            } else {
+              avatarImg.addEventListener('load', showLayout, { once: true });
+              avatarImg.addEventListener('error', showLayout, { once: true });
+            }
+          } else {
+            showLayout();
+          }
+        }
+        
+        function showLayout() {
+          const mainLayout = document.querySelector('.main-layout');
+          if (mainLayout) {
+            mainLayout.classList.add('loaded');
+          }
+        }
+        
+        // 等待 DOM 加载完成
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initPage);
+        } else {
+          // DOM 已经加载完成
+          initPage();
+        }
+        
+        // 等待所有图片加载完成后再显示
+        window.addEventListener('load', function() {
+          const mainLayout = document.querySelector('.main-layout');
+          if (mainLayout && !mainLayout.classList.contains('loaded')) {
+            mainLayout.classList.add('loaded');
           }
           
           // 3秒后自动隐藏 error message
