@@ -387,8 +387,8 @@
             0 0 50px rgba(255, 215, 0, 0.3),
             inset 0 2px 6px rgba(0, 0, 0, 0.3);
         width: 90%;
-        max-width: 80vw;
-        max-height: 80vw;
+        max-width: min(90vw, 2000px);
+        max-height: min(85vh, 1200px);
         min-width: 300px;
         min-height: 200px;
         display: flex;
@@ -1117,6 +1117,63 @@
     @media (min-width: 1200px) {
         html {
             font-size: 18px;
+        }
+        
+        .user-modal-content {
+            max-width: min(85vw, 2200px);
+            max-height: min(88vh, 1400px);
+            width: 85%;
+        }
+        
+        .user-grid {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: clamp(0.75rem, 1.5vw, 1.25rem);
+        }
+        
+        .user-item-avatar {
+            width: clamp(80px, 10vw, 130px);
+            height: clamp(80px, 10vw, 130px);
+        }
+        
+        .user-modal-title {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+        }
+        
+        .user-item-name {
+            font-size: clamp(0.875rem, 1.8vw, 1.125rem);
+        }
+    }
+    
+    /* 响应式设计 - 超大屏幕设备 (2560px+) */
+    @media (min-width: 2560px) {
+        .user-modal-content {
+            max-width: min(80vw, 2400px);
+            max-height: min(85vh, 1600px);
+            width: 80%;
+        }
+        
+        .user-grid {
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: clamp(1rem, 2vw, 1.5rem);
+        }
+        
+        .user-item-avatar {
+            width: clamp(100px, 12vw, 150px);
+            height: clamp(100px, 12vw, 150px);
+        }
+        
+        .user-modal-title {
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
+        }
+        
+        .user-item-name {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+        }
+        
+        .user-modal-search input {
+            font-size: clamp(0.875rem, 1.8vw, 1.125rem);
+            padding: clamp(0.625rem, 1.2vw, 0.875rem) clamp(1rem, 2vw, 1.5rem);
         }
     }
     
