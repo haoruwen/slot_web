@@ -1,6 +1,6 @@
 DB_HOST = "127.0.0.1"
 DB_USER = "root"
-DB_PASS = "Wings@0330!"
+DB_PASS = "wyc990213"
 DB_NAME = "db_slot"
 
 IP_BLOCK_TIMES = 10
