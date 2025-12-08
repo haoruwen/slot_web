@@ -59,7 +59,7 @@ def draw_others():
         if selected_tier == 'first':
             if not slot.check_points(FIRST_TIER_POINTS):
                 user_names = slot.get_users()
-                return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error="Invalid", avatar_path = avatar_path)
+                return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_first_prize()
             slot.update_points(FIRST_TIER_POINTS)
             if slot.is_first():
@@ -70,7 +70,7 @@ def draw_others():
         elif selected_tier == 'second':
             if not slot.check_points(SECOND_TIER_POINTS):
                 user_names = slot.get_users()
-                return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error="Invalid", avatar_path = avatar_path)
+                return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_second_prize()
             slot.update_points(SECOND_TIER_POINTS)
             if slot.is_first():
@@ -81,7 +81,7 @@ def draw_others():
         else:
             if not slot.check_points(THIRD_TIER_POINTS):
                 user_names = slot.get_users()
-                return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error="Invalid", avatar_path = avatar_path)
+                return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_third_prize()
             slot.update_points(THIRD_TIER_POINTS)
             if slot.is_first():
@@ -110,17 +110,17 @@ def draw_self():
         prize = None
         if selected_tier == 'first':
             if not slot.check_self_points(FIRST_TIER_POINTS):
-                return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error="Invalid", avatar_path = avatar_path)
+                return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_first_prize()
             slot.update_self_points(FIRST_TIER_POINTS)
         elif selected_tier == 'second':
             if not slot.check_self_points(SECOND_TIER_POINTS):
-                return render_template('draw_self.html',points = user_self_points, tiers=TIERS, error="Invalid", avatar_path = avatar_path)
+                return render_template('draw_self.html',points = user_self_points, tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_second_prize()
             slot.update_self_points(SECOND_TIER_POINTS)
         else:
             if not slot.check_self_points(THIRD_TIER_POINTS):
-                return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error="Invalid", avatar_path = avatar_path)
+                return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_third_prize()
             slot.update_self_points(THIRD_TIER_POINTS)
 
@@ -172,7 +172,7 @@ def login():
         remaining_time = user.fail_attempt(client_ip)
         if remaining_time == 0:
             return f"permission denied", 403
-        return render_template('login.html', msg=info + "  remaining %s times then banned" % remaining_time)
+        return render_template('login.html', msg=info + ". %s attempts left before permanent ban." % remaining_time)
 
 @user_bp.route('/logout')
 def logout():
