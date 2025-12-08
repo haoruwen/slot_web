@@ -58,32 +58,38 @@
         display: inline-block; 
         background: transparent;
         backdrop-filter: none;
-        padding: clamp(2rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem); 
+        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 5vw, 4rem); 
         border-radius: 0; 
         box-shadow: none;
         border: none;
         position: relative;
         z-index: 1;
+        max-width: min(95vw, 1200px);
+        width: 100%;
+        box-sizing: border-box;
     }
     
     h1 { 
-        margin: 0 0 clamp(1rem, 2vw, 1.5rem); 
-        font-size: clamp(1.5rem, 3vw, 2rem); 
+        margin: 0 0 clamp(0.75rem, 2vw, 1.25rem); 
+        font-size: clamp(1.25rem, 3vw, 1.75rem); 
         color: #ffd700; 
         text-shadow: 
             0 0 10px rgba(255, 215, 0, 0.8),
             0 2px 4px rgba(0, 0, 0, 0.5);
+        text-align: center;
     }
     
     .prize { 
-        font-size: clamp(2rem, 4vw, 3rem); 
+        font-size: clamp(1.5rem, 3.5vw, 2.5rem); 
         color: #ffd700; 
         font-weight: 700; 
-        margin-bottom: clamp(1rem, 2vw, 1.5rem);
+        margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
         text-shadow: 
             0 0 15px rgba(255, 215, 0, 0.9),
             0 0 25px rgba(255, 193, 7, 0.7),
             0 2px 6px rgba(0, 0, 0, 0.6);
+        text-align: center;
+        word-wrap: break-word;
     }
     
     .congratulations-text {
@@ -100,7 +106,7 @@
     }
     
     .congratulations-text h2 {
-        font-size: clamp(1.5rem, 3vw, 2.5rem);
+        font-size: clamp(1.25rem, 3vw, 2.25rem);
         color: #ffd700;
         font-weight: 800;
         margin: 0 0 clamp(0.5rem, 1vw, 0.75rem);
@@ -111,6 +117,7 @@
             0 1px 2px rgba(0, 0, 0, 0.8);
         letter-spacing: 0.1em;
         animation: textPulse 2s ease-in-out infinite;
+        text-align: center;
     }
     
     @keyframes textPulse {
@@ -125,17 +132,20 @@
     }
     
     .congratulations-text .prize-name {
-        font-size: clamp(1.25rem, 2.5vw, 2rem);
+        font-size: clamp(1rem, 2.5vw, 1.75rem);
         color: #fff8dc;
         font-weight: 600;
         text-shadow: 
             0 0 10px rgba(255, 215, 0, 0.8),
             0 2px 4px rgba(0, 0, 0, 0.6);
         letter-spacing: 0.05em;
+        text-align: center;
+        word-wrap: break-word;
+        padding: 0 clamp(0.5rem, 2vw, 1rem);
     }
     
     .congratulations-text .finding-text {
-        font-size: clamp(1.5rem, 3vw, 2.5rem);
+        font-size: clamp(1.25rem, 3vw, 2.25rem);
         color: #ffd700;
         font-weight: 800;
         margin: 0;
@@ -146,13 +156,15 @@
             0 1px 2px rgba(0, 0, 0, 0.8);
         letter-spacing: 0.1em;
         animation: textPulse 2s ease-in-out infinite;
+        text-align: center;
+        padding: 0 clamp(0.5rem, 2vw, 1rem);
     }
     
     .prize-carousel {
-        width: clamp(250px, 30vw, 380px);
-        height: clamp(250px, 30vw, 380px);
+        width: clamp(200px, 35vw, 400px);
+        height: clamp(200px, 35vw, 400px);
         aspect-ratio: 1;
-        margin: 0 auto clamp(1rem, 2vw, 1.5rem);
+        margin: 0 auto clamp(0.75rem, 2vw, 1.5rem);
         position: relative;
         overflow: visible;
         border-radius: 0;
@@ -160,6 +172,8 @@
         box-shadow: none;
         background: transparent;
         transition: all 0.1s ease;
+        max-width: 90vw;
+        max-height: 90vw;
     }
     
     .prize-carousel-item.winner {
@@ -206,40 +220,49 @@
     
     .confetti {
         position: absolute;
-        width: 10px;
-        height: 10px;
+        width: clamp(12px, 1.2vw, 18px);
+        height: clamp(12px, 1.2vw, 18px);
         background: #ffd700;
-        top: -10px;
+        top: -20px;
         animation: confettiFall linear forwards;
     }
     
-    .confetti:nth-child(1) { left: 10%; background: #ffd700; animation-duration: 3s; animation-delay: 0s; }
-    .confetti:nth-child(2) { left: 20%; background: #ff6b6b; animation-duration: 3.5s; animation-delay: 0.2s; }
-    .confetti:nth-child(3) { left: 30%; background: #4ecdc4; animation-duration: 3.2s; animation-delay: 0.1s; }
-    .confetti:nth-child(4) { left: 40%; background: #ffd700; animation-duration: 3.8s; animation-delay: 0.3s; }
-    .confetti:nth-child(5) { left: 50%; background: #ff6b6b; animation-duration: 3.3s; animation-delay: 0s; }
-    .confetti:nth-child(6) { left: 60%; background: #4ecdc4; animation-duration: 3.6s; animation-delay: 0.2s; }
-    .confetti:nth-child(7) { left: 70%; background: #ffd700; animation-duration: 3.4s; animation-delay: 0.1s; }
-    .confetti:nth-child(8) { left: 80%; background: #ff6b6b; animation-duration: 3.7s; animation-delay: 0.3s; }
-    .confetti:nth-child(9) { left: 90%; background: #4ecdc4; animation-duration: 3.5s; animation-delay: 0s; }
-    .confetti:nth-child(10) { left: 15%; background: #ffd700; animation-duration: 3.3s; animation-delay: 0.2s; }
-    .confetti:nth-child(11) { left: 25%; background: #ff6b6b; animation-duration: 3.6s; animation-delay: 0.1s; }
-    .confetti:nth-child(12) { left: 35%; background: #4ecdc4; animation-duration: 3.4s; animation-delay: 0.3s; }
-    .confetti:nth-child(13) { left: 45%; background: #ffd700; animation-duration: 3.8s; animation-delay: 0s; }
-    .confetti:nth-child(14) { left: 55%; background: #ff6b6b; animation-duration: 3.2s; animation-delay: 0.2s; }
-    .confetti:nth-child(15) { left: 65%; background: #4ecdc4; animation-duration: 3.7s; animation-delay: 0.1s; }
-    .confetti:nth-child(16) { left: 75%; background: #ffd700; animation-duration: 3.5s; animation-delay: 0.3s; }
-    .confetti:nth-child(17) { left: 85%; background: #ff6b6b; animation-duration: 3.3s; animation-delay: 0s; }
-    .confetti:nth-child(18) { left: 95%; background: #4ecdc4; animation-duration: 3.6s; animation-delay: 0.2s; }
+    .confetti:nth-child(1) { left: 5%; background: #ffd700; animation-duration: 4s; animation-delay: 0s; }
+    .confetti:nth-child(2) { left: 12%; background: #ff6b6b; animation-duration: 4.2s; animation-delay: 0.1s; }
+    .confetti:nth-child(3) { left: 18%; background: #4ecdc4; animation-duration: 3.8s; animation-delay: 0.2s; }
+    .confetti:nth-child(4) { left: 25%; background: #ffd700; animation-duration: 4.5s; animation-delay: 0s; }
+    .confetti:nth-child(5) { left: 32%; background: #ff6b6b; animation-duration: 4.1s; animation-delay: 0.15s; }
+    .confetti:nth-child(6) { left: 38%; background: #4ecdc4; animation-duration: 3.9s; animation-delay: 0.25s; }
+    .confetti:nth-child(7) { left: 45%; background: #ffd700; animation-duration: 4.3s; animation-delay: 0.05s; }
+    .confetti:nth-child(8) { left: 52%; background: #ff6b6b; animation-duration: 4.4s; animation-delay: 0.2s; }
+    .confetti:nth-child(9) { left: 58%; background: #4ecdc4; animation-duration: 4s; animation-delay: 0.1s; }
+    .confetti:nth-child(10) { left: 65%; background: #ffd700; animation-duration: 4.2s; animation-delay: 0.3s; }
+    .confetti:nth-child(11) { left: 72%; background: #ff6b6b; animation-duration: 3.7s; animation-delay: 0.05s; }
+    .confetti:nth-child(12) { left: 78%; background: #4ecdc4; animation-duration: 4.3s; animation-delay: 0.15s; }
+    .confetti:nth-child(13) { left: 85%; background: #ffd700; animation-duration: 4.1s; animation-delay: 0.25s; }
+    .confetti:nth-child(14) { left: 92%; background: #ff6b6b; animation-duration: 3.9s; animation-delay: 0.1s; }
+    .confetti:nth-child(15) { left: 8%; background: #4ecdc4; animation-duration: 4.4s; animation-delay: 0.2s; }
+    .confetti:nth-child(16) { left: 22%; background: #ffd700; animation-duration: 3.8s; animation-delay: 0.3s; }
+    .confetti:nth-child(17) { left: 35%; background: #ff6b6b; animation-duration: 4.2s; animation-delay: 0.05s; }
+    .confetti:nth-child(18) { left: 48%; background: #4ecdc4; animation-duration: 4.1s; animation-delay: 0.15s; }
+    .confetti:nth-child(19) { left: 62%; background: #ffd700; animation-duration: 3.9s; animation-delay: 0.25s; }
+    .confetti:nth-child(20) { left: 75%; background: #ff6b6b; animation-duration: 4.3s; animation-delay: 0.1s; }
+    .confetti:nth-child(21) { left: 88%; background: #4ecdc4; animation-duration: 4s; animation-delay: 0.2s; }
+    .confetti:nth-child(22) { left: 15%; background: #ffd700; animation-duration: 4.4s; animation-delay: 0.05s; }
+    .confetti:nth-child(23) { left: 42%; background: #ff6b6b; animation-duration: 3.8s; animation-delay: 0.3s; }
+    .confetti:nth-child(24) { left: 68%; background: #4ecdc4; animation-duration: 4.2s; animation-delay: 0.15s; }
     
     @keyframes confettiFall {
         0% {
-            transform: translateY(0) translateX(0) rotate(0deg);
+            transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+            opacity: 1;
+        }
+        50% {
             opacity: 1;
         }
         100% {
-            transform: translateY(100vh) translateX(calc(var(--drift) * 100px)) rotate(720deg);
-            opacity: 0;
+            transform: translateY(100vh) translateX(calc(var(--drift) * 150px)) rotate(720deg) scale(0.8);
+            opacity: 0.3;
         }
     }
     
@@ -251,6 +274,22 @@
     .confetti:nth-child(even) {
         --drift: -1;
         transform: rotate(45deg);
+    }
+    
+    /* 增强彩带颜色亮度 */
+    .confetti[style*="#ffd700"],
+    .confetti[style*="background: #ffd700"] {
+        background: #ffed4e !important;
+    }
+    
+    .confetti[style*="#ff6b6b"],
+    .confetti[style*="background: #ff6b6b"] {
+        background: #ff8787 !important;
+    }
+    
+    .confetti[style*="#4ecdc4"],
+    .confetti[style*="background: #4ecdc4"] {
+        background: #6dd5ce !important;
     }
     
     .prize-carousel-container {
@@ -291,24 +330,28 @@
     }
     
     .buttons { 
-        margin-top: clamp(1rem, 2vw, 1.5rem); 
+        margin-top: clamp(1rem, 2vw, 1.5rem);
+        text-align: center;
     }
     
     a.button { 
         display: inline-block; 
-        margin: 5px; 
-        padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 2rem); 
+        margin: clamp(0.25rem, 1vw, 0.5rem); 
+        padding: clamp(0.75rem, 2vw, 1.1rem) clamp(1.25rem, 3vw, 2rem); 
         background: rgba(220, 53, 69, 0.85);
-        border: 2px solid rgba(255, 215, 0, 0.6);
+        border: clamp(2px, 0.3vw, 3px) solid rgba(255, 215, 0, 0.6);
         color: white; 
         text-decoration: none; 
         border-radius: clamp(0.5rem, 1vw, 0.75rem);
         font-weight: 600;
+        font-size: clamp(0.875rem, 2vw, 1.1rem);
         transition: all 0.3s ease;
         box-shadow: 
             0 4px 15px rgba(0, 0, 0, 0.3),
             0 0 20px rgba(255, 215, 0, 0.2);
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        min-width: clamp(120px, 25vw, 180px);
+        text-align: center;
     }
     
     a.button:hover { 
@@ -318,6 +361,168 @@
         box-shadow: 
             0 6px 20px rgba(0, 0, 0, 0.4),
             0 0 30px rgba(255, 215, 0, 0.4);
+    }
+    
+    /* 响应式设计 - 移动设备 */
+    @media (max-width: 768px) {
+        body {
+            padding: clamp(1rem, 3vw, 2rem);
+        }
+        
+        .card {
+            padding: clamp(1.25rem, 4vw, 2rem) clamp(1rem, 3vw, 1.5rem);
+        }
+        
+        .congratulations-text h2,
+        .congratulations-text .finding-text {
+            font-size: clamp(1.1rem, 4vw, 1.75rem);
+        }
+        
+        .congratulations-text .prize-name {
+            font-size: clamp(0.9rem, 3vw, 1.4rem);
+        }
+        
+        .prize-carousel {
+            width: clamp(180px, 50vw, 300px);
+            height: clamp(180px, 50vw, 300px);
+        }
+        
+        a.button {
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            padding: clamp(0.65rem, 2.5vw, 0.9rem) clamp(1rem, 3vw, 1.5rem);
+            margin: clamp(0.25rem, 1vw, 0.4rem);
+        }
+    }
+    
+    /* 响应式设计 - 小屏幕设备 */
+    @media (max-width: 480px) {
+        body {
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+        }
+        
+        .card {
+            padding: clamp(1rem, 4vw, 1.5rem) clamp(0.75rem, 3vw, 1.25rem);
+        }
+        
+        h1 {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            margin-bottom: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        .congratulations-text {
+            margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+        }
+        
+        .congratulations-text h2,
+        .congratulations-text .finding-text {
+            font-size: clamp(1rem, 4.5vw, 1.5rem);
+            margin-bottom: clamp(0.4rem, 1.5vw, 0.6rem);
+        }
+        
+        .congratulations-text .prize-name {
+            font-size: clamp(0.85rem, 3.5vw, 1.2rem);
+        }
+        
+        .prize-carousel {
+            width: clamp(150px, 60vw, 250px);
+            height: clamp(150px, 60vw, 250px);
+            margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+        }
+        
+        .prize {
+            font-size: clamp(1.25rem, 4vw, 2rem);
+        }
+        
+        .buttons {
+            margin-top: clamp(0.75rem, 2vw, 1.25rem);
+        }
+        
+        a.button {
+            font-size: clamp(0.75rem, 3.5vw, 0.95rem);
+            padding: clamp(0.6rem, 3vw, 0.85rem) clamp(0.9rem, 4vw, 1.25rem);
+            margin: clamp(0.2rem, 1vw, 0.35rem);
+            min-width: clamp(100px, 40vw, 150px);
+            display: block;
+            width: auto;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+    
+    /* 响应式设计 - 平板设备 */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .prize-carousel {
+            width: clamp(280px, 40vw, 350px);
+            height: clamp(280px, 40vw, 350px);
+        }
+        
+        .congratulations-text h2,
+        .congratulations-text .finding-text {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+        }
+    }
+    
+    /* 响应式设计 - 大屏幕设备 */
+    @media (min-width: 1200px) {
+        .card {
+            padding: clamp(2rem, 4vw, 3rem) clamp(2.5rem, 5vw, 4.5rem);
+        }
+        
+        .congratulations-text h2,
+        .congratulations-text .finding-text {
+            font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+        }
+        
+        .congratulations-text .prize-name {
+            font-size: clamp(1.25rem, 3vw, 1.9rem);
+        }
+        
+        .prize-carousel {
+            width: clamp(320px, 30vw, 450px);
+            height: clamp(320px, 30vw, 450px);
+        }
+        
+        a.button {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            padding: clamp(1rem, 2vw, 1.25rem) clamp(1.75rem, 3vw, 2.5rem);
+        }
+    }
+    
+    /* 响应式设计 - 超大屏幕设备 (2560px+) */
+    @media (min-width: 2560px) {
+        .card {
+            padding: clamp(2.5rem, 5vw, 4rem) clamp(3rem, 6vw, 6rem);
+            max-width: min(90vw, 1400px);
+        }
+        
+        h1 {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+        }
+        
+        .congratulations-text h2,
+        .congratulations-text .finding-text {
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+        
+        .congratulations-text .prize-name {
+            font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+        }
+        
+        .prize-carousel {
+            width: clamp(400px, 25vw, 550px);
+            height: clamp(400px, 25vw, 550px);
+        }
+        
+        .prize {
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+        
+        a.button {
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            padding: clamp(1.1rem, 2.5vw, 1.4rem) clamp(2rem, 4vw, 3rem);
+            min-width: clamp(150px, 20vw, 220px);
+        }
     }
   </style>
 </head>
@@ -572,13 +777,18 @@
           const confettiContainer = document.getElementById('confettiContainer');
           if (!confettiContainer) return;
           
-          // Create 18 confetti pieces
-          for (let i = 0; i < 18; i++) {
+          // Create more confetti pieces for better effect (24 instead of 18)
+          const colors = ['#ffed4e', '#ff8787', '#6dd5ce'];
+          
+          for (let i = 0; i < 24; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
-            confetti.style.left = (Math.random() * 100) + '%';
-            confetti.style.animationDelay = (Math.random() * 0.5) + 's';
-            confetti.style.animationDuration = (3 + Math.random() * 1) + 's';
+            // Use predefined positions for better distribution
+            const positions = [5, 12, 18, 25, 32, 38, 45, 52, 58, 65, 72, 78, 85, 92, 8, 22, 35, 48, 62, 75, 88, 15, 42, 68];
+            confetti.style.left = (positions[i] || (Math.random() * 100)) + '%';
+            confetti.style.background = colors[i % 3];
+            confetti.style.animationDelay = (Math.random() * 0.3) + 's';
+            confetti.style.animationDuration = (3.7 + Math.random() * 0.8) + 's';
             confettiContainer.appendChild(confetti);
             
             // Remove confetti after animation
@@ -586,7 +796,7 @@
               if (confetti.parentNode) {
                 confetti.parentNode.removeChild(confetti);
               }
-            }, 5000);
+            }, 6000);
           }
         }
       }
