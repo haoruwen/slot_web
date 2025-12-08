@@ -242,78 +242,6 @@
         pointer-events: auto;
     }
     
-    .points-display {
-        font-size: clamp(1.5rem, 2.5vw, 2.2rem);
-        font-weight: 800;
-        text-align: center;
-        color: #ffd700;
-        text-shadow: 
-            0 0 10px rgba(255, 215, 0, 0.9),
-            0 0 20px rgba(255, 193, 7, 0.7),
-            0 4px 8px rgba(0, 0, 0, 0.6),
-            0 1px 2px rgba(0, 0, 0, 0.8);
-        position: fixed;
-        bottom: 125px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: clamp(0.5rem, 1vw, 0.75rem) clamp(1.25rem, 2.5vw, 2rem);
-        background: rgba(139, 69, 19, 0.3);
-        border-radius: clamp(1rem, 2vw, 1.5rem);
-        backdrop-filter: blur(10px);
-        border: none;
-        box-shadow: 
-            0 4px 20px rgba(0, 0, 0, 0.4),
-            inset 0 2px 4px rgba(0, 0, 0, 0.2),
-            inset 0 -2px 4px rgba(255, 255, 255, 0.1),
-            0 0 25px rgba(255, 215, 0, 0.3);
-        letter-spacing: 0.1em;
-        width: 25%;
-        max-width: 40vw;
-        max-height: 40vw;
-        min-width: 250px;
-        min-height: 60px;
-        z-index: 998;
-    }
-    
-    .points-display::before {
-        content: '🎁';
-        position: absolute;
-        left: clamp(0.5rem, 1.5vw, 1rem);
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1rem, 2vw, 1.5rem);
-        animation: floatIcon 3s ease-in-out infinite;
-    }
-    
-    .points-display::after {
-        content: '⭐';
-        position: absolute;
-        right: clamp(0.5rem, 1.5vw, 1rem);
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1rem, 2vw, 1.5rem);
-        animation: twinkle 2s ease-in-out infinite 1s;
-    }
-    
-    @keyframes floatIcon {
-        0%, 100% {
-            transform: translateY(-50%) translateY(0px);
-        }
-        50% {
-            transform: translateY(-50%) translateY(-8px);
-        }
-    }
-    
-    .points-display::after {
-        content: '⭐';
-        position: absolute;
-        right: clamp(0.5rem, 1.5vw, 1rem);
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1rem, 2vw, 1.5rem);
-        animation: twinkle 2s ease-in-out infinite 1s;
-    }
-    
     
     @keyframes float {
         0%, 100% {
@@ -867,7 +795,9 @@
         max-height: 10vw;
         min-width: 60px;
         min-height: 60px;
-        /* bottom, right 移除，left 和 top 由 JavaScript 动态计算 */
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
         filter: 
             drop-shadow(0 0 3px rgba(255, 255, 255, 0.8))
             drop-shadow(0 0 6px rgba(255, 255, 255, 0.6))
@@ -875,7 +805,6 @@
             drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
         transition: all 0.3s ease;
         cursor: pointer;
-        position: absolute;
         pointer-events: auto;
         z-index: 998;
     }
@@ -1029,11 +958,6 @@
             padding-top: 0;
         }
         
-        .points-display {
-            min-width: 200px;
-            min-height: 50px;
-        }
-        
         form {
             align-items: center;
         }
@@ -1080,11 +1004,6 @@
         
         .right-content {
             gap: clamp(1.25rem, 2.5vw, 2rem);
-        }
-        
-        .points-display {
-            min-width: 180px;
-            min-height: 45px;
         }
         
         .avatar-container {
@@ -1180,22 +1099,9 @@
           imageUrl: "{{ url_for('static', filename='background/board.png') }}"
         };
         
-        // ============================================
-        // 元素位置配置 - 在这里调整每个元素的位置
-        // ============================================
-        // 格式: { elementSelector, targetX, targetY, anchorX, anchorY }
-        // - selector: CSS选择器，用于选择元素
-        // - targetX: 元素在背景图上的X坐标（像素）
-        // - targetY: 元素在背景图上的Y坐标（像素）
-        // - anchorX: 元素的水平锚点 (0=左, 0.5=中心, 1=右)
-        // - anchorY: 元素的垂直锚点 (0=上, 0.5=中心, 1=下)
-        //
-        // 如何获取坐标：
-        // 1. 在图片编辑器中打开背景图
-        // 2. 找到要对齐的点（如铃铛中心、袜子中心等）
-        // 3. 记录该点的X、Y坐标（像素）
-        // 4. 更新下面的 targetX 和 targetY 值
-        // ============================================
+        // 元素位置配置
+        // targetX/targetY: 元素在背景图上的坐标（像素）
+        // anchorX/anchorY: 元素的锚点 (0=左上, 0.5=中心, 1=右下)
         const elementPositions = [
           {
             selector: '.main-avatar, .bg-container .element.bell-button',
@@ -1224,66 +1130,9 @@
             targetY: 1300,  // ⬅️ 修改这个值调整第三个袜子的Y位置
             anchorX: 0.5,
             anchorY: 0.5
-          },
-          {
-            selector: '.element.gift-btn, button[type="submit"]',
-            targetX: 3600, // ⬅️ 修改这个值调整抽奖按钮的X位置
-            targetY: 1940, // ⬅️ 修改这个值调整抽奖按钮的Y位置
-            anchorX: 0.5,
-            anchorY: 0.5
           }
+          // 抽奖按钮使用固定定位，不在此配置中
         ];
-        
-        // ============================================
-        // 调试模式：启用后可以在浏览器控制台实时调整位置
-        // ============================================
-        // 在浏览器控制台输入以下命令来调整位置：
-        // adjustPosition('.main-avatar', 200, 600)  // 调整头像位置
-        // adjustPosition('.element.sock1', 1000, 500)  // 调整第一个袜子位置
-        // 然后复制控制台输出的新坐标值，更新到上面的 elementPositions 数组中
-        // ============================================
-        window.adjustPosition = function(selector, newX, newY) {
-          const element = document.querySelector(selector);
-          if (!element) {
-            console.error('元素未找到:', selector);
-            return;
-          }
-          
-          // 找到对应的配置
-          const config = elementPositions.find(c => {
-            return document.querySelector(c.selector) === element;
-          });
-          
-          if (config) {
-            config.targetX = newX;
-            config.targetY = newY;
-            calculateElementPosition(element, newX, newY, config.anchorX, config.anchorY);
-            console.log(`✅ 已更新 ${selector} 的位置:`);
-            console.log(`   targetX: ${newX},`);
-            console.log(`   targetY: ${newY},`);
-            console.log(`   复制上面的值到 elementPositions 数组中`);
-          } else {
-            console.error('未找到对应的配置');
-          }
-        };
-        
-        // 在页面上点击元素时显示当前坐标（调试用）
-        window.enablePositionDebug = function() {
-          elementPositions.forEach(config => {
-            const elements = document.querySelectorAll(config.selector);
-            elements.forEach(element => {
-              element.style.outline = '2px dashed red';
-              element.style.cursor = 'crosshair';
-              element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                console.log(`元素: ${config.selector}`);
-                console.log(`当前配置: targetX=${config.targetX}, targetY=${config.targetY}`);
-                console.log(`当前位置: left=${this.style.left}, top=${this.style.top}`);
-              });
-            });
-          });
-          console.log('✅ 调试模式已启用，点击元素查看坐标信息');
-        };
         
         // 计算元素在 cover 模式下的位置
         function calculateElementPosition(element, targetX, targetY, anchorX, anchorY) {
@@ -1365,6 +1214,10 @@
           elementPositions.forEach(config => {
             const elements = document.querySelectorAll(config.selector);
             elements.forEach(element => {
+              // 跳过抽奖按钮，它使用固定定位
+              if (element.classList.contains('gift-btn') || element.type === 'submit') {
+                return;
+              }
               calculateElementPosition(
                 element,
                 config.targetX,
@@ -1502,7 +1355,8 @@
         
         // 等待所有图片加载完成
         function waitForImages() {
-          const images = document.querySelectorAll('.bg-container img, .bg-container button[type="submit"]');
+          // 抽奖按钮不需要等待，它使用固定定位
+          const images = document.querySelectorAll('.bg-container img');
           let loadedCount = 0;
           const totalImages = images.length;
           
@@ -1512,24 +1366,18 @@
           }
           
           images.forEach(img => {
-            if (img.tagName === 'IMG') {
-              if (img.complete) {
-                loadedCount++;
-                checkAllLoaded();
-              } else {
-                img.addEventListener('load', function() {
-                  loadedCount++;
-                  checkAllLoaded();
-                });
-                img.addEventListener('error', function() {
-                  loadedCount++;
-                  checkAllLoaded();
-                });
-              }
-            } else {
-              // 对于按钮，直接算作已加载
+            if (img.complete) {
               loadedCount++;
               checkAllLoaded();
+            } else {
+              img.addEventListener('load', function() {
+                loadedCount++;
+                checkAllLoaded();
+              });
+              img.addEventListener('error', function() {
+                loadedCount++;
+                checkAllLoaded();
+              });
             }
           });
           
@@ -1696,10 +1544,6 @@
         <div class="result">{{ result }}</div>
       {% endif %}
   </main>
-  
-  {% if session.username and points is defined %}
-      <div class="points-display">{{ points }} pts</div>
-  {% endif %}
 </body>
 </html>
 
