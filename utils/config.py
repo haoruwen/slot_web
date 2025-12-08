@@ -14,6 +14,6 @@ FIRST_TIER_BONUS_POINTS = 3
 SECOND_TIER_BONUS_POINTS = 2
 THIRD_TIER_BONUS_POINTS = 1
 
-RANDOM_USER = "Random user"
+RANDOM_USER = "random"
 
 POINTS_ERROR_MESSAGE = "Your points aren't enough to join this round."

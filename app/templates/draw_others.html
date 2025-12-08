@@ -142,6 +142,7 @@
     }
     
     .main-avatar {
+        position: fixed;
         width: 45vw;
         height: 45vw;
         max-width: 600px;
@@ -150,20 +151,22 @@
         min-height: 400px;
         object-fit: contain;
         display: block;
-        flex-shrink: 0;
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
         transition: transform 0.3s ease, filter 0.3s ease;
-        position: relative;
         cursor: pointer;
+        left: 100px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 999;
     }
     
     .main-avatar:hover {
-        transform: scale(1.03);
+        transform: translateY(-50%) scale(1.03);
         filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
     }
     
     .main-avatar:active {
-        transform: scale(0.98);
+        transform: translateY(-50%) scale(0.98);
     }
     
     .main-avatar::before {
@@ -186,9 +189,12 @@
         align-items: flex-start;
         justify-content: center;
         gap: clamp(2rem, 3.5vw, 3rem);
-        flex: 1;
         min-width: 0;
         padding-top: clamp(1rem, 2vw, 1.5rem);
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
     }
     
     .points-display {
@@ -640,56 +646,14 @@
         animation: float 3s ease-in-out infinite;
     }
     
-    .tier-selection {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: clamp(1rem, 2vw, 1.5rem);
-        margin-top: -4vw;
-        margin-left: -14vw;
-        position: relative;
-        width: 100%;
-        max-width: 600px;
-        min-width: 400px;
-        padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1rem, 2vw, 1.5rem);
-        gap: 0;
-        background: transparent;
-        backdrop-filter: none;
-        border-radius: 0;
-        border: none;
-        box-shadow: none;
-    }
-    
-    .tier-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-    }
-    
-    .tier-item:nth-child(2) {
-        margin-left: 2vw;
-    }
-    
-    .tier-item:nth-child(3) {
-        margin-left: 6vw;
-    }
-    
-    .tier-item:first-child .tier-image {
-        transform: rotate(-15deg) scale(1.5);
-    }
-    
-    .tier-item:nth-child(2) .tier-image {
-        transform: rotate(-15deg) translateY(-35px) scale(1.5);
-    }
-    
-    .tier-item:nth-child(3) .tier-image {
-        transform: rotate(-15deg) scale(1.5);
-    }
-    
     .tier-image {
-        width: 100%;
-        height: auto;
+        position: fixed;
+        width: 17.5vw;
+        height: 17.5vw;
+        max-width: 165px;
+        max-height: 165px;
+        min-width: 110px;
+        min-height: 110px;
         aspect-ratio: 1;
         object-fit: contain;
         cursor: pointer;
@@ -698,13 +662,27 @@
             opacity 0.1s ease;
         opacity: 0.8;
         filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
-        position: relative;
-        max-width: 35vw;
-        max-height: 35vw;
-        min-width: 220px;
-        min-height: 220px;
+        z-index: 999;
         will-change: transform, filter;
         transform-origin: center center;
+    }
+    
+    .tier-image-1 {
+        left: 20%;
+        top: 50%;
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5);
+    }
+    
+    .tier-image-2 {
+        left: 50%;
+        top: calc(50% - 35px);
+        transform: translate(-50%, -50%) rotate(-15deg) translateY(-35px) scale(1.5);
+    }
+    
+    .tier-image-3 {
+        left: 80%;
+        top: 50%;
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5);
     }
     
     .tier-image::before {
@@ -719,22 +697,22 @@
         pointer-events: none;
     }
     
-    .tier-image:hover {
+    .tier-image-1:hover {
         opacity: 1;
-        transform: scale(1.15) translateY(-5px);
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.725) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
-    .tier-item:first-child .tier-image:hover {
-        transform: rotate(-15deg) scale(1.725) translateY(-5px);
+    .tier-image-2:hover {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.725) translateY(-40px);
+        filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
-    .tier-item:nth-child(2) .tier-image:hover {
-        transform: rotate(-15deg) scale(1.725) translateY(-40px);
-    }
-    
-    .tier-item:nth-child(3) .tier-image:hover {
-        transform: rotate(-15deg) scale(1.725) translateY(-5px);
+    .tier-image-3:hover {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.725) translateY(-5px);
+        filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
     .tier-image:hover::before {
@@ -742,9 +720,9 @@
         animation: twinkle 1.5s ease-in-out infinite;
     }
     
-    .tier-image.selected {
+    .tier-image-1.selected {
         opacity: 1 !important;
-        transform: scale(1.15) translateY(-5px) !important;
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.725) translateY(-5px) !important;
         filter: 
             drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
             drop-shadow(0 0 25px rgba(255, 215, 0, 0.5))
@@ -756,16 +734,32 @@
             filter 0.1s ease !important;
     }
     
-    .tier-item:first-child .tier-image.selected {
-        transform: rotate(-15deg) scale(1.725) translateY(-5px) !important;
+    .tier-image-2.selected {
+        opacity: 1 !important;
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.725) translateY(-40px) !important;
+        filter: 
+            drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
+            drop-shadow(0 0 25px rgba(255, 215, 0, 0.5))
+            drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4)) !important;
+        box-shadow: none !important;
+        animation: none !important;
+        transition: 
+            transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+            filter 0.1s ease !important;
     }
     
-    .tier-item:nth-child(2) .tier-image.selected {
-        transform: rotate(-15deg) scale(1.725) translateY(-40px) !important;
-    }
-    
-    .tier-item:nth-child(3) .tier-image.selected {
-        transform: rotate(-15deg) scale(1.725) translateY(-5px) !important;
+    .tier-image-3.selected {
+        opacity: 1 !important;
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1.725) translateY(-5px) !important;
+        filter: 
+            drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
+            drop-shadow(0 0 25px rgba(255, 215, 0, 0.5))
+            drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4)) !important;
+        box-shadow: none !important;
+        animation: none !important;
+        transition: 
+            transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+            filter 0.1s ease !important;
     }
     
     .tier-image.selected::before {
@@ -951,13 +945,6 @@
             font-size: 14px;
         }
         
-        .main-layout {
-            flex-direction: column;
-            gap: clamp(2rem, 5vw, 3rem);
-            max-width: 95vw;
-            align-items: center;
-        }
-        
         .main-avatar {
             width: 50vw;
             height: 50vw;
@@ -984,29 +971,13 @@
             align-items: center;
         }
         
-        .tier-selection {
-            width: 100%;
-            max-width: 600px;
-            min-width: 400px;
-            margin-top: -4vw;
-            margin-left: -14vw;
-            gap: 0;
-        }
-        
         .tier-image {
-            width: 100%;
-            max-width: 35vw;
-            max-height: 35vw;
-            min-width: 220px;
-            min-height: 220px;
-        }
-        
-        .tier-item:nth-child(2) {
-            margin-left: 2vw;
-        }
-        
-        .tier-item:nth-child(3) {
-            margin-left: 6vw;
+            width: 17.5vw;
+            height: 17.5vw;
+            max-width: 165px;
+            max-height: 165px;
+            min-width: 110px;
+            min-height: 110px;
         }
         
         .user-select-container label::after {
@@ -1024,28 +995,13 @@
             padding: clamp(2rem, 8vw, 4rem) clamp(0.75rem, 3vw, 1rem);
         }
         
-        .tier-selection {
-            width: 80vw;
-            min-width: 280px;
-            max-width: 450px;
-            margin-top: -4vw;
-            margin-left: -14vw;
-            gap: 0;
-            padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1rem, 2vw, 1.5rem);
-        }
-        
         .tier-image {
-            width: 100%;
-            min-width: 180px;
-            min-height: 180px;
-        }
-        
-        .tier-item:nth-child(2) {
-            margin-left: 2vw;
-        }
-        
-        .tier-item:nth-child(3) {
-            margin-left: 6vw;
+            width: 17.5vw;
+            height: 17.5vw;
+            max-width: 165px;
+            max-height: 165px;
+            min-width: 90px;
+            min-height: 90px;
         }
         
         button[type="submit"] {
@@ -1095,10 +1051,9 @@
 
   <main>
       {% if session.username %}
-          <div class="main-layout">
-              <img class="main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/random.png') }}" alt="avatar" onclick="openUserModal()">
-              
-              <div class="right-content">
+          <img class="main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/random.png') }}" alt="avatar" onclick="openUserModal()">
+          
+          <div class="right-content">
                   {% if points is defined %}
                   <!-- <div class="points-display">{{ points }} pts</div> -->
                   {% endif %}
@@ -1146,22 +1101,13 @@
                     <input type="hidden" name="user" id="userHidden" required>
                     <input type="hidden" name="tier" id="tier" required>
                     
-                    <div class="tier-selection">
-                      <div class="tier-item">
-                        <img class="tier-image" src="{{ url_for('static', filename='tiers/tier3.png') }}" alt="Tier 3" data-tier="third" onclick="selectTier('third')">
-                      </div>
-                      <div class="tier-item">
-                        <img class="tier-image" src="{{ url_for('static', filename='tiers/tier2.png') }}" alt="Tier 2" data-tier="second" onclick="selectTier('second')">
-                      </div>
-                      <div class="tier-item">
-                        <img class="tier-image" src="{{ url_for('static', filename='tiers/tier1.png') }}" alt="Tier 1" data-tier="first" onclick="selectTier('first')">
-                      </div>
-                    </div>
+                    <img class="tier-image tier-image-1" src="{{ url_for('static', filename='tiers/tier3.png') }}" alt="Tier 3" data-tier="third" onclick="selectTier('third')">
+                    <img class="tier-image tier-image-2" src="{{ url_for('static', filename='tiers/tier2.png') }}" alt="Tier 2" data-tier="second" onclick="selectTier('second')">
+                    <img class="tier-image tier-image-3" src="{{ url_for('static', filename='tiers/tier1.png') }}" alt="Tier 1" data-tier="first" onclick="selectTier('first')">
 
                     <button type="submit" aria-label="Run"></button>
                   </form>
               </div>
-          </div>
       {% endif %}
       
       <script>
@@ -1176,9 +1122,11 @@
             img.classList.remove('selected');
           });
           
-          // 添加选中状态到当前图片
-          const clickedImg = event.target;
-          clickedImg.classList.add('selected');
+          // 根据tier找到对应的图片并添加选中状态
+          const clickedImg = document.querySelector(`.tier-image[data-tier="${tier}"]`);
+          if (clickedImg) {
+            clickedImg.classList.add('selected');
+          }
         }
         
         // 打开用户选择模态框
