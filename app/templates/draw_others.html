@@ -150,6 +150,23 @@
         padding: 0 clamp(1.5rem, 4vw, 2.5rem);
     }
     
+    .text1-image {
+        position: fixed;
+        width: 25%;
+        aspect-ratio: 1;
+        max-width: 25vw;
+        max-height: 25vw;
+        min-width: 150px;
+        min-height: 100px;
+        object-fit: contain;
+        display: block;
+        left: 210px;
+        top: 24%;
+        transform: translateY(-50%);
+        z-index: 998;
+        pointer-events: none;
+    }
+    
     .main-avatar {
         position: fixed;
         width: 37%;
@@ -964,7 +981,7 @@
             min-width: 200px;
             min-height: 200px;
         }
-        
+
         .right-content {
             width: 100%;
             align-items: center;
@@ -1011,6 +1028,11 @@
             min-height: 50px;
         }
         
+        .text1-image {
+            min-width: 120px;
+            min-height: 80px;
+        }
+        
         .home-btn, .logout-btn {
             min-width: 35px;
             min-height: 35px;
@@ -1054,6 +1076,8 @@
       <a href="{{ url_for('user.logout') }}" class="logout-btn">Logout</a>
         {% endif %}
 
+  <!-- Text1 Image -->
+  <img class="text1-image" src="{{ url_for('static', filename='texts/text1.png') }}" alt="text1">
 
   <main>
       {% if session.username %}
@@ -1337,6 +1361,7 @@
           }
         });
       </script>
+
 
       {% if error %}
         <div class="error">{{ error }}</div>
