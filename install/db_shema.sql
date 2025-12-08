@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `tbl_users` (
   `role` enum('user', 'administrator') NOT NULL,
   `points` int NOT NULL,
   `self_points` int NOT NULL,
-  `is_first` BOOLEAN DEFAULT `TRUE`,
+  `is_first` BOOLEAN DEFAULT TRUE,
   `avatar_path` VARCHAR(255) DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
