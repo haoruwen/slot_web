@@ -191,12 +191,20 @@
         object-fit: contain;
         display: block;
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-        transition: transform 0.3s ease, filter 0.3s ease;
+        transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
         cursor: pointer;
         /* left 和 top 由 JavaScript 动态计算 */
         position: absolute;
         pointer-events: auto;
         z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    .main-avatar.positioned,
+    .bg-container .element.bell-button.positioned {
+        opacity: 1;
+        visibility: visible;
     }
     
     .main-avatar:hover {
@@ -640,14 +648,24 @@
         cursor: pointer;
         transition: 
             transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.1s ease;
-        opacity: 0.8;
+            opacity 0.3s ease,
+            visibility 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
         filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
         will-change: transform, filter;
         transform-origin: center center;
         position: absolute;
         pointer-events: auto;
         z-index: 998;
+    }
+    
+    .tier-image.positioned,
+    .bg-container .element.sock1.positioned,
+    .bg-container .element.sock2.positioned,
+    .bg-container .element.sock3.positioned {
+        opacity: 0.8;
+        visibility: visible;
     }
     
     .tier-image-1,
@@ -686,6 +704,7 @@
     .tier-image-1:hover,
     .bg-container .element.sock1:hover {
         opacity: 1;
+        visibility: visible;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
@@ -693,6 +712,7 @@
     .tier-image-2:hover,
     .bg-container .element.sock2:hover {
         opacity: 1;
+        visibility: visible;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-40px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
@@ -700,6 +720,7 @@
     .tier-image-3:hover,
     .bg-container .element.sock3:hover {
         opacity: 1;
+        visibility: visible;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
@@ -715,6 +736,7 @@
     .tier-image-1.selected,
     .bg-container .element.sock1.selected {
         opacity: 1 !important;
+        visibility: visible !important;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px) !important;
         filter: 
             drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
@@ -730,6 +752,7 @@
     .tier-image-2.selected,
     .bg-container .element.sock2.selected {
         opacity: 1 !important;
+        visibility: visible !important;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-40px) !important;
         filter: 
             drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
@@ -745,6 +768,7 @@
     .tier-image-3.selected,
     .bg-container .element.sock3.selected {
         opacity: 1 !important;
+        visibility: visible !important;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px) !important;
         filter: 
             drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
@@ -808,11 +832,18 @@
         pointer-events: auto;
         z-index: 998;
         transform: translate(-50%, -50%);
-        transition: all 0.3s ease;
+        transition: all 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
         box-sizing: border-box;
         display: flex;
         align-items: center;
         justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    .bg-container .element.points-display.positioned {
+        opacity: 1;
+        visibility: visible;
     }
     
     .bg-container .element.points-display:hover {
@@ -853,10 +884,18 @@
             drop-shadow(0 0 6px rgba(255, 255, 255, 0.6))
             drop-shadow(0 0 10px rgba(255, 255, 255, 0.4))
             drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
-        transition: all 0.3s ease;
+        transition: all 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
         cursor: pointer;
         pointer-events: auto;
         z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+    }
+    
+    button[type="submit"].positioned,
+    .bg-container .element.gift-btn.positioned {
+        opacity: 1;
+        visibility: visible;
     }
     
     button[type="submit"]:hover,
@@ -1281,6 +1320,9 @@
           // 应用位置
           element.style.left = elementLeft + 'px';
           element.style.top = elementTop + 'px';
+          
+          // 标记元素已定位，显示元素
+          element.classList.add('positioned');
         }
         
         // 更新所有元素位置
@@ -1429,13 +1471,18 @@
         
         // 等待所有图片加载完成
         function waitForImages() {
-          // 抽奖按钮不需要等待，它使用固定定位
+          // 抽奖按钮也需要等待，标记为已定位
           const images = document.querySelectorAll('.bg-container img');
+          const button = document.querySelector('button[type="submit"], .bg-container .element.gift-btn');
           let loadedCount = 0;
           const totalImages = images.length;
           
           if (totalImages === 0) {
             updateAllElementPositions();
+            // 标记按钮为已定位
+            if (button) {
+              button.classList.add('positioned');
+            }
             return;
           }
           
@@ -1460,6 +1507,10 @@
               // 所有图片加载完成，再等待一小段时间确保渲染完成
               setTimeout(() => {
                 updateAllElementPositions();
+                // 标记按钮为已定位
+                if (button) {
+                  button.classList.add('positioned');
+                }
               }, 100);
             }
           }
