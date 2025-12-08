@@ -15,19 +15,32 @@
         margin: 0; 
         padding: 0; 
         background-color: #fafafa; 
-        background-image: url('../static/background/board.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
         height: 100vh;
         overflow: hidden;
         position: relative;
     }
     
-    body::before {
-        content: '';
+    .bg-container {
         position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+    
+    .bg-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    
+    .bg-container::before {
+        content: '';
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
@@ -37,8 +50,14 @@
             radial-gradient(circle at 80% 70%, rgba(40, 167, 69, 0.04) 0%, transparent 50%),
             radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 60%);
         pointer-events: none;
-        z-index: 0;
+        z-index: 1;
         animation: shimmer 10s ease-in-out infinite;
+    }
+    
+    .bg-container .element {
+        position: absolute;
+        z-index: 998;
+        pointer-events: auto;
     }
     
     
@@ -109,6 +128,11 @@
         box-sizing: border-box;
         position: relative;
         z-index: 1;
+        pointer-events: none;
+    }
+    
+    main * {
+        pointer-events: auto;
     }
     form {
         width: 100%;
@@ -117,6 +141,12 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        position: relative;
+        pointer-events: none;
+    }
+    
+    form input {
+        pointer-events: auto;
     }
     .avatar-container {
         display: flex;
@@ -150,24 +180,8 @@
         padding: 0 clamp(1.5rem, 4vw, 2.5rem);
     }
     
-    .text1-image {
-        position: fixed;
-        width: 25%;
-        max-width: 25vw;
-        max-height: 25vw;
-        min-width: 150px;
-        min-height: 100px;
-        object-fit: contain;
-        display: block;
-        left: 210px;
-        top: 24%;
-        transform: translateY(-50%);
-        z-index: 998;
-        pointer-events: none;
-    }
-    
-    .main-avatar {
-        position: fixed;
+    .main-avatar,
+    .bg-container .element.bell-button {
         width: 37%;
         aspect-ratio: 1;
         max-width: 37vw;
@@ -179,22 +193,23 @@
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
         transition: transform 0.3s ease, filter 0.3s ease;
         cursor: pointer;
-        left: 100px;
-        top: 57%;
-        transform: translateY(-50%);
-        z-index: 999;
+        /* left 和 top 由 JavaScript 动态计算 */
+        position: absolute;
+        pointer-events: auto;
+        z-index: 998;
     }
     
     .main-avatar:hover {
-        transform: translateY(-50%) scale(1.03);
+        transform: scale(1.03);
         filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
     }
     
     .main-avatar:active {
-        transform: translateY(-50%) scale(0.98);
+        transform: scale(0.98);
     }
     
-    .main-avatar::before {
+    .main-avatar::before,
+    .bg-container .element.bell-button::before {
         content: '🎄';
         position: absolute;
         top: -2rem;
@@ -216,10 +231,15 @@
         gap: clamp(2rem, 3.5vw, 3rem);
         min-width: 0;
         padding-top: clamp(1rem, 2vw, 1.5rem);
-        position: relative;
+        position: absolute;
         width: 100%;
         max-width: 600px;
-        margin: 0 auto;
+        z-index: 1;
+        pointer-events: none;
+    }
+    
+    .right-content * {
+        pointer-events: auto;
     }
     
     .points-display {
@@ -409,7 +429,7 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(5px);
-        z-index: 2000;
+        z-index: 10000;
         animation: fadeIn 0.3s ease;
         overflow-y: auto;
     }
@@ -678,8 +698,10 @@
         animation: float 3s ease-in-out infinite;
     }
     
-    .tier-image {
-        position: fixed;
+    .tier-image,
+    .bg-container .element.sock1,
+    .bg-container .element.sock2,
+    .bg-container .element.sock3 {
         width: 15%;
         aspect-ratio: 1;
         max-width: 15vw;
@@ -693,30 +715,35 @@
             opacity 0.1s ease;
         opacity: 0.8;
         filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
-        z-index: 999;
         will-change: transform, filter;
         transform-origin: center center;
+        position: absolute;
+        pointer-events: auto;
+        z-index: 998;
     }
     
-    .tier-image-1 {
-        left: 54%;
-        top: 48%;
+    .tier-image-1,
+    .bg-container .element.sock1 {
+        /* left 和 top 由 JavaScript 动态计算 */
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5);
     }
     
-    .tier-image-2 {
-        left: 69.5%;
-        top: calc(50% - 35px);
+    .tier-image-2,
+    .bg-container .element.sock2 {
+        /* left 和 top 由 JavaScript 动态计算 */
         transform: translate(-50%, -50%) rotate(-15deg) translateY(-35px) scale(1.5);
     }
     
-    .tier-image-3 {
-        left: 85%;
-        top: 49%;
+    .tier-image-3,
+    .bg-container .element.sock3 {
+        /* left 和 top 由 JavaScript 动态计算 */
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5);
     }
     
-    .tier-image::before {
+    .tier-image::before,
+    .bg-container .element.sock1::before,
+    .bg-container .element.sock2::before,
+    .bg-container .element.sock3::before {
         content: '✨';
         position: absolute;
         top: -25%;
@@ -728,30 +755,37 @@
         pointer-events: none;
     }
     
-    .tier-image-1:hover {
+    .tier-image-1:hover,
+    .bg-container .element.sock1:hover {
         opacity: 1;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
-    .tier-image-2:hover {
+    .tier-image-2:hover,
+    .bg-container .element.sock2:hover {
         opacity: 1;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-40px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
-    .tier-image-3:hover {
+    .tier-image-3:hover,
+    .bg-container .element.sock3:hover {
         opacity: 1;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
-    .tier-image:hover::before {
+    .tier-image:hover::before,
+    .bg-container .element.sock1:hover::before,
+    .bg-container .element.sock2:hover::before,
+    .bg-container .element.sock3:hover::before {
         opacity: 1;
         animation: twinkle 1.5s ease-in-out infinite;
     }
     
-    .tier-image-1.selected {
+    .tier-image-1.selected,
+    .bg-container .element.sock1.selected {
         opacity: 1 !important;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px) !important;
         filter: 
@@ -765,7 +799,8 @@
             filter 0.1s ease !important;
     }
     
-    .tier-image-2.selected {
+    .tier-image-2.selected,
+    .bg-container .element.sock2.selected {
         opacity: 1 !important;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-40px) !important;
         filter: 
@@ -779,7 +814,8 @@
             filter 0.1s ease !important;
     }
     
-    .tier-image-3.selected {
+    .tier-image-3.selected,
+    .bg-container .element.sock3.selected {
         opacity: 1 !important;
         transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px) !important;
         filter: 
@@ -793,7 +829,10 @@
             filter 0.1s ease !important;
     }
     
-    .tier-image.selected::before {
+    .tier-image.selected::before,
+    .bg-container .element.sock1.selected::before,
+    .bg-container .element.sock2.selected::before,
+    .bg-container .element.sock3.selected::before {
         opacity: 0 !important;
         animation: none !important;
     }
@@ -814,7 +853,8 @@
         display: none;
     }
     
-    button[type="submit"] {
+    button[type="submit"],
+    .bg-container .element.gift-btn {
         background-image: url('../static/draw_button.png');
         background-size: contain;
         background-repeat: no-repeat;
@@ -827,10 +867,7 @@
         max-height: 10vw;
         min-width: 60px;
         min-height: 60px;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
+        /* bottom, right 移除，left 和 top 由 JavaScript 动态计算 */
         filter: 
             drop-shadow(0 0 3px rgba(255, 255, 255, 0.8))
             drop-shadow(0 0 6px rgba(255, 255, 255, 0.6))
@@ -838,9 +875,13 @@
             drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
         transition: all 0.3s ease;
         cursor: pointer;
+        position: absolute;
+        pointer-events: auto;
+        z-index: 998;
     }
     
-    button[type="submit"]:hover {
+    button[type="submit"]:hover,
+    .bg-container .element.gift-btn:hover {
         transform: scale(1.2);
         filter: 
             drop-shadow(0 0 5px rgba(255, 255, 255, 1))
@@ -1027,11 +1068,6 @@
             min-height: 50px;
         }
         
-        .text1-image {
-            min-width: 120px;
-            min-height: 80px;
-        }
-        
         .home-btn, .logout-btn {
             min-width: 35px;
             min-height: 35px;
@@ -1054,9 +1090,6 @@
         .avatar-container {
             max-width: 90vw;
         }
-        
-        .result::before,
-        .result::after,
     }
     
     /* 响应式设计 - 大屏幕设备 */
@@ -1075,12 +1108,17 @@
       <a href="{{ url_for('user.logout') }}" class="logout-btn">Logout</a>
         {% endif %}
 
-  <!-- Text1 Image -->
-  <img class="text1-image" src="{{ url_for('static', filename='texts/text1.png') }}" alt="text1">
-
-  <main>
+  <div class="bg-container">
+      <img src="{{ url_for('static', filename='background/board.png') }}" class="bg-img" alt="background">
+      
       {% if session.username %}
-          <img class="main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/random.png') }}" alt="avatar" onclick="openUserModal()">
+          <img class="element bell-button main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/random.png') }}" alt="avatar" onclick="openUserModal()">
+          
+          <img class="element sock1 tier-image tier-image-1" src="{{ url_for('static', filename='tiers/tier3.png') }}" alt="Tier 3" data-tier="third" onclick="selectTier('third')">
+          <img class="element sock2 tier-image tier-image-2" src="{{ url_for('static', filename='tiers/tier2.png') }}" alt="Tier 2" data-tier="second" onclick="selectTier('second')">
+          <img class="element sock3 tier-image tier-image-3" src="{{ url_for('static', filename='tiers/tier1.png') }}" alt="Tier 1" data-tier="first" onclick="selectTier('first')">
+
+          <button type="submit" form="tierForm" class="element gift-btn" aria-label="Run"></button>
           
           <div class="right-content">
                   <div class="user-select-container">
@@ -1091,52 +1129,268 @@
               {% endfor %}
             </select>
                   </div>
-                  
-                  <!-- 用户选择模态框 -->
-                  <div class="user-modal" id="userModal">
-                      <div class="user-modal-content">
-                          <div class="user-modal-header">
-                              <h2 class="user-modal-title">🎁 Choose a Lucky Friend</h2>
-                              <button class="user-modal-close" onclick="closeUserModal()">×</button>
-                          </div>
-                          <div class="user-modal-search">
-                              <input type="text" id="userSearch" placeholder="🔍 Search user..." oninput="filterUsers()">
-                          </div>
-                          <div class="user-modal-body">
-                              <div class="user-grid" id="userGrid">
-                                  {% for u in users %}
-                                  <div class="user-item" data-username="{{ u }}" onclick="selectUser('{{ u }}')">
-                                      {% if u == 'random' %}
-                                      <div class="user-item-avatar" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.3)); display: flex; align-items: center; justify-content: center; font-size: clamp(1.5rem, 3vw, 2rem); border-radius: 50%; width: clamp(60px, 8vw, 100px); height: clamp(60px, 8vw, 100px); border: 3px solid rgba(255, 215, 0, 0.5); margin-bottom: clamp(0.5rem, 1vw, 0.75rem);">🎲</div>
-                                      {% else %}
-                                      <img class="user-item-avatar" 
-                                           src="{{ url_for('static', filename='avatars/' + u + '.png') }}" 
-                                           alt="{{ u }}"
-                                           onerror="this.src='{{ url_for('static', filename='avatars/default.png') }}'">
-                                      {% endif %}
-                                      <div class="user-item-name">{{ u }}</div>
-                                  </div>
-                                  {% endfor %}
-                              </div>
-                          </div>
-                      </div>
-                  </div>
 
                   <form method="POST" id="tierForm">
                     <input type="hidden" name="user" id="userHidden" required>
                     <input type="hidden" name="tier" id="tier" required>
-                    
-                    <img class="tier-image tier-image-1" src="{{ url_for('static', filename='tiers/tier3.png') }}" alt="Tier 3" data-tier="third" onclick="selectTier('third')">
-                    <img class="tier-image tier-image-2" src="{{ url_for('static', filename='tiers/tier2.png') }}" alt="Tier 2" data-tier="second" onclick="selectTier('second')">
-                    <img class="tier-image tier-image-3" src="{{ url_for('static', filename='tiers/tier1.png') }}" alt="Tier 1" data-tier="first" onclick="selectTier('first')">
-
-                    <button type="submit" aria-label="Run"></button>
                   </form>
               </div>
+              
+              <!-- 用户选择模态框 - 移到body层级 -->
+              <div class="user-modal" id="userModal">
+                  <div class="user-modal-content">
+                      <div class="user-modal-header">
+                          <h2 class="user-modal-title">🎁 Choose a Lucky Friend</h2>
+                          <button class="user-modal-close" onclick="closeUserModal()">×</button>
+                      </div>
+                      <div class="user-modal-search">
+                          <input type="text" id="userSearch" placeholder="🔍 Search user..." oninput="filterUsers()">
+                      </div>
+                      <div class="user-modal-body">
+                          <div class="user-grid" id="userGrid">
+                              {% for u in users %}
+                              <div class="user-item" data-username="{{ u }}" onclick="selectUser('{{ u }}')">
+                                  {% if u == 'random' %}
+                                  <div class="user-item-avatar" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.3)); display: flex; align-items: center; justify-content: center; font-size: clamp(1.5rem, 3vw, 2rem); border-radius: 50%; width: clamp(60px, 8vw, 100px); height: clamp(60px, 8vw, 100px); border: 3px solid rgba(255, 215, 0, 0.5); margin-bottom: clamp(0.5rem, 1vw, 0.75rem);">🎲</div>
+                                  {% else %}
+                                  <img class="user-item-avatar" 
+                                       src="{{ url_for('static', filename='avatars/' + u + '.png') }}" 
+                                       alt="{{ u }}"
+                                       onerror="this.src='{{ url_for('static', filename='avatars/default.png') }}'">
+                                  {% endif %}
+                                  <div class="user-item-name">{{ u }}</div>
+                              </div>
+                              {% endfor %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
       {% endif %}
+  </div>
+
+  <main>
       
       <script>
         let currentSelectedUser = 'random';
+        
+        // 背景图配置
+        const bgConfig = {
+          originalWidth: 1920,  // 背景图原始宽度，需要根据实际图片调整
+          originalHeight: 1080, // 背景图原始高度，需要根据实际图片调整
+          imageUrl: "{{ url_for('static', filename='background/board.png') }}"
+        };
+        
+        // ============================================
+        // 元素位置配置 - 在这里调整每个元素的位置
+        // ============================================
+        // 格式: { elementSelector, targetX, targetY, anchorX, anchorY }
+        // - selector: CSS选择器，用于选择元素
+        // - targetX: 元素在背景图上的X坐标（像素）
+        // - targetY: 元素在背景图上的Y坐标（像素）
+        // - anchorX: 元素的水平锚点 (0=左, 0.5=中心, 1=右)
+        // - anchorY: 元素的垂直锚点 (0=上, 0.5=中心, 1=下)
+        //
+        // 如何获取坐标：
+        // 1. 在图片编辑器中打开背景图
+        // 2. 找到要对齐的点（如铃铛中心、袜子中心等）
+        // 3. 记录该点的X、Y坐标（像素）
+        // 4. 更新下面的 targetX 和 targetY 值
+        // ============================================
+        const elementPositions = [
+          {
+            selector: '.main-avatar, .bg-container .element.bell-button',
+            targetX: 1000,  // ⬅️ 修改这个值调整头像的X位置
+            targetY: 1200,  // ⬅️ 修改这个值调整头像的Y位置
+            anchorX: 0.5,  // 0.5 = 中心对齐
+            anchorY: 0.5
+          },
+          {
+            selector: '.element.sock1, .tier-image-1',
+            targetX: 2350, // ⬅️ 修改这个值调整第一个袜子的X位置
+            targetY: 1280,  // ⬅️ 修改这个值调整第一个袜子的Y位置
+            anchorX: 0.5,
+            anchorY: 0.5
+          },
+          {
+            selector: '.element.sock2, .tier-image-2',
+            targetX: 2953, // ⬅️ 修改这个值调整第二个袜子的X位置
+            targetY: 1245,  // ⬅️ 修改这个值调整第二个袜子的Y位置
+            anchorX: 0.5,
+            anchorY: 0.5
+          },
+          {
+            selector: '.element.sock3, .tier-image-3',
+            targetX: 3560, // ⬅️ 修改这个值调整第三个袜子的X位置
+            targetY: 1300,  // ⬅️ 修改这个值调整第三个袜子的Y位置
+            anchorX: 0.5,
+            anchorY: 0.5
+          },
+          {
+            selector: '.element.gift-btn, button[type="submit"]',
+            targetX: 3600, // ⬅️ 修改这个值调整抽奖按钮的X位置
+            targetY: 1940, // ⬅️ 修改这个值调整抽奖按钮的Y位置
+            anchorX: 0.5,
+            anchorY: 0.5
+          }
+        ];
+        
+        // ============================================
+        // 调试模式：启用后可以在浏览器控制台实时调整位置
+        // ============================================
+        // 在浏览器控制台输入以下命令来调整位置：
+        // adjustPosition('.main-avatar', 200, 600)  // 调整头像位置
+        // adjustPosition('.element.sock1', 1000, 500)  // 调整第一个袜子位置
+        // 然后复制控制台输出的新坐标值，更新到上面的 elementPositions 数组中
+        // ============================================
+        window.adjustPosition = function(selector, newX, newY) {
+          const element = document.querySelector(selector);
+          if (!element) {
+            console.error('元素未找到:', selector);
+            return;
+          }
+          
+          // 找到对应的配置
+          const config = elementPositions.find(c => {
+            return document.querySelector(c.selector) === element;
+          });
+          
+          if (config) {
+            config.targetX = newX;
+            config.targetY = newY;
+            calculateElementPosition(element, newX, newY, config.anchorX, config.anchorY);
+            console.log(`✅ 已更新 ${selector} 的位置:`);
+            console.log(`   targetX: ${newX},`);
+            console.log(`   targetY: ${newY},`);
+            console.log(`   复制上面的值到 elementPositions 数组中`);
+          } else {
+            console.error('未找到对应的配置');
+          }
+        };
+        
+        // 在页面上点击元素时显示当前坐标（调试用）
+        window.enablePositionDebug = function() {
+          elementPositions.forEach(config => {
+            const elements = document.querySelectorAll(config.selector);
+            elements.forEach(element => {
+              element.style.outline = '2px dashed red';
+              element.style.cursor = 'crosshair';
+              element.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log(`元素: ${config.selector}`);
+                console.log(`当前配置: targetX=${config.targetX}, targetY=${config.targetY}`);
+                console.log(`当前位置: left=${this.style.left}, top=${this.style.top}`);
+              });
+            });
+          });
+          console.log('✅ 调试模式已启用，点击元素查看坐标信息');
+        };
+        
+        // 计算元素在 cover 模式下的位置
+        function calculateElementPosition(element, targetX, targetY, anchorX, anchorY) {
+          const container = document.querySelector('.bg-container');
+          if (!container || !element) return;
+          
+          // 确保元素已经渲染
+          if (element.offsetWidth === 0 || element.offsetHeight === 0) {
+            // 如果元素还没有尺寸，延迟计算
+            setTimeout(() => calculateElementPosition(element, targetX, targetY, anchorX, anchorY), 50);
+            return;
+          }
+          
+          const containerWidth = container.offsetWidth;
+          const containerHeight = container.offsetHeight;
+          
+          if (containerWidth === 0 || containerHeight === 0) return;
+          
+          // 计算背景图的宽高比
+          const bgAspectRatio = bgConfig.originalWidth / bgConfig.originalHeight;
+          const containerAspectRatio = containerWidth / containerHeight;
+          
+          let displayWidth, displayHeight, offsetX = 0, offsetY = 0;
+          
+          // 计算 cover 模式下的实际显示尺寸和偏移
+          if (bgAspectRatio > containerAspectRatio) {
+            // 背景图宽度填满，高度被裁剪（上下有黑边）
+            displayHeight = containerHeight;
+            displayWidth = displayHeight * bgAspectRatio;
+            offsetX = (displayWidth - containerWidth) / 2;
+          } else {
+            // 背景图高度填满，宽度被裁剪（左右有黑边）
+            displayWidth = containerWidth;
+            displayHeight = displayWidth / bgAspectRatio;
+            offsetY = (displayHeight - containerHeight) / 2;
+          }
+          
+          // 计算目标点在容器中的实际位置
+          const targetPixelX = (targetX / bgConfig.originalWidth) * displayWidth - offsetX;
+          const targetPixelY = (targetY / bgConfig.originalHeight) * displayHeight - offsetY;
+          
+          // 获取元素的原始尺寸（不考虑 transform）
+          const elementWidth = element.offsetWidth;
+          const elementHeight = element.offsetHeight;
+          
+          // 检查元素是否有 translate(-50%, -50%) 的 transform
+          const computedStyle = window.getComputedStyle(element);
+          const transform = computedStyle.transform;
+          let hasTranslateCenter = false;
+          
+          if (transform && transform !== 'none') {
+            // 检查是否包含 translate(-50%, -50%)
+            if (transform.includes('translate(-50%') || transform.includes('translate(-50%')) {
+              hasTranslateCenter = true;
+            }
+          }
+          
+          // 计算元素的左上角位置（考虑锚点和 transform）
+          let elementLeft, elementTop;
+          
+          if (hasTranslateCenter) {
+            // 如果元素有 translate(-50%, -50%)，元素中心会对齐到目标点
+            // 所以直接设置目标点位置，transform 会自动居中
+            elementLeft = targetPixelX;
+            elementTop = targetPixelY;
+          } else {
+            // 正常计算，考虑锚点
+            elementLeft = targetPixelX - (elementWidth * anchorX);
+            elementTop = targetPixelY - (elementHeight * anchorY);
+          }
+          
+          // 应用位置
+          element.style.left = elementLeft + 'px';
+          element.style.top = elementTop + 'px';
+        }
+        
+        // 更新所有元素位置
+        function updateAllElementPositions() {
+          elementPositions.forEach(config => {
+            const elements = document.querySelectorAll(config.selector);
+            elements.forEach(element => {
+              calculateElementPosition(
+                element,
+                config.targetX,
+                config.targetY,
+                config.anchorX,
+                config.anchorY
+              );
+            });
+          });
+        }
+        
+        // 防抖函数
+        function debounce(func, wait) {
+          let timeout;
+          return function executedFunction(...args) {
+            const later = () => {
+              clearTimeout(timeout);
+              func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+          };
+        }
+        
+        // 创建防抖版本的位置更新函数
+        const debouncedUpdatePositions = debounce(updateAllElementPositions, 100);
         
         function selectTier(tier) {
           // 更新隐藏的input值
@@ -1246,8 +1500,80 @@
           });
         }
         
+        // 等待所有图片加载完成
+        function waitForImages() {
+          const images = document.querySelectorAll('.bg-container img, .bg-container button[type="submit"]');
+          let loadedCount = 0;
+          const totalImages = images.length;
+          
+          if (totalImages === 0) {
+            updateAllElementPositions();
+            return;
+          }
+          
+          images.forEach(img => {
+            if (img.tagName === 'IMG') {
+              if (img.complete) {
+                loadedCount++;
+                checkAllLoaded();
+              } else {
+                img.addEventListener('load', function() {
+                  loadedCount++;
+                  checkAllLoaded();
+                });
+                img.addEventListener('error', function() {
+                  loadedCount++;
+                  checkAllLoaded();
+                });
+              }
+            } else {
+              // 对于按钮，直接算作已加载
+              loadedCount++;
+              checkAllLoaded();
+            }
+          });
+          
+          function checkAllLoaded() {
+            if (loadedCount >= totalImages) {
+              // 所有图片加载完成，再等待一小段时间确保渲染完成
+              setTimeout(() => {
+                updateAllElementPositions();
+              }, 100);
+            }
+          }
+        }
+        
         // 等待 DOM 加载完成
         document.addEventListener('DOMContentLoaded', function() {
+          // 等待背景图加载完成后再计算位置
+          const bgImg = document.querySelector('.bg-img');
+          if (bgImg) {
+            if (bgImg.complete && bgImg.naturalWidth > 0) {
+              // 图片已加载，获取实际尺寸
+              bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
+              bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
+              waitForImages();
+            } else {
+              // 等待图片加载
+              bgImg.addEventListener('load', function() {
+                // 获取实际图片尺寸（如果与配置不同，可以自动更新）
+                bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
+                bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
+                waitForImages();
+              });
+              bgImg.addEventListener('error', function() {
+                // 即使加载失败也继续
+                waitForImages();
+              });
+            }
+          } else {
+            // 如果没有背景图，直接等待其他图片
+            waitForImages();
+          }
+          
+          // 监听窗口大小变化
+          window.addEventListener('resize', debouncedUpdatePositions);
+          
           // 表单提交前检查是否选择了tier和user
           const tierForm = document.getElementById('tierForm');
           if (tierForm) {
