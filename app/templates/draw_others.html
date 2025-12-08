@@ -917,67 +917,47 @@
     @keyframes slideIn {
         from {
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translate(-50%, calc(-50% - 20px));
         }
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translate(-50%, -50%);
         }
     }
-    
+
     .error { 
-        margin-top: clamp(1rem, 3vw, 1.5rem); 
-        background: rgba(220, 53, 69, 0.9);
-        padding: clamp(1.25rem, 3vw, 1.5rem); 
-        border: 3px solid rgba(255, 215, 0, 0.8); 
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.95), rgba(200, 35, 51, 0.95));
+        padding: clamp(1.25rem, 3vw, 1.5rem) clamp(2rem, 4vw, 3rem); 
+        border: 3px solid #ffc107; 
         border-radius: clamp(1rem, 2vw, 1.25rem); 
-        color: #fff8dc; 
-        width: 90%;
-        max-width: clamp(400px, 80vw, 800px);
-        font-size: clamp(0.875rem, 2vw, 1rem);
+        color: white; 
+        font-size: clamp(1rem, 2.5vw, 1.5rem);
         box-shadow: 
-            0 4px 20px rgba(0, 0, 0, 0.4),
-            0 0 30px rgba(255, 215, 0, 0.3),
-            inset 0 2px 4px rgba(0, 0, 0, 0.2),
-            inset 0 -2px 4px rgba(255, 255, 255, 0.1);
+            0 8px 25px rgba(220, 53, 69, 0.5), 
+            0 0 40px rgba(255, 193, 7, 0.4),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
         text-align: center;
         font-weight: 700;
-        backdrop-filter: blur(10px);
-        position: relative;
+        backdrop-filter: blur(15px);
         overflow: hidden;
-        animation: slideIn 0.5s ease-out, shake 0.5s ease-in-out;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        animation: slideIn 0.5s ease-out forwards, fadeOut 0.5s ease-in 2.5s forwards;
+        white-space: nowrap;
     }
     
-    .error::before {
-        content: '⚠️';
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-        animation: shake 0.5s ease-in-out infinite;
-    }
-    
-    .error::after {
-        content: '❌';
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-        animation: shake 0.5s ease-in-out infinite 0.25s;
-    }
-    
-    @keyframes shake {
-        0%, 100% {
-            transform: translateY(-50%) translateX(0);
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translate(-50%, -50%);
         }
-        25% {
-            transform: translateY(-50%) translateX(-10px);
-        }
-        75% {
-            transform: translateY(-50%) translateX(10px);
+        to {
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            visibility: hidden;
         }
     }
     
@@ -1100,10 +1080,6 @@
         
         .result::before,
         .result::after,
-        .error::before,
-        .error::after {
-            display: none;
-        }
     }
     
     /* 响应式设计 - 大屏幕设备 */
@@ -1537,6 +1513,14 @@
           
           // 初始化选中用户高亮
           updateSelectedUserHighlight();
+          
+          // 3秒后自动隐藏 error message
+          const errorElement = document.querySelector('.error');
+          if (errorElement) {
+            setTimeout(function() {
+              errorElement.style.display = 'none';
+            }, 3000);
+          }
         });
       </script>
 

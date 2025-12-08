@@ -16,4 +16,4 @@ THIRD_TIER_BONUS_POINTS = 1
 
 RANDOM_USER = "Random user"
 
-POINTS_ERROR_MESSAGE = "Your points aren't enough to join this round. Level up your points and try again!"
+POINTS_ERROR_MESSAGE = "Your points aren't enough to join this round."
