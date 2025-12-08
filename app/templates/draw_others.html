@@ -434,53 +434,84 @@
     
     .user-modal-header {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        padding: clamp(1rem, 2vw, 1.5rem);
-        border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+        padding: clamp(0.625rem, 1.2vw, 0.875rem) clamp(0.875rem, 1.8vw, 1.25rem);
+        border-bottom: 1px solid rgba(255, 215, 0, 0.5);
+        position: relative;
     }
     
     .user-modal-title {
         color: #ffd700;
-        font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+        font-size: clamp(0.875rem, 1.8vw, 1.125rem);
         font-weight: 700;
         text-shadow: 
             0 0 10px rgba(255, 215, 0, 0.8),
+            0 0 20px rgba(255, 215, 0, 0.5),
             0 2px 4px rgba(0, 0, 0, 0.5);
         margin: 0;
+        line-height: 1.2;
+        text-align: center;
+        letter-spacing: 0.05em;
     }
     
     .user-modal-close {
-        background: transparent;
-        border: 2px solid rgba(255, 215, 0, 0.6);
-        color: #ffd700;
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        width: clamp(1.5rem, 3vw, 2rem);
-        height: clamp(1.5rem, 3vw, 2rem);
-        border-radius: 50%;
+        background: transparent !important;
+        background-image: none !important;
+        border: none !important;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: clamp(1.5rem, 3vw, 1.75rem);
+        width: auto !important;
+        height: auto !important;
+        min-width: auto !important;
+        max-width: none !important;
+        min-height: auto !important;
+        max-height: none !important;
+        padding: 0;
+        margin: 0 !important;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
         line-height: 1;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
+        animation: none !important;
+        aspect-ratio: auto !important;
+        font-weight: 600;
+        position: absolute;
+        right: clamp(0.875rem, 1.8vw, 1.25rem);
+        top: 50%;
+        transform: translateY(-50%);
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+    
+    .user-modal-close::before,
+    .user-modal-close::after {
+        display: none !important;
     }
     
     .user-modal-close:hover {
-        background: rgba(255, 215, 0, 0.2);
-        border-color: rgba(255, 215, 0, 0.9);
-        transform: rotate(90deg);
+        color: rgba(255, 255, 255, 1);
+        background: transparent !important;
+        background-image: none !important;
+        transform: translateY(-50%) scale(1.15) !important;
+        filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.6)) !important;
+        text-shadow: 
+            0 0 12px rgba(255, 215, 0, 0.8),
+            0 0 20px rgba(255, 215, 0, 0.4);
+        animation: none !important;
     }
     
     .user-modal-search {
-        padding: clamp(1rem, 2vw, 1.5rem);
-        border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        padding: clamp(0.375rem, 0.8vw, 0.5rem) clamp(0.5rem, 1vw, 0.75rem);
+        border-bottom: 1px solid rgba(255, 215, 0, 0.3);
     }
     
     .user-modal-search input {
         width: calc(100% - 0.5rem);
-        padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
-        font-size: clamp(0.875rem, 1.8vw, 1.125rem);
+        padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.75rem, 1.5vw, 1rem);
+        font-size: clamp(0.75rem, 1.5vw, 0.95rem);
         background: rgba(139, 69, 19, 0.5);
         border: 2px solid rgba(255, 215, 0, 0.5);
         border-radius: clamp(0.75rem, 1.5vw, 1rem);
@@ -501,15 +532,16 @@
     }
     
     .user-modal-body {
-        padding: clamp(1rem, 2vw, 1.5rem);
+        padding: clamp(0.75rem, 1.5vw, 1rem);
         overflow-y: auto;
         flex: 1;
+        max-height: calc((clamp(60px, 8vw, 100px) + clamp(0.5rem, 1vw, 0.75rem) + clamp(0.5rem, 1vw, 0.75rem) + clamp(0.5rem, 1vw, 0.75rem) + 1.5rem) * 2 + clamp(0.5rem, 1vw, 0.75rem) + clamp(0.75rem, 1.5vw, 1rem) * 2);
     }
     
     .user-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(clamp(100px, 12vw, 140px), 1fr));
-        gap: clamp(1rem, 2vw, 1.5rem);
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: clamp(0.5rem, 1vw, 0.75rem);
     }
     
     .user-item {
@@ -517,7 +549,7 @@
         flex-direction: column;
         align-items: center;
         cursor: pointer;
-        padding: clamp(0.75rem, 1.5vw, 1rem);
+        padding: clamp(0.5rem, 1vw, 0.75rem);
         border-radius: clamp(0.75rem, 1.5vw, 1rem);
         background: rgba(139, 69, 19, 0.3);
         border: 2px solid rgba(255, 215, 0, 0.3);
@@ -591,7 +623,7 @@
     /* 响应式设计 */
     @media (max-width: 768px) {
         .user-grid {
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: clamp(0.75rem, 1.5vw, 1rem);
         }
         
@@ -603,7 +635,7 @@
     
     @media (max-width: 480px) {
         .user-grid {
-            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: clamp(0.5rem, 1vw, 0.75rem);
         }
         
@@ -1258,7 +1290,7 @@
                   <div class="user-modal" id="userModal">
                       <div class="user-modal-content">
                           <div class="user-modal-header">
-                              <h2 class="user-modal-title">🎁 Select User</h2>
+                              <h2 class="user-modal-title">🎁 Choose a Lucky Friend</h2>
                               <button class="user-modal-close" onclick="closeUserModal()">×</button>
                           </div>
                           <div class="user-modal-search">
