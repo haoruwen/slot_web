@@ -374,6 +374,7 @@
         z-index: 10000;
         animation: fadeIn 0.3s ease;
         overflow-y: auto;
+        will-change: opacity, transform;
     }
     
     .user-modal.active {
@@ -381,6 +382,10 @@
         align-items: center;
         justify-content: center;
         padding: clamp(1rem, 3vw, 2rem);
+    }
+    
+    .user-grid {
+        will-change: contents;
     }
     
     .user-modal-content {
@@ -1354,43 +1359,34 @@
           
           // 计算 cover 模式下的实际显示尺寸和偏移
           if (bgAspectRatio > containerAspectRatio) {
-            // 背景图宽度填满，高度被裁剪（上下有黑边）
             displayHeight = containerHeight;
             displayWidth = displayHeight * bgAspectRatio;
             offsetX = (displayWidth - containerWidth) / 2;
           } else {
-            // 背景图高度填满，宽度被裁剪（左右有黑边）
             displayWidth = containerWidth;
             displayHeight = displayWidth / bgAspectRatio;
             offsetY = (displayHeight - containerHeight) / 2;
           }
           
-          // 计算目标点在容器中的实际位置
           const targetPixelX = (targetX / bgConfig.originalWidth) * displayWidth - offsetX;
           const targetPixelY = (targetY / bgConfig.originalHeight) * displayHeight - offsetY;
           
-          // 获取元素的原始尺寸（不考虑 transform）
           const elementWidth = element.offsetWidth;
           const elementHeight = element.offsetHeight;
           
-          // 检查元素是否有 translate(-50%, -50%) 的 transform
           const computedStyle = window.getComputedStyle(element);
           const transform = computedStyle.transform;
           let hasTranslateCenter = false;
           
           if (transform && transform !== 'none') {
-            // 检查是否包含 translate(-50%, -50%)
             if (transform.includes('translate(-50%') || transform.includes('translate(-50%')) {
               hasTranslateCenter = true;
             }
           }
           
-          // 计算元素的左上角位置（考虑锚点和 transform）
           let elementLeft, elementTop;
           
           if (hasTranslateCenter) {
-            // 如果元素有 translate(-50%, -50%)，元素中心会对齐到目标点
-            // 所以直接设置目标点位置，transform 会自动居中
             elementLeft = targetPixelX;
             elementTop = targetPixelY;
           } else {
@@ -1403,16 +1399,13 @@
           element.style.left = elementLeft + 'px';
           element.style.top = elementTop + 'px';
           
-          // 标记元素已定位，显示元素
           element.classList.add('positioned');
         }
         
-        // 更新所有元素位置
         function updateAllElementPositions() {
           elementPositions.forEach(config => {
             const elements = document.querySelectorAll(config.selector);
             elements.forEach(element => {
-              // 跳过抽奖按钮，它使用固定定位
               if (element.classList.contains('gift-btn') || element.type === 'submit') {
                 return;
               }
@@ -1427,7 +1420,6 @@
           });
         }
         
-        // 防抖函数
         function debounce(func, wait) {
           let timeout;
           return function executedFunction(...args) {
@@ -1440,32 +1432,33 @@
           };
         }
         
-        // 创建防抖版本的位置更新函数
         const debouncedUpdatePositions = debounce(updateAllElementPositions, 100);
         
         function selectTier(tier) {
-          // 更新隐藏的input值
           document.getElementById('tier').value = tier;
           
-          // 移除所有选中状态
           document.querySelectorAll('.tier-image').forEach(img => {
             img.classList.remove('selected');
           });
           
-          // 根据tier找到对应的图片并添加选中状态
           const clickedImg = document.querySelector(`.tier-image[data-tier="${tier}"]`);
           if (clickedImg) {
             clickedImg.classList.add('selected');
           }
         }
         
-        // 延迟加载头像图片（分批加载）
         let avatarLoadInterval = null;
+        let cachedUserItems = null; // 缓存用户项列表
+        let cachedLazyAvatars = null; // 缓存待加载头像列表
         
         function loadUserAvatars() {
-          const lazyAvatars = document.querySelectorAll('.lazy-avatar:not([data-loaded])');
-          if (lazyAvatars.length === 0) {
-            // 所有头像已加载完成，清除定时器
+          if (!cachedLazyAvatars || cachedLazyAvatars.length === 0) {
+            cachedLazyAvatars = document.querySelectorAll('.lazy-avatar:not([data-loaded])');
+          } else {
+            cachedLazyAvatars = Array.from(cachedLazyAvatars).filter(img => !img.getAttribute('data-loaded'));
+          }
+          
+          if (cachedLazyAvatars.length === 0) {
             if (avatarLoadInterval) {
               clearInterval(avatarLoadInterval);
               avatarLoadInterval = null;
@@ -1473,12 +1466,10 @@
             return;
           }
           
-          // 每次加载6张图片（避免网络拥塞）
           const batchSize = 6;
-          const batch = Array.from(lazyAvatars).slice(0, batchSize);
+          const batch = Array.from(cachedLazyAvatars).slice(0, batchSize);
           
           batch.forEach((img, index) => {
-            // 错开加载时间，避免同时发起请求
             setTimeout(() => {
               const dataSrc = img.getAttribute('data-src');
               if (dataSrc && !img.getAttribute('data-loaded')) {
@@ -1489,78 +1480,74 @@
                   img.setAttribute('data-loaded', 'true');
                 };
                 tempImg.onerror = function() {
-                  // 加载失败时保持默认头像，标记为已加载
                   img.setAttribute('data-loaded', 'true');
                 };
                 tempImg.src = dataSrc;
               }
-            }, index * 100); // 每张图片间隔100ms加载
+            }, index * 100); 
           });
         }
         
-        // 打开用户选择模态框
         function openUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // 开始加载头像图片（延迟加载）
-            // 先立即加载第一批
-            loadUserAvatars();
-            
-            // 继续加载剩余的头像（每300ms检查一次，加载下一批）
-            if (avatarLoadInterval) {
-              clearInterval(avatarLoadInterval);
-            }
-            avatarLoadInterval = setInterval(() => {
-              loadUserAvatars();
-            }, 300); // 每300ms加载下一批（6张图片）
-            
-            // 高亮当前选中的用户
-            updateSelectedUserHighlight();
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (!cachedUserItems) {
+                  cachedUserItems = document.querySelectorAll('.user-item');
+                }
+                
+                cachedLazyAvatars = null; 
+                loadUserAvatars();
+                
+                if (avatarLoadInterval) {
+                  clearInterval(avatarLoadInterval);
+                }
+                avatarLoadInterval = setInterval(() => {
+                  loadUserAvatars();
+                }, 300); 
+                updateSelectedUserHighlight();
+              });
+            });
           }
         }
         
-        // 关闭用户选择模态框
         function closeUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
             modal.classList.remove('active');
             document.body.style.overflow = '';
             
-            // 停止加载头像的定时器
             if (avatarLoadInterval) {
               clearInterval(avatarLoadInterval);
               avatarLoadInterval = null;
             }
             
-            // 清空搜索框
             const searchInput = document.getElementById('userSearch');
             if (searchInput) {
               searchInput.value = '';
-              filterUsers();
+              requestAnimationFrame(() => {
+                filterUsers();
+              });
             }
           }
         }
         
-        // 选择用户
         function selectUser(username) {
           currentSelectedUser = username;
-          
-          // 更新隐藏字段
           const userHidden = document.getElementById('userHidden');
           if (userHidden) {
             userHidden.value = username;
           }
           
-          // 更新select元素（保持兼容）
           const userSelect = document.getElementById('user');
           if (userSelect) {
             userSelect.value = username;
           }
           
-          // 更新头像
           const avatarImg = document.getElementById('selectedUserAvatar');
           if (avatarImg) {
             const basePath = "{{ url_for('static', filename='avatars/') }}";
@@ -1577,16 +1564,18 @@
             testImg.src = avatarPath;
           }
           
-          // 更新选中状态
           updateSelectedUserHighlight();
           
-          // 关闭模态框
           closeUserModal();
         }
         
-        // 更新选中用户的高亮
         function updateSelectedUserHighlight() {
-          document.querySelectorAll('.user-item').forEach(item => {
+          const userItems = cachedUserItems || document.querySelectorAll('.user-item');
+          if (!cachedUserItems) {
+            cachedUserItems = userItems;
+          }
+          
+          userItems.forEach(item => {
             item.classList.remove('selected');
             if (item.dataset.username === currentSelectedUser) {
               item.classList.add('selected');
@@ -1594,11 +1583,13 @@
           });
         }
         
-        // 搜索过滤用户
         function filterUsers() {
           const searchInput = document.getElementById('userSearch');
           const searchTerm = searchInput.value.toLowerCase();
-          const userItems = document.querySelectorAll('.user-item');
+          const userItems = cachedUserItems || document.querySelectorAll('.user-item');
+          if (!cachedUserItems) {
+            cachedUserItems = userItems;
+          }
           
           userItems.forEach(item => {
             const username = item.dataset.username.toLowerCase();
@@ -1610,54 +1601,39 @@
           });
         }
         
-        // 初始位置计算（快速计算，不等待图片加载）
         function calculateInitialPositions() {
-          // 使用配置的默认尺寸快速计算位置
           const bgImg = document.querySelector('.bg-img');
           if (bgImg && bgImg.naturalWidth > 0) {
-            // 如果背景图已加载，使用实际尺寸
             bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
             bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
           }
-          // 否则使用配置中的默认尺寸
-          
-          // 立即计算并显示元素位置
           updateAllElementPositions();
           
-          // 标记按钮为已定位
           const button = document.querySelector('button[type="submit"], .bg-container .element.gift-btn');
           if (button) {
             button.classList.add('positioned');
           }
         }
         
-        // 等待 DOM 加载完成
         document.addEventListener('DOMContentLoaded', function() {
-          // 立即计算初始位置（不等待图片加载）
-          // 使用 requestAnimationFrame 确保 DOM 已渲染
           requestAnimationFrame(function() {
             setTimeout(calculateInitialPositions, 0);
           });
           
-          // 如果背景图稍后加载完成，更新尺寸（但不再重新计算位置）
           const bgImg = document.querySelector('.bg-img');
           if (bgImg && !bgImg.complete) {
             bgImg.addEventListener('load', function() {
-              // 更新配置中的实际尺寸，供 resize 时使用
               bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
               bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
-              // 如果窗口大小已改变，重新计算一次
               if (window.innerWidth !== window.initialWidth || window.innerHeight !== window.initialHeight) {
                 debouncedUpdatePositions();
               }
             }, { once: true });
           }
           
-          // 记录初始窗口尺寸
           window.initialWidth = window.innerWidth;
           window.initialHeight = window.innerHeight;
           
-          // 只在窗口大小变化时重新计算位置
           window.addEventListener('resize', debouncedUpdatePositions);
           
           // 表单提交前检查是否选择了tier和user
@@ -1817,6 +1793,32 @@
               }
             }
           });
+          
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+              cachedUserItems = document.querySelectorAll('.user-item');
+              cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
+            }, { timeout: 1000 });
+          } else {
+            // 降级方案：延迟1秒后缓存
+            setTimeout(() => {
+              cachedUserItems = document.querySelectorAll('.user-item');
+              cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
+            }, 1000);
+          }
+          
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+              cachedUserItems = document.querySelectorAll('.user-item');
+              cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
+            }, { timeout: 1000 });
+          } else {
+            // 降级方案：延迟1秒后缓存
+            setTimeout(() => {
+              cachedUserItems = document.querySelectorAll('.user-item');
+              cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
+            }, 1000);
+          }
           
           // 初始化选中用户高亮
           updateSelectedUserHighlight();
