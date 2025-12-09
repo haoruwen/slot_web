@@ -370,8 +370,9 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.7);
         z-index: 10000;
-        overflow-y: auto;
-        will-change: opacity, transform;
+        /* 移除双重滚动，只在 body 层滚动 */
+        overflow: hidden;
+        /* 移除 will-change，仅在动画时动态添加 */
         /* 使用 opacity + visibility 替代 display: none，避免强制重排 */
         opacity: 0;
         visibility: hidden;
@@ -379,34 +380,33 @@
         align-items: center;
         justify-content: center;
         padding: clamp(1rem, 3vw, 2rem);
-        transition: opacity 0.2s ease, visibility 0.2s ease;
+        transition: opacity 0.15s ease, visibility 0.15s ease;
         pointer-events: none;
-        /* 关闭时不应用 backdrop-filter，提升性能 */
-        backdrop-filter: none;
+        /* 完全移除 backdrop-filter，大幅提升性能 */
     }
     
     .user-modal.active {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
-        /* 只在打开时应用 backdrop-filter */
-        backdrop-filter: blur(5px);
+    }
+    
+    /* 动画完成后移除 will-change（通过JS动态管理） */
+    .user-modal.active.animation-complete {
+        will-change: auto;
     }
     
     .user-grid {
-        /* 移除 will-change，仅在需要时使用 */
-        contain: layout style;
+        /* 优化布局性能 */
+        contain: layout style paint;
     }
     
     .user-modal-content {
         background: rgba(139, 69, 19, 0.95);
-        /* 移除双重 backdrop-filter，只在模态框层面应用 */
         border-radius: clamp(1.5rem, 3vw, 2rem);
         border: 3px solid rgba(255, 215, 0, 0.8);
-        box-shadow: 
-            0 8px 40px rgba(0, 0, 0, 0.5),
-            0 0 50px rgba(255, 215, 0, 0.3),
-            inset 0 2px 6px rgba(0, 0, 0, 0.3);
+        /* 大幅减少 box-shadow 层数：从3层减少到1层，提升性能 */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
         width: 90%;
         max-width: min(90vw, 2000px);
         max-height: min(85vh, 1200px);
@@ -415,14 +415,12 @@
         display: flex;
         flex-direction: column;
         position: relative;
-        /* 使用 transform + opacity 实现动画，性能更好 */
-        transform: translateY(20px);
+        /* 合并动画：只使用 opacity，移除 transform */
         opacity: 0;
-        transition: transform 0.2s ease, opacity 0.2s ease;
+        transition: opacity 0.15s ease;
     }
     
     .user-modal.active .user-modal-content {
-        transform: translateY(0);
         opacity: 1;
     }
     
@@ -439,10 +437,8 @@
         color: #ffd700;
         font-size: clamp(0.875rem, 1.8vw, 1.125rem);
         font-weight: 700;
-        text-shadow: 
-            0 0 10px rgba(255, 215, 0, 0.8),
-            0 0 20px rgba(255, 215, 0, 0.5),
-            0 2px 4px rgba(0, 0, 0, 0.5);
+        /* 减少 text-shadow 层数：从3层减少到1层，提升性能 */
+        text-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
         margin: 0;
         line-height: 1.2;
         text-align: center;
@@ -467,10 +463,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
+        /* 精确指定需要过渡的属性，避免监听所有属性 */
+        transition: transform 0.2s ease, color 0.2s ease;
         line-height: 1;
-        /* 移除 filter，使用 text-shadow 替代，性能更好 */
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
         animation: none !important;
         aspect-ratio: auto !important;
         font-weight: 600;
@@ -478,7 +474,6 @@
         right: clamp(0.875rem, 1.8vw, 1.25rem);
         top: 50%;
         transform: translateY(-50%);
-        text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
     }
     
     .user-modal-close::before,
@@ -491,11 +486,8 @@
         background: transparent !important;
         background-image: none !important;
         transform: translateY(-50%) scale(1.15) !important;
-        /* 移除 filter，使用 text-shadow 替代，性能更好 */
-        text-shadow: 
-            0 0 12px rgba(255, 215, 0, 0.8),
-            0 0 20px rgba(255, 215, 0, 0.4),
-            0 4px 8px rgba(255, 215, 0, 0.3);
+        /* 简化 text-shadow，减少层数 */
+        text-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
         animation: none !important;
     }
     
@@ -521,7 +513,8 @@
     .user-modal-search input:focus {
         border-color: rgba(255, 215, 0, 0.9);
         background: rgba(139, 69, 19, 0.7);
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        /* 简化 box-shadow，减少性能开销 */
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
     }
     
     .user-modal-search input::placeholder {
@@ -533,6 +526,10 @@
         overflow-y: auto;
         flex: 1;
         min-height: 0;
+        /* 优化滚动性能 */
+        overflow-anchor: none;
+        transform: translateZ(0);
+        -webkit-overflow-scrolling: touch;
     }
     
     .user-grid {
@@ -550,10 +547,9 @@
         border-radius: clamp(0.75rem, 1.5vw, 1rem);
         background: rgba(139, 69, 19, 0.3);
         border: 2px solid rgba(255, 215, 0, 0.3);
-        transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
         position: relative;
-        /* 优化hover性能 */
-        will-change: transform;
+        /* 移除持续存在的 will-change，仅在 hover 时动态添加 */
     }
     
     .user-item.hidden {
@@ -563,14 +559,16 @@
     .user-item:hover {
         background: rgba(139, 69, 19, 0.5);
         border-color: rgba(255, 215, 0, 0.7);
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+        transform: translateY(-3px) scale(1.03);
+        /* 移除 box-shadow，减少性能开销 */
+        /* 动态添加 will-change 提示浏览器优化 */
+        will-change: transform;
     }
     
     .user-item.selected {
         background: rgba(255, 215, 0, 0.2);
         border-color: rgba(255, 215, 0, 0.9);
-        box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+        /* 移除 box-shadow，减少性能开销 */
     }
     
     .user-item-avatar {
@@ -580,9 +578,8 @@
         object-fit: cover;
         border: 3px solid rgba(255, 215, 0, 0.5);
         margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
-        /* 使用 box-shadow 替代 filter，性能更好 */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+        /* 移除 box-shadow，大幅提升性能 */
+        transition: border-color 0.2s ease, opacity 0.2s ease;
         opacity: 0.7;
     }
     
@@ -592,8 +589,7 @@
     
     .user-item:hover .user-item-avatar {
         border-color: rgba(255, 215, 0, 0.9);
-        /* 使用 box-shadow 替代 filter，性能更好 */
-        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+        /* 移除 box-shadow，减少性能开销 */
     }
     
     .user-item-name {
@@ -601,13 +597,15 @@
         font-size: clamp(0.75rem, 1.5vw, 1rem);
         font-weight: 600;
         text-align: center;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        /* 简化 text-shadow，减少性能开销 */
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         word-break: break-word;
     }
     
     .user-item.selected .user-item-name {
         color: #ffd700;
-        text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        /* 简化 text-shadow */
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
     }
     
     @keyframes fadeIn {
@@ -1595,8 +1593,16 @@
             }
             
             // 第二步：立即显示模态框（opacity/visibility 切换很快，不触发重排）
+            // 动画开始时添加 will-change 提示
+            modal.style.willChange = 'opacity';
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // 动画完成后移除 will-change（优化性能）
+            setTimeout(() => {
+              modal.classList.add('animation-complete');
+              modal.style.willChange = 'auto';
+            }, 200); // 略长于动画时间
             
             // 第三步：同步执行关键的初始化操作（因为元素已在渲染树中）
             
@@ -1637,9 +1643,19 @@
             // 立即禁用交互，防止重复点击
             modal.style.pointerEvents = 'none';
             
+            // 移除 animation-complete 类，准备下次动画
+            modal.classList.remove('animation-complete');
+            // 动画开始时添加 will-change
+            modal.style.willChange = 'opacity';
+            
             // 移除 active 类，触发关闭动画
             modal.classList.remove('active');
             document.body.style.overflow = '';
+            
+            // 动画完成后移除 will-change
+            setTimeout(() => {
+              modal.style.willChange = 'auto';
+            }, 200);
             
             // 停止加载头像的定时器
             if (avatarLoadInterval) {
