@@ -1598,6 +1598,7 @@
             });
             
             // 第二步：延迟执行状态重置操作（避免阻塞显示）
+            // 使用第一个 RAF 执行状态重置，让模态框先显示
             requestAnimationFrame(() => {
               // 预加载DOM查询结果（如果还没有缓存）
               if (!cachedUserItems) {
@@ -1637,16 +1638,20 @@
                 userGrid.addEventListener('click', handleUserGridClick);
               }
               
-              // 加载头像
-              loadUserAvatars();
-              
-              if (avatarLoadInterval) {
-                clearInterval(avatarLoadInterval);
-              }
-              // 加快加载速度，每200ms加载下一批
-              avatarLoadInterval = setInterval(() => {
+              // 第三步：再延迟执行图片加载（使用第二个 RAF，让模态框先显示）
+              // 这样第二次及之后也能像第一次一样：先出现模态框，然后再加载图片
+              requestAnimationFrame(() => {
+                // 加载头像
                 loadUserAvatars();
-              }, 200);
+                
+                if (avatarLoadInterval) {
+                  clearInterval(avatarLoadInterval);
+                }
+                // 加快加载速度，每200ms加载下一批
+                avatarLoadInterval = setInterval(() => {
+                  loadUserAvatars();
+                }, 200);
+              });
             });
           }
         }
