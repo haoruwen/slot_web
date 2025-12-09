@@ -188,12 +188,12 @@
     
     .main-avatar,
     .bg-container .element.bell-button {
-        width: 37%;
+        width: 32%;
         aspect-ratio: 1;
-        max-width: 37vw;
-        max-height: 37vw;
-        min-width: 320px;
-        min-height: 320px;
+        max-width: 32vw;
+        max-height: 32vw;
+        min-width: 280px;
+        min-height: 280px;
         object-fit: contain;
         display: block;
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
@@ -1034,8 +1034,8 @@
         }
         
         .main-avatar {
-            min-width: 200px;
-            min-height: 200px;
+            min-width: 180px;
+            min-height: 180px;
         }
 
         .right-content {
@@ -1226,7 +1226,7 @@
           {
             selector: '.main-avatar, .bg-container .element.bell-button',
             targetX: 1000,  // ⬅️ 修改这个值调整头像的X位置
-            targetY: 1200,  // ⬅️ 修改这个值调整头像的Y位置
+            targetY: 1160,  // ⬅️ 修改这个值调整头像的Y位置
             anchorX: 0.5,  // 0.5 = 中心对齐
             anchorY: 0.5
           },
@@ -1456,16 +1456,75 @@
           // 表单提交前检查是否选择了tier
           const tierForm = document.getElementById('tierForm');
           if (tierForm) {
-            tierForm.addEventListener('submit', function(e) {
+            tierForm.addEventListener('submit', async function(e) {
+              e.preventDefault(); // 阻止默认表单提交
+              
               const selectedTier = document.getElementById('tier').value;
               
               // 用户字段已自动设置为当前登录用户，无需检查
               if (!selectedTier) {
-                e.preventDefault();
                 alert('Oops! Don\'t forget to select a tier.');
                 return false;
               }
+              
+              // 使用 fetch 提交表单
+              const formData = new FormData(tierForm);
+              
+              try {
+                const response = await fetch(tierForm.action || window.location.pathname, {
+                  method: 'POST',
+                  body: formData
+                });
+                
+                const responseText = await response.text();
+                
+                // 检查响应中是否包含错误信息（draw_self.html 的特征：包含 tierForm）
+                if (responseText.includes('tierForm') && responseText.includes('class="error"')) {
+                  // 提取错误信息
+                  const errorMatch = responseText.match(/<div class="error">([^<]+)<\/div>/);
+                  let errorMessage = errorMatch ? errorMatch[1].trim() : 'Not enough points!';
+                  
+                  // 解码 HTML 实体（如 &#39; -> '）
+                  const tempDiv = document.createElement('div');
+                  tempDiv.innerHTML = errorMessage;
+                  errorMessage = tempDiv.textContent || tempDiv.innerText || errorMessage;
+                  
+                  // 显示错误，不刷新页面
+                  showError(errorMessage);
+                } else if (responseText.includes('congratulations-text') || (responseText.includes('class="card"') && responseText.includes('Result'))) {
+                  // 成功，返回了 result.html 的内容，直接替换整个页面
+                  document.open();
+                  document.write(responseText);
+                  document.close();
+                } else {
+                  // 其他情况，刷新页面（保持原有行为）
+                  window.location.reload();
+                }
+              } catch (error) {
+                console.error('Form submission error:', error);
+                alert('An error occurred. Please try again.');
+              }
             });
+          }
+          
+          // 显示错误信息的函数
+          function showError(message) {
+            // 移除已有的错误提示
+            const existingError = document.querySelector('.error');
+            if (existingError) {
+              existingError.remove();
+            }
+            
+            // 创建错误提示元素
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            
+            // 3秒后自动隐藏
+            setTimeout(function() {
+              errorDiv.style.display = 'none';
+            }, 3000);
           }
           
           // 处理头像加载失败的情况
