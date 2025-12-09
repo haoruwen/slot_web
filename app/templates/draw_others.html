@@ -1477,6 +1477,7 @@
         let avatarLoadInterval = null;
         let cachedUserItems = null; // 缓存用户项列表
         let cachedLazyAvatars = null; // 缓存待加载头像列表
+        let cachedModalContent = null; // 缓存模态框内容元素
         
         // 防抖函数（用于搜索）
         function debounceSearch(func, wait) {
@@ -1570,30 +1571,26 @@
             // ========== 根本性优化：只切换样式，不修改 DOM ==========
             // 所有 DOM 操作已经在 closeUserModal() 中完成，这里只需要切换样式即可立即显示
             
-            // 第一步：立即显示模态框（禁用 transition，立即显示）
+            // 第一步：立即显示模态框（使用 cssText 一次性设置所有样式，减少样式计算次数）
             // 只切换样式，不修改 DOM，可以立即显示
-            modal.style.transition = 'none';
-            modal.style.opacity = '1';
-            modal.style.visibility = 'visible';
-            modal.style.willChange = 'opacity';
-            modal.classList.add('active');
+            // 使用 cssText 合并所有样式设置，避免多次样式重新计算
+            modal.style.cssText = 'transition: none; opacity: 1; visibility: visible; will-change: opacity; pointer-events: auto;';
             document.body.style.overflow = 'hidden';
             
-            // 然后查询并设置 content 样式（确保内容也立即显示）
-            const modalContent = modal.querySelector('.user-modal-content');
-            if (modalContent) {
-              modalContent.style.transition = 'none';
-              modalContent.style.opacity = '1';  // 直接设置，避免等待 CSS 选择器计算
+            // 使用缓存的 modalContent（避免 querySelector 查询，减少重排）
+            if (!cachedModalContent) {
+              cachedModalContent = modal.querySelector('.user-modal-content');
             }
-            
-            // 重置 pointer-events（确保可以点击）
-            modal.style.pointerEvents = '';
+            if (cachedModalContent) {
+              // 使用 cssText 一次性设置所有样式
+              cachedModalContent.style.cssText = 'transition: none; opacity: 1;';
+            }
             
             // 下一帧恢复 transition（用于后续可能的动画）
             requestAnimationFrame(() => {
               modal.style.transition = '';
-              if (modalContent) {
-                modalContent.style.transition = '';
+              if (cachedModalContent) {
+                cachedModalContent.style.transition = '';
               }
               
               // 动画完成后移除 will-change（优化性能）
@@ -1653,28 +1650,29 @@
             // 移除 animation-complete 类，准备下次打开
             modal.classList.remove('animation-complete');
             
-            // 禁用 transition，立即关闭（无动画）
-            const modalContent = modal.querySelector('.user-modal-content');
-            modal.style.transition = 'none';
-            if (modalContent) {
-              modalContent.style.transition = 'none';
+            // 使用缓存的 modalContent（避免 querySelector 查询）
+            if (!cachedModalContent) {
+              cachedModalContent = modal.querySelector('.user-modal-content');
             }
             
-            // 立即关闭模态框（无动画，直接隐藏）
-            modal.classList.remove('active');
-            modal.style.opacity = '0';
-            modal.style.visibility = 'hidden';
+            // 使用 cssText 一次性设置所有样式，立即关闭（无动画）
+            modal.style.cssText = 'transition: none; opacity: 0; visibility: hidden; pointer-events: none; will-change: opacity;';
+            if (cachedModalContent) {
+              cachedModalContent.style.cssText = 'transition: none; opacity: 0;';
+            }
             document.body.style.overflow = '';
             
-            // 移除 will-change（不再需要）
-            modal.style.willChange = 'auto';
+            // 移除 active 类（如果存在）
+            modal.classList.remove('active');
             
             // 下一帧恢复 transition（为下次打开做准备）
+            // 预先设置 will-change，为下次打开优化性能
             requestAnimationFrame(() => {
               modal.style.transition = '';
-              if (modalContent) {
-                modalContent.style.transition = '';
+              if (cachedModalContent) {
+                cachedModalContent.style.transition = '';
               }
+              // will-change 保持在 'opacity'，为下次打开做准备
             });
             
             // 停止加载头像的定时器
@@ -1700,6 +1698,11 @@
             // ========== 根本性优化：在关闭时准备好所有状态，打开时只切换样式 ==========
             // 立即执行所有 DOM 操作（同步，不等待 RAF），为下次打开做好准备
             // 这样打开时只需要切换样式，不需要修改 DOM，可以立即显示
+            
+            // 缓存 modalContent（如果还没有缓存）
+            if (!cachedModalContent) {
+              cachedModalContent = modal.querySelector('.user-modal-content');
+            }
             
             // 预加载DOM查询结果（如果还没有缓存）
             if (!cachedUserItems) {
