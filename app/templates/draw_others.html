@@ -1708,6 +1708,9 @@
             if (!cachedUserItems) {
               cachedUserItems = document.querySelectorAll('.user-item');
             }
+            if (!cachedLazyAvatars) {
+              cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
+            }
             
             // 移除所有用户项的 hidden 和 selected 类（同步执行，不等待 RAF）
             // 搜索框已经清空，所以所有用户都应该显示
@@ -1715,6 +1718,31 @@
               cachedUserItems.forEach(item => {
                 item.classList.remove('hidden');
                 item.classList.remove('selected');  // 清除选择状态
+              });
+            }
+            
+            // 重置所有图片的加载状态（为下次打开时重新加载做准备）
+            // 这样第二次及之后也能像第一次一样：先显示模态框，然后再慢慢加载图片
+            if (cachedLazyAvatars && cachedLazyAvatars.length > 0) {
+              cachedLazyAvatars.forEach(img => {
+                // 重置 data-loaded 属性，让图片可以重新加载
+                img.removeAttribute('data-loaded');
+                // 重置 src 为默认图片（从 HTML 原始属性获取），这样可以看到逐步加载的效果
+                // 检查当前 src 是否包含实际头像路径（不是 default.png）
+                const currentSrc = img.src;
+                if (currentSrc && !currentSrc.includes('default.png')) {
+                  // 从 HTML 原始 src 属性获取默认图片路径
+                  // 如果原始 src 已经被修改，使用 data-src 的目录 + default.png
+                  const dataSrc = img.getAttribute('data-src');
+                  if (dataSrc) {
+                    const defaultImgPath = dataSrc.substring(0, dataSrc.lastIndexOf('/')) + '/default.png';
+                    img.src = defaultImgPath;
+                  } else {
+                    // 如果没有 data-src，使用固定的默认路径
+                    img.src = '/static/avatars/default.png';
+                  }
+                  img.classList.remove('loaded');
+                }
               });
             }
             
