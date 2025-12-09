@@ -1568,20 +1568,20 @@
           const modal = document.getElementById('userModal');
           if (modal) {
             // 第一步：立即显示模态框（禁用 transition，立即显示）
-            const modalContent = modal.querySelector('.user-modal-content');
-            
-            // 禁用 transition，立即显示
+            // 先设置 modal 样式，立即显示
             modal.style.transition = 'none';
-            if (modalContent) {
-              modalContent.style.transition = 'none';
-            }
-            
-            // 直接设置内联样式（而不是清空），立即生效，无需等待样式重新计算
             modal.style.opacity = '1';
             modal.style.visibility = 'visible';
             modal.style.willChange = 'opacity';
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // 然后查询并设置 content 样式（确保内容也立即显示）
+            const modalContent = modal.querySelector('.user-modal-content');
+            if (modalContent) {
+              modalContent.style.transition = 'none';
+              modalContent.style.opacity = '1';  // 直接设置，避免等待 CSS 选择器计算
+            }
             
             // 下一帧恢复 transition（用于后续可能的动画）
             requestAnimationFrame(() => {
