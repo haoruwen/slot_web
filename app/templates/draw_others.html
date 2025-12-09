@@ -1567,7 +1567,15 @@
         function openUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
-            // 第一步：立即显示模态框（先显示，再重置状态，避免阻塞）
+            // 第一步：立即显示模态框（禁用 transition，立即显示）
+            const modalContent = modal.querySelector('.user-modal-content');
+            
+            // 禁用 transition，立即显示
+            modal.style.transition = 'none';
+            if (modalContent) {
+              modalContent.style.transition = 'none';
+            }
+            
             // 重置关闭时设置的样式
             modal.style.opacity = '';
             modal.style.visibility = '';
@@ -1575,11 +1583,19 @@
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // 动画完成后移除 will-change（优化性能）
-            setTimeout(() => {
-              modal.classList.add('animation-complete');
-              modal.style.willChange = 'auto';
-            }, 200); // 略长于动画时间
+            // 下一帧恢复 transition（用于后续可能的动画）
+            requestAnimationFrame(() => {
+              modal.style.transition = '';
+              if (modalContent) {
+                modalContent.style.transition = '';
+              }
+              
+              // 动画完成后移除 will-change（优化性能）
+              setTimeout(() => {
+                modal.classList.add('animation-complete');
+                modal.style.willChange = 'auto';
+              }, 200);
+            });
             
             // 第二步：延迟执行状态重置操作（避免阻塞显示）
             requestAnimationFrame(() => {
@@ -1644,6 +1660,13 @@
             // 移除 animation-complete 类，准备下次打开
             modal.classList.remove('animation-complete');
             
+            // 禁用 transition，立即关闭（无动画）
+            const modalContent = modal.querySelector('.user-modal-content');
+            modal.style.transition = 'none';
+            if (modalContent) {
+              modalContent.style.transition = 'none';
+            }
+            
             // 立即关闭模态框（无动画，直接隐藏）
             modal.classList.remove('active');
             modal.style.opacity = '0';
@@ -1652,6 +1675,14 @@
             
             // 移除 will-change（不再需要）
             modal.style.willChange = 'auto';
+            
+            // 下一帧恢复 transition（为下次打开做准备）
+            requestAnimationFrame(() => {
+              modal.style.transition = '';
+              if (modalContent) {
+                modalContent.style.transition = '';
+              }
+            });
             
             // 停止加载头像的定时器
             if (avatarLoadInterval) {
