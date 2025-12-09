@@ -1567,8 +1567,11 @@
         function openUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
+            // ========== 根本性优化：只切换样式，不修改 DOM ==========
+            // 所有 DOM 操作已经在 closeUserModal() 中完成，这里只需要切换样式即可立即显示
+            
             // 第一步：立即显示模态框（禁用 transition，立即显示）
-            // 先设置 modal 样式，立即显示
+            // 只切换样式，不修改 DOM，可以立即显示
             modal.style.transition = 'none';
             modal.style.opacity = '1';
             modal.style.visibility = 'visible';
@@ -1582,6 +1585,9 @@
               modalContent.style.transition = 'none';
               modalContent.style.opacity = '1';  // 直接设置，避免等待 CSS 选择器计算
             }
+            
+            // 重置 pointer-events（确保可以点击）
+            modal.style.pointerEvents = '';
             
             // 下一帧恢复 transition（用于后续可能的动画）
             requestAnimationFrame(() => {
@@ -1597,13 +1603,10 @@
               }, 200);
             });
             
-            // 第二步：重置选择状态（不记住上次选择的用户，默认什么也不选）
-            currentSelectedUser = null;
-            
-            // 第三步：延迟执行状态重置操作（避免阻塞显示）
-            // 使用第一个 RAF 执行必要的状态重置，让模态框先显示
+            // 第二步：延迟执行非关键操作（不修改 DOM，只设置事件监听）
+            // 使用第一个 RAF 设置事件监听，不阻塞显示
             requestAnimationFrame(() => {
-              // 预加载DOM查询结果（如果还没有缓存）
+              // 预加载DOM查询结果（如果还没有缓存，用于图片加载和后续操作）
               if (!cachedUserItems) {
                 cachedUserItems = document.querySelectorAll('.user-item');
               }
@@ -1611,30 +1614,8 @@
                 cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
               }
               
-              // 移除所有用户项的 hidden 类，确保所有用户都显示
-              if (cachedUserItems && cachedUserItems.length > 0) {
-                cachedUserItems.forEach(item => {
-                  item.classList.remove('hidden');
-                });
-              }
-              
-              // 移除所有用户项的 selected 类（清除之前的选择状态，但不触发高亮更新）
-              if (cachedUserItems && cachedUserItems.length > 0) {
-                cachedUserItems.forEach(item => {
-                  item.classList.remove('selected');
-                });
-              }
-              
-              // 重置 pointer-events（确保可以点击）
-              modal.style.pointerEvents = '';
-              
-              // 清空搜索框
-              const searchInput = document.getElementById('userSearch');
-              if (searchInput) {
-                searchInput.value = '';
-              }
-              
               // 设置搜索输入框事件监听（使用防抖）
+              const searchInput = document.getElementById('userSearch');
               if (searchInput && debouncedFilterUsers) {
                 searchInput.addEventListener('input', debouncedFilterUsers);
               }
@@ -1645,8 +1626,7 @@
                 userGrid.addEventListener('click', handleUserGridClick);
               }
               
-              // 第四步：再延迟执行图片加载（使用第二个 RAF，让模态框先显示）
-              // 不调用 updateSelectedUserHighlight()，因为默认什么也不选
+              // 第三步：再延迟执行图片加载（使用第二个 RAF，让模态框先显示）
               // 这样第二次及之后也能像第一次一样：先出现模态框，然后再加载图片
               requestAnimationFrame(() => {
                 // 加载头像
@@ -1717,9 +1697,26 @@
               userGrid.removeEventListener('click', handleUserGridClick);
             }
             
-            // 立即执行清理操作（不再等待动画）
-            // 确保恢复用户显示（双重保险）
-            filterUsers();
+            // ========== 根本性优化：在关闭时准备好所有状态，打开时只切换样式 ==========
+            // 立即执行所有 DOM 操作（同步，不等待 RAF），为下次打开做好准备
+            // 这样打开时只需要切换样式，不需要修改 DOM，可以立即显示
+            
+            // 预加载DOM查询结果（如果还没有缓存）
+            if (!cachedUserItems) {
+              cachedUserItems = document.querySelectorAll('.user-item');
+            }
+            
+            // 移除所有用户项的 hidden 和 selected 类（同步执行，不等待 RAF）
+            // 搜索框已经清空，所以所有用户都应该显示
+            if (cachedUserItems && cachedUserItems.length > 0) {
+              cachedUserItems.forEach(item => {
+                item.classList.remove('hidden');
+                item.classList.remove('selected');  // 清除选择状态
+              });
+            }
+            
+            // 重置选择状态（不记住上次选择的用户，默认什么也不选）
+            currentSelectedUser = null;
           }
         }
         
