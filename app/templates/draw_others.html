@@ -10,7 +10,6 @@
   <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier2.png') }}">
   <link rel="preload" as="image" href="{{ url_for('static', filename='tiers/tier3.png') }}">
   <link rel="preload" as="image" href="{{ url_for('static', filename='draw_button.png') }}">
-  <link rel="preload" as="image" href="{{ url_for('static', filename='avatars/random.png') }}">
   <style>
     html {
         overflow: hidden;
@@ -1197,7 +1196,7 @@
       <img src="{{ url_for('static', filename='background/board.png') }}" class="bg-img" alt="background">
       
       {% if session.username %}
-          <img class="element bell-button main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/random.png') }}" alt="avatar" onclick="openUserModal()">
+          <img class="element bell-button main-avatar" id="selectedUserAvatar" src="{{ url_for('static', filename='avatars/default.png') }}" alt="avatar" onclick="openUserModal()">
           
           {% if points is defined %}
           <div class="element points-display" id="pointsDisplay">{{ points }} pts</div>
