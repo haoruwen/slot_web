@@ -363,7 +363,6 @@
     
     /* 用户选择模态框 */
     .user-modal {
-        display: none;
         position: fixed;
         top: 0;
         left: 0;
@@ -372,16 +371,23 @@
         background: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(5px);
         z-index: 10000;
-        animation: fadeIn 0.3s ease;
         overflow-y: auto;
         will-change: opacity, transform;
-    }
-    
-    .user-modal.active {
+        /* 使用 opacity + visibility 替代 display: none，避免强制重排 */
+        opacity: 0;
+        visibility: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: clamp(1rem, 3vw, 2rem);
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        pointer-events: none;
+    }
+    
+    .user-modal.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
     }
     
     .user-grid {
@@ -404,8 +410,16 @@
         min-height: 200px;
         display: flex;
         flex-direction: column;
-        animation: slideUp 0.3s ease;
         position: relative;
+        /* 使用 transform + opacity 实现动画，性能更好 */
+        transform: translateY(20px);
+        opacity: 0;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    
+    .user-modal.active .user-modal-content {
+        transform: translateY(0);
+        opacity: 1;
     }
     
     .user-modal-header {
@@ -1452,13 +1466,16 @@
         let cachedLazyAvatars = null; // 缓存待加载头像列表
         
         function loadUserAvatars() {
+          // 如果缓存为空或不存在，首次查询并缓存
           if (!cachedLazyAvatars || cachedLazyAvatars.length === 0) {
-            cachedLazyAvatars = document.querySelectorAll('.lazy-avatar:not([data-loaded])');
-          } else {
-            cachedLazyAvatars = Array.from(cachedLazyAvatars).filter(img => !img.getAttribute('data-loaded'));
+            cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
           }
           
-          if (cachedLazyAvatars.length === 0) {
+          // 从缓存中过滤出未加载的头像（不重置缓存，保持缓存有效）
+          const unloadedAvatars = Array.from(cachedLazyAvatars).filter(img => !img.getAttribute('data-loaded'));
+          
+          if (unloadedAvatars.length === 0) {
+            // 所有头像已加载完成，清除定时器
             if (avatarLoadInterval) {
               clearInterval(avatarLoadInterval);
               avatarLoadInterval = null;
@@ -1466,8 +1483,9 @@
             return;
           }
           
+          // 每次加载6张图片（避免网络拥塞）
           const batchSize = 6;
-          const batch = Array.from(cachedLazyAvatars).slice(0, batchSize);
+          const batch = unloadedAvatars.slice(0, batchSize);
           
           batch.forEach((img, index) => {
             setTimeout(() => {
@@ -1491,26 +1509,33 @@
         function openUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
+            // 第一步：立即显示模态框（opacity/visibility 切换很快，不触发重排）
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
+            // 第二步：同步执行关键的初始化操作（因为元素已在渲染树中）
+            // 预加载DOM查询结果（如果还没有缓存）
+            if (!cachedUserItems) {
+              cachedUserItems = document.querySelectorAll('.user-item');
+            }
+            if (!cachedLazyAvatars) {
+              cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
+            }
+            
+            // 立即更新高亮状态（同步执行，很快）
+            updateSelectedUserHighlight();
+            
+            // 第三步：延迟执行非关键操作（图片加载等）
+            // 使用单层 RAF，避免双重延迟
             requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                if (!cachedUserItems) {
-                  cachedUserItems = document.querySelectorAll('.user-item');
-                }
-                
-                cachedLazyAvatars = null; 
+              loadUserAvatars();
+              
+              if (avatarLoadInterval) {
+                clearInterval(avatarLoadInterval);
+              }
+              avatarLoadInterval = setInterval(() => {
                 loadUserAvatars();
-                
-                if (avatarLoadInterval) {
-                  clearInterval(avatarLoadInterval);
-                }
-                avatarLoadInterval = setInterval(() => {
-                  loadUserAvatars();
-                }, 300); 
-                updateSelectedUserHighlight();
-              });
+              }, 300);
             });
           }
         }
@@ -1529,9 +1554,8 @@
             const searchInput = document.getElementById('userSearch');
             if (searchInput) {
               searchInput.value = '';
-              requestAnimationFrame(() => {
-                filterUsers();
-              });
+              // 关闭时立即恢复所有用户显示（同步执行，很快）
+              filterUsers();
             }
           }
         }
