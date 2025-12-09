@@ -1597,8 +1597,11 @@
               }, 200);
             });
             
-            // 第二步：延迟执行状态重置操作（避免阻塞显示）
-            // 使用第一个 RAF 执行状态重置，让模态框先显示
+            // 第二步：重置选择状态（不记住上次选择的用户）
+            currentSelectedUser = 'random';
+            
+            // 第三步：延迟执行状态重置操作（避免阻塞显示）
+            // 使用第一个 RAF 执行必要的状态重置，让模态框先显示
             requestAnimationFrame(() => {
               // 预加载DOM查询结果（如果还没有缓存）
               if (!cachedUserItems) {
@@ -1624,9 +1627,6 @@
                 searchInput.value = '';
               }
               
-              // 更新高亮状态
-              updateSelectedUserHighlight();
-              
               // 设置搜索输入框事件监听（使用防抖）
               if (searchInput && debouncedFilterUsers) {
                 searchInput.addEventListener('input', debouncedFilterUsers);
@@ -1638,19 +1638,26 @@
                 userGrid.addEventListener('click', handleUserGridClick);
               }
               
-              // 第三步：再延迟执行图片加载（使用第二个 RAF，让模态框先显示）
-              // 这样第二次及之后也能像第一次一样：先出现模态框，然后再加载图片
+              // 第四步：延迟执行高亮更新（使用第二个 RAF，避免阻塞显示）
+              // 不记住上次选择的用户，所以不需要立即更新高亮
               requestAnimationFrame(() => {
-                // 加载头像
-                loadUserAvatars();
+                // 更新高亮状态（此时模态框已经显示，不会阻塞）
+                updateSelectedUserHighlight();
                 
-                if (avatarLoadInterval) {
-                  clearInterval(avatarLoadInterval);
-                }
-                // 加快加载速度，每200ms加载下一批
-                avatarLoadInterval = setInterval(() => {
+                // 第五步：再延迟执行图片加载（使用第三个 RAF，让模态框先显示）
+                // 这样第二次及之后也能像第一次一样：先出现模态框，然后再加载图片
+                requestAnimationFrame(() => {
+                  // 加载头像
                   loadUserAvatars();
-                }, 200);
+                  
+                  if (avatarLoadInterval) {
+                    clearInterval(avatarLoadInterval);
+                  }
+                  // 加快加载速度，每200ms加载下一批
+                  avatarLoadInterval = setInterval(() => {
+                    loadUserAvatars();
+                  }, 200);
+                });
               });
             });
           }
