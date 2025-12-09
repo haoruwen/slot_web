@@ -1569,11 +1569,7 @@
         function openUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
-            // 第一步：立即显示模态框（opacity/visibility 切换很快，不触发重排）
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // 第二步：同步执行关键的初始化操作（因为元素已在渲染树中）
+            // 第一步：重置所有状态（确保每次打开都是干净状态）
             // 预加载DOM查询结果（如果还没有缓存）
             if (!cachedUserItems) {
               cachedUserItems = document.querySelectorAll('.user-item');
@@ -1582,11 +1578,32 @@
               cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
             }
             
+            // 移除所有用户项的 hidden 类，确保所有用户都显示
+            if (cachedUserItems && cachedUserItems.length > 0) {
+              cachedUserItems.forEach(item => {
+                item.classList.remove('hidden');
+              });
+            }
+            
+            // 重置 pointer-events（确保可以点击）
+            modal.style.pointerEvents = '';
+            
+            // 清空搜索框
+            const searchInput = document.getElementById('userSearch');
+            if (searchInput) {
+              searchInput.value = '';
+            }
+            
+            // 第二步：立即显示模态框（opacity/visibility 切换很快，不触发重排）
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // 第三步：同步执行关键的初始化操作（因为元素已在渲染树中）
+            
             // 立即更新高亮状态（同步执行，很快）
             updateSelectedUserHighlight();
             
             // 设置搜索输入框事件监听（使用防抖）
-            const searchInput = document.getElementById('userSearch');
             if (searchInput && debouncedFilterUsers) {
               searchInput.addEventListener('input', debouncedFilterUsers);
             }
@@ -1597,7 +1614,7 @@
               userGrid.addEventListener('click', handleUserGridClick);
             }
             
-            // 第三步：延迟执行非关键操作（图片加载等）
+            // 第四步：延迟执行非关键操作（图片加载等）
             // 使用单层 RAF，避免双重延迟
             requestAnimationFrame(() => {
               // 优化：初始加载更多头像（12张），快速显示
@@ -1646,13 +1663,15 @@
             
             // 监听动画结束事件，动画完成后再执行DOM操作
             // 这样可以避免DOM操作阻塞关闭动画
+            // 注意：由于 openUserModal 已经重置了状态，这里主要是为了清理
             modal.addEventListener('transitionend', function handleTransitionEnd(event) {
               // 只在 opacity 过渡结束时执行（避免多个过渡触发多次）
               if (event && event.propertyName === 'opacity') {
-                // 动画完成后再恢复用户显示，不阻塞关闭动画
+                // 动画完成后再确保恢复用户显示（双重保险）
+                // 由于搜索框已清空，这会显示所有用户
                 filterUsers();
                 
-                // 恢复 pointer-events
+                // 确保 pointer-events 已恢复（双重保险）
                 modal.style.pointerEvents = '';
                 
                 // 移除事件监听器（只执行一次）
