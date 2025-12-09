@@ -369,7 +369,6 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(5px);
         z-index: 10000;
         overflow-y: auto;
         will-change: opacity, transform;
@@ -382,21 +381,26 @@
         padding: clamp(1rem, 3vw, 2rem);
         transition: opacity 0.2s ease, visibility 0.2s ease;
         pointer-events: none;
+        /* 关闭时不应用 backdrop-filter，提升性能 */
+        backdrop-filter: none;
     }
     
     .user-modal.active {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
+        /* 只在打开时应用 backdrop-filter */
+        backdrop-filter: blur(5px);
     }
     
     .user-grid {
-        will-change: contents;
+        /* 移除 will-change，仅在需要时使用 */
+        contain: layout style;
     }
     
     .user-modal-content {
         background: rgba(139, 69, 19, 0.95);
-        backdrop-filter: blur(15px);
+        /* 移除双重 backdrop-filter，只在模态框层面应用 */
         border-radius: clamp(1.5rem, 3vw, 2rem);
         border: 3px solid rgba(255, 215, 0, 0.8);
         box-shadow: 
@@ -465,7 +469,8 @@
         justify-content: center;
         transition: all 0.3s ease;
         line-height: 1;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
+        /* 移除 filter，使用 text-shadow 替代，性能更好 */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         animation: none !important;
         aspect-ratio: auto !important;
         font-weight: 600;
@@ -486,10 +491,11 @@
         background: transparent !important;
         background-image: none !important;
         transform: translateY(-50%) scale(1.15) !important;
-        filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.6)) !important;
+        /* 移除 filter，使用 text-shadow 替代，性能更好 */
         text-shadow: 
             0 0 12px rgba(255, 215, 0, 0.8),
-            0 0 20px rgba(255, 215, 0, 0.4);
+            0 0 20px rgba(255, 215, 0, 0.4),
+            0 4px 8px rgba(255, 215, 0, 0.3);
         animation: none !important;
     }
     
@@ -507,7 +513,8 @@
         border-radius: clamp(0.75rem, 1.5vw, 1rem);
         color: #fff8dc;
         outline: none;
-        transition: all 0.3s ease;
+        /* 明确指定需要过渡的属性，避免监听所有属性 */
+        transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
         box-sizing: border-box;
     }
     
@@ -543,8 +550,14 @@
         border-radius: clamp(0.75rem, 1.5vw, 1rem);
         background: rgba(139, 69, 19, 0.3);
         border: 2px solid rgba(255, 215, 0, 0.3);
-        transition: all 0.3s ease;
+        transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
         position: relative;
+        /* 优化hover性能 */
+        will-change: transform;
+    }
+    
+    .user-item.hidden {
+        display: none;
     }
     
     .user-item:hover {
@@ -567,8 +580,9 @@
         object-fit: cover;
         border: 3px solid rgba(255, 215, 0, 0.5);
         margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
-        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-        transition: all 0.3s ease;
+        /* 使用 box-shadow 替代 filter，性能更好 */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
         opacity: 0.7;
     }
     
@@ -578,7 +592,8 @@
     
     .user-item:hover .user-item-avatar {
         border-color: rgba(255, 215, 0, 0.9);
-        filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.5));
+        /* 使用 box-shadow 替代 filter，性能更好 */
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     
     .user-item-name {
@@ -1256,12 +1271,12 @@
                           <button class="user-modal-close" onclick="closeUserModal()">×</button>
                       </div>
                       <div class="user-modal-search">
-                          <input type="text" id="userSearch" placeholder="🔍 Search user..." oninput="filterUsers()">
+                          <input type="text" id="userSearch" placeholder="🔍 Search user...">
                       </div>
                       <div class="user-modal-body">
                           <div class="user-grid" id="userGrid">
                               {% for u in users %}
-                              <div class="user-item" data-username="{{ u }}" onclick="selectUser('{{ u }}')">
+                              <div class="user-item" data-username="{{ u }}">
                                   {% if u == 'random' %}
                                   <div class="user-item-avatar" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.3)); display: flex; align-items: center; justify-content: center; font-size: clamp(1.5rem, 3vw, 2rem); border-radius: 50%; width: clamp(60px, 8vw, 100px); height: clamp(60px, 8vw, 100px); border: 3px solid rgba(255, 215, 0, 0.5); margin-bottom: clamp(0.5rem, 1vw, 0.75rem);">🎲</div>
                                   {% else %}
@@ -1465,6 +1480,47 @@
         let cachedUserItems = null; // 缓存用户项列表
         let cachedLazyAvatars = null; // 缓存待加载头像列表
         
+        // 防抖函数（用于搜索）
+        function debounceSearch(func, wait) {
+          let timeout;
+          return function executedFunction(...args) {
+            const later = () => {
+              clearTimeout(timeout);
+              func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+          };
+        }
+        
+        // 使用CSS类切换替代内联样式，性能更好
+        function filterUsers() {
+          const searchInput = document.getElementById('userSearch');
+          if (!searchInput) return;
+          
+          const searchTerm = searchInput.value.toLowerCase();
+          const userItems = cachedUserItems || document.querySelectorAll('.user-item');
+          if (!cachedUserItems) {
+            cachedUserItems = userItems;
+          }
+          
+          // 使用 requestAnimationFrame 批量更新，减少重排
+          requestAnimationFrame(() => {
+            userItems.forEach(item => {
+              const username = item.dataset.username.toLowerCase();
+              // 使用CSS类切换替代内联样式
+              if (username.includes(searchTerm)) {
+                item.classList.remove('hidden');
+              } else {
+                item.classList.add('hidden');
+              }
+            });
+          });
+        }
+        
+        // 创建防抖版本的搜索函数（提前初始化）
+        let debouncedFilterUsers = debounceSearch(filterUsers, 150);
+        
         function loadUserAvatars() {
           // 如果缓存为空或不存在，首次查询并缓存
           if (!cachedLazyAvatars || cachedLazyAvatars.length === 0) {
@@ -1483,8 +1539,12 @@
             return;
           }
           
-          // 每次加载6张图片（避免网络拥塞）
-          const batchSize = 6;
+          // 优化：初始加载更多图片（12张），后续批次加载6张
+          // 判断是否是首次加载（所有头像都未加载）
+          const totalAvatars = cachedLazyAvatars.length;
+          const loadedAvatars = totalAvatars - unloadedAvatars.length;
+          const isFirstBatch = loadedAvatars === 0;
+          const batchSize = isFirstBatch ? 12 : 6;
           const batch = unloadedAvatars.slice(0, batchSize);
           
           batch.forEach((img, index) => {
@@ -1525,17 +1585,31 @@
             // 立即更新高亮状态（同步执行，很快）
             updateSelectedUserHighlight();
             
+            // 设置搜索输入框事件监听（使用防抖）
+            const searchInput = document.getElementById('userSearch');
+            if (searchInput && debouncedFilterUsers) {
+              searchInput.addEventListener('input', debouncedFilterUsers);
+            }
+            
+            // 设置事件委托处理用户项点击
+            const userGrid = document.getElementById('userGrid');
+            if (userGrid && typeof handleUserGridClick !== 'undefined') {
+              userGrid.addEventListener('click', handleUserGridClick);
+            }
+            
             // 第三步：延迟执行非关键操作（图片加载等）
             // 使用单层 RAF，避免双重延迟
             requestAnimationFrame(() => {
+              // 优化：初始加载更多头像（12张），快速显示
               loadUserAvatars();
               
               if (avatarLoadInterval) {
                 clearInterval(avatarLoadInterval);
               }
+              // 加快加载速度，每200ms加载下一批
               avatarLoadInterval = setInterval(() => {
                 loadUserAvatars();
-              }, 300);
+              }, 200);
             });
           }
         }
@@ -1543,19 +1617,58 @@
         function closeUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
+            // 立即禁用交互，防止重复点击
+            modal.style.pointerEvents = 'none';
+            
+            // 移除 active 类，触发关闭动画
             modal.classList.remove('active');
             document.body.style.overflow = '';
             
+            // 停止加载头像的定时器
             if (avatarLoadInterval) {
               clearInterval(avatarLoadInterval);
               avatarLoadInterval = null;
             }
             
+            // 清空搜索框并移除事件监听
             const searchInput = document.getElementById('userSearch');
-            if (searchInput) {
+            if (searchInput && debouncedFilterUsers) {
               searchInput.value = '';
-              // 关闭时立即恢复所有用户显示（同步执行，很快）
-              filterUsers();
+              // 移除搜索事件监听
+              searchInput.removeEventListener('input', debouncedFilterUsers);
+            }
+            
+            // 移除用户网格的事件委托（避免内存泄漏）
+            const userGrid = document.getElementById('userGrid');
+            if (userGrid && typeof handleUserGridClick !== 'undefined') {
+              userGrid.removeEventListener('click', handleUserGridClick);
+            }
+            
+            // 监听动画结束事件，动画完成后再执行DOM操作
+            // 这样可以避免DOM操作阻塞关闭动画
+            modal.addEventListener('transitionend', function handleTransitionEnd(event) {
+              // 只在 opacity 过渡结束时执行（避免多个过渡触发多次）
+              if (event && event.propertyName === 'opacity') {
+                // 动画完成后再恢复用户显示，不阻塞关闭动画
+                filterUsers();
+                
+                // 恢复 pointer-events
+                modal.style.pointerEvents = '';
+                
+                // 移除事件监听器（只执行一次）
+                modal.removeEventListener('transitionend', handleTransitionEnd);
+              }
+            }, { once: true });
+          }
+        }
+        
+        // 使用事件委托处理用户项点击（优化性能）
+        function handleUserGridClick(event) {
+          const userItem = event.target.closest('.user-item');
+          if (userItem) {
+            const username = userItem.dataset.username;
+            if (username) {
+              selectUser(username);
             }
           }
         }
@@ -1607,23 +1720,6 @@
           });
         }
         
-        function filterUsers() {
-          const searchInput = document.getElementById('userSearch');
-          const searchTerm = searchInput.value.toLowerCase();
-          const userItems = cachedUserItems || document.querySelectorAll('.user-item');
-          if (!cachedUserItems) {
-            cachedUserItems = userItems;
-          }
-          
-          userItems.forEach(item => {
-            const username = item.dataset.username.toLowerCase();
-            if (username.includes(searchTerm)) {
-              item.style.display = 'flex';
-            } else {
-              item.style.display = 'none';
-            }
-          });
-        }
         
         function calculateInitialPositions() {
           const bgImg = document.querySelector('.bg-img');
