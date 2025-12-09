@@ -1478,6 +1478,8 @@
         let cachedUserItems = null; // 缓存用户项列表
         let cachedLazyAvatars = null; // 缓存待加载头像列表
         let cachedModalContent = null; // 缓存模态框内容元素
+        let avatarLoadTimeouts = []; // 存储所有图片加载的 setTimeout ID，用于清理
+        let isModalOpen = false; // 模态框打开状态标志，用于防止竞态条件
         
         // 防抖函数（用于搜索）
         function debounceSearch(func, wait) {
@@ -1521,13 +1523,21 @@
         let debouncedFilterUsers = debounceSearch(filterUsers, 150);
         
         function loadUserAvatars() {
-          // 如果缓存为空或不存在，首次查询并缓存
+          // 防止竞态条件：检查模态框是否仍然打开
+          if (!isModalOpen) {
+            return;
+          }
+          
+          // 验证缓存有效性：如果缓存为空或不存在，重新查询
           if (!cachedLazyAvatars || cachedLazyAvatars.length === 0) {
             cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
           }
           
           // 从缓存中过滤出未加载的头像（不重置缓存，保持缓存有效）
-          const unloadedAvatars = Array.from(cachedLazyAvatars).filter(img => !img.getAttribute('data-loaded'));
+          const unloadedAvatars = Array.from(cachedLazyAvatars).filter(img => {
+            // 验证元素是否仍在 DOM 中
+            return img.isConnected && !img.getAttribute('data-loaded');
+          });
           
           if (unloadedAvatars.length === 0) {
             // 所有头像已加载完成，清除定时器
@@ -1547,27 +1557,46 @@
           const batch = unloadedAvatars.slice(0, batchSize);
           
           batch.forEach((img, index) => {
-            setTimeout(() => {
+            const timeoutId = setTimeout(() => {
+              // 再次检查模态框状态和元素有效性
+              if (!isModalOpen || !img.isConnected) {
+                return;
+              }
+              
               const dataSrc = img.getAttribute('data-src');
               if (dataSrc && !img.getAttribute('data-loaded')) {
                 const tempImg = new Image();
                 tempImg.onload = function() {
+                  // 检查模态框是否仍然打开，防止在关闭后修改 DOM
+                  if (!isModalOpen || !img.isConnected) {
+                    return;
+                  }
                   img.src = dataSrc;
                   img.classList.add('loaded');
                   img.setAttribute('data-loaded', 'true');
                 };
                 tempImg.onerror = function() {
+                  // 检查模态框是否仍然打开
+                  if (!isModalOpen || !img.isConnected) {
+                    return;
+                  }
                   img.setAttribute('data-loaded', 'true');
                 };
                 tempImg.src = dataSrc;
               }
-            }, index * 100); 
+            }, index * 100);
+            
+            // 存储 timeout ID，用于后续清理
+            avatarLoadTimeouts.push(timeoutId);
           });
         }
         
         function openUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
+            // 设置模态框打开状态标志
+            isModalOpen = true;
+            
             // ========== 根本性优化：只切换样式，不修改 DOM ==========
             // 所有 DOM 操作已经在 closeUserModal() 中完成，这里只需要切换样式即可立即显示
             
@@ -1577,8 +1606,8 @@
             modal.style.cssText = 'transition: none; opacity: 1; visibility: visible; will-change: opacity; pointer-events: auto;';
             document.body.style.overflow = 'hidden';
             
-            // 使用缓存的 modalContent（避免 querySelector 查询，减少重排）
-            if (!cachedModalContent) {
+            // 验证并更新缓存的 modalContent
+            if (!cachedModalContent || !cachedModalContent.isConnected) {
               cachedModalContent = modal.querySelector('.user-modal-content');
             }
             if (cachedModalContent) {
@@ -1588,44 +1617,66 @@
             
             // 下一帧恢复 transition（用于后续可能的动画）
             requestAnimationFrame(() => {
+              // 防止竞态条件：检查模态框是否仍然打开
+              if (!isModalOpen || !modal.isConnected) {
+                return;
+              }
+              
               modal.style.transition = '';
-              if (cachedModalContent) {
+              if (cachedModalContent && cachedModalContent.isConnected) {
                 cachedModalContent.style.transition = '';
               }
               
               // 动画完成后移除 will-change（优化性能）
-              setTimeout(() => {
+              const timeoutId = setTimeout(() => {
+                // 再次检查模态框状态
+                if (!isModalOpen || !modal.isConnected) {
+                  return;
+                }
                 modal.classList.add('animation-complete');
                 modal.style.willChange = 'auto';
               }, 200);
+              
+              // 存储 timeout ID（虽然这个通常不需要清理，但为了完整性）
+              avatarLoadTimeouts.push(timeoutId);
             });
             
             // 第二步：延迟执行非关键操作（不修改 DOM，只设置事件监听）
             // 使用第一个 RAF 设置事件监听，不阻塞显示
             requestAnimationFrame(() => {
-              // 预加载DOM查询结果（如果还没有缓存，用于图片加载和后续操作）
-              if (!cachedUserItems) {
+              // 防止竞态条件：检查模态框是否仍然打开
+              if (!isModalOpen || !modal.isConnected) {
+                return;
+              }
+              
+              // 验证并更新缓存（如果缓存失效）
+              if (!cachedUserItems || cachedUserItems.length === 0) {
                 cachedUserItems = document.querySelectorAll('.user-item');
               }
-              if (!cachedLazyAvatars) {
+              if (!cachedLazyAvatars || cachedLazyAvatars.length === 0) {
                 cachedLazyAvatars = document.querySelectorAll('.lazy-avatar');
               }
               
               // 设置搜索输入框事件监听（使用防抖）
               const searchInput = document.getElementById('userSearch');
-              if (searchInput && debouncedFilterUsers) {
+              if (searchInput && debouncedFilterUsers && searchInput.isConnected) {
                 searchInput.addEventListener('input', debouncedFilterUsers);
               }
               
               // 设置事件委托处理用户项点击
               const userGrid = document.getElementById('userGrid');
-              if (userGrid && typeof handleUserGridClick !== 'undefined') {
+              if (userGrid && typeof handleUserGridClick !== 'undefined' && userGrid.isConnected) {
                 userGrid.addEventListener('click', handleUserGridClick);
               }
               
               // 第三步：再延迟执行图片加载（使用第二个 RAF，让模态框先显示）
               // 这样第二次及之后也能像第一次一样：先出现模态框，然后再加载图片
               requestAnimationFrame(() => {
+                // 防止竞态条件：检查模态框是否仍然打开
+                if (!isModalOpen || !modal.isConnected) {
+                  return;
+                }
+                
                 // 加载头像
                 loadUserAvatars();
                 
@@ -1644,20 +1695,23 @@
         function closeUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
+            // 立即设置模态框关闭状态标志，防止竞态条件
+            isModalOpen = false;
+            
             // 立即禁用交互，防止重复点击
             modal.style.pointerEvents = 'none';
             
             // 移除 animation-complete 类，准备下次打开
             modal.classList.remove('animation-complete');
             
-            // 使用缓存的 modalContent（避免 querySelector 查询）
-            if (!cachedModalContent) {
+            // 验证并更新缓存的 modalContent
+            if (!cachedModalContent || !cachedModalContent.isConnected) {
               cachedModalContent = modal.querySelector('.user-modal-content');
             }
             
             // 使用 cssText 一次性设置所有样式，立即关闭（无动画）
             modal.style.cssText = 'transition: none; opacity: 0; visibility: hidden; pointer-events: none; will-change: opacity;';
-            if (cachedModalContent) {
+            if (cachedModalContent && cachedModalContent.isConnected) {
               cachedModalContent.style.cssText = 'transition: none; opacity: 0;';
             }
             document.body.style.overflow = '';
@@ -1665,15 +1719,11 @@
             // 移除 active 类（如果存在）
             modal.classList.remove('active');
             
-            // 下一帧恢复 transition（为下次打开做准备）
-            // 预先设置 will-change，为下次打开优化性能
-            requestAnimationFrame(() => {
-              modal.style.transition = '';
-              if (cachedModalContent) {
-                cachedModalContent.style.transition = '';
-              }
-              // will-change 保持在 'opacity'，为下次打开做准备
+            // 清理所有未完成的 setTimeout（防止内存泄漏）
+            avatarLoadTimeouts.forEach(timeoutId => {
+              clearTimeout(timeoutId);
             });
+            avatarLoadTimeouts = [];
             
             // 停止加载头像的定时器
             if (avatarLoadInterval) {
@@ -1694,6 +1744,21 @@
             if (userGrid && typeof handleUserGridClick !== 'undefined') {
               userGrid.removeEventListener('click', handleUserGridClick);
             }
+            
+            // 下一帧恢复 transition（为下次打开做准备）
+            // 预先设置 will-change，为下次打开优化性能
+            requestAnimationFrame(() => {
+              // 检查模态框是否仍然关闭（防止竞态条件）
+              if (isModalOpen || !modal.isConnected) {
+                return;
+              }
+              
+              modal.style.transition = '';
+              if (cachedModalContent && cachedModalContent.isConnected) {
+                cachedModalContent.style.transition = '';
+              }
+              // will-change 保持在 'opacity'，为下次打开做准备
+            });
             
             // ========== 根本性优化：在关闭时准备好所有状态，打开时只切换样式 ==========
             // 立即执行所有 DOM 操作（同步，不等待 RAF），为下次打开做好准备
@@ -1725,6 +1790,11 @@
             // 这样第二次及之后也能像第一次一样：先显示模态框，然后再慢慢加载图片
             if (cachedLazyAvatars && cachedLazyAvatars.length > 0) {
               cachedLazyAvatars.forEach(img => {
+                // 验证元素是否仍在 DOM 中
+                if (!img.isConnected) {
+                  return;
+                }
+                
                 // 重置 data-loaded 属性，让图片可以重新加载
                 img.removeAttribute('data-loaded');
                 // 重置 src 为默认图片（从 HTML 原始属性获取），这样可以看到逐步加载的效果
@@ -1735,8 +1805,15 @@
                   // 如果原始 src 已经被修改，使用 data-src 的目录 + default.png
                   const dataSrc = img.getAttribute('data-src');
                   if (dataSrc) {
-                    const defaultImgPath = dataSrc.substring(0, dataSrc.lastIndexOf('/')) + '/default.png';
-                    img.src = defaultImgPath;
+                    const lastSlashIndex = dataSrc.lastIndexOf('/');
+                    if (lastSlashIndex !== -1) {
+                      // 错误处理：确保 lastIndexOf 返回有效索引
+                      const defaultImgPath = dataSrc.substring(0, lastSlashIndex) + '/default.png';
+                      img.src = defaultImgPath;
+                    } else {
+                      // 如果路径格式不符合预期，使用固定的默认路径
+                      img.src = '/static/avatars/default.png';
+                    }
                   } else {
                     // 如果没有 data-src，使用固定的默认路径
                     img.src = '/static/avatars/default.png';
@@ -1997,7 +2074,8 @@
           document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
               const modal = document.getElementById('userModal');
-              if (modal && modal.classList.contains('active')) {
+              // 修复：使用样式检查而不是类检查（因为我们已经移除了 classList.add('active')）
+              if (modal && isModalOpen && window.getComputedStyle(modal).opacity === '1' && window.getComputedStyle(modal).visibility === 'visible') {
                 closeUserModal();
               }
             }
