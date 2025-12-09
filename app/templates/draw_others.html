@@ -1576,9 +1576,9 @@
               modalContent.style.transition = 'none';
             }
             
-            // 重置关闭时设置的样式
-            modal.style.opacity = '';
-            modal.style.visibility = '';
+            // 直接设置内联样式（而不是清空），立即生效，无需等待样式重新计算
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
             modal.style.willChange = 'opacity';
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
