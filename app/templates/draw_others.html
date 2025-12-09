@@ -550,6 +550,11 @@
         margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
         filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
         transition: all 0.3s ease;
+        opacity: 0.7;
+    }
+    
+    .user-item-avatar.loaded {
+        opacity: 1;
     }
     
     .user-item:hover .user-item-avatar {
@@ -1241,9 +1246,11 @@
                                   {% if u == 'random' %}
                                   <div class="user-item-avatar" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.3)); display: flex; align-items: center; justify-content: center; font-size: clamp(1.5rem, 3vw, 2rem); border-radius: 50%; width: clamp(60px, 8vw, 100px); height: clamp(60px, 8vw, 100px); border: 3px solid rgba(255, 215, 0, 0.5); margin-bottom: clamp(0.5rem, 1vw, 0.75rem);">🎲</div>
                                   {% else %}
-                                  <img class="user-item-avatar" 
-                                       src="{{ url_for('static', filename='avatars/' + u + '.png') }}" 
+                                  <img class="user-item-avatar lazy-avatar" 
+                                       data-src="{{ url_for('static', filename='avatars/' + u + '.png') }}" 
+                                       src="{{ url_for('static', filename='avatars/default.png') }}" 
                                        alt="{{ u }}"
+                                       loading="lazy"
                                        onerror="this.src='{{ url_for('static', filename='avatars/default.png') }}'">
                                   {% endif %}
                                   <div class="user-item-name">{{ u }}</div>
@@ -1452,12 +1459,64 @@
           }
         }
         
+        // 延迟加载头像图片（分批加载）
+        let avatarLoadInterval = null;
+        
+        function loadUserAvatars() {
+          const lazyAvatars = document.querySelectorAll('.lazy-avatar:not([data-loaded])');
+          if (lazyAvatars.length === 0) {
+            // 所有头像已加载完成，清除定时器
+            if (avatarLoadInterval) {
+              clearInterval(avatarLoadInterval);
+              avatarLoadInterval = null;
+            }
+            return;
+          }
+          
+          // 每次加载6张图片（避免网络拥塞）
+          const batchSize = 6;
+          const batch = Array.from(lazyAvatars).slice(0, batchSize);
+          
+          batch.forEach((img, index) => {
+            // 错开加载时间，避免同时发起请求
+            setTimeout(() => {
+              const dataSrc = img.getAttribute('data-src');
+              if (dataSrc && !img.getAttribute('data-loaded')) {
+                const tempImg = new Image();
+                tempImg.onload = function() {
+                  img.src = dataSrc;
+                  img.classList.add('loaded');
+                  img.setAttribute('data-loaded', 'true');
+                };
+                tempImg.onerror = function() {
+                  // 加载失败时保持默认头像，标记为已加载
+                  img.setAttribute('data-loaded', 'true');
+                };
+                tempImg.src = dataSrc;
+              }
+            }, index * 100); // 每张图片间隔100ms加载
+          });
+        }
+        
         // 打开用户选择模态框
         function openUserModal() {
           const modal = document.getElementById('userModal');
           if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // 开始加载头像图片（延迟加载）
+            // 先立即加载第一批
+            loadUserAvatars();
+            
+            // 继续加载剩余的头像（每300ms检查一次，加载下一批）
+            if (avatarLoadInterval) {
+              clearInterval(avatarLoadInterval);
+            }
+            avatarLoadInterval = setInterval(() => {
+              loadUserAvatars();
+            }, 300); // 每300ms加载下一批（6张图片）
+            
             // 高亮当前选中的用户
             updateSelectedUserHighlight();
           }
@@ -1469,6 +1528,13 @@
           if (modal) {
             modal.classList.remove('active');
             document.body.style.overflow = '';
+            
+            // 停止加载头像的定时器
+            if (avatarLoadInterval) {
+              clearInterval(avatarLoadInterval);
+              avatarLoadInterval = null;
+            }
+            
             // 清空搜索框
             const searchInput = document.getElementById('userSearch');
             if (searchInput) {
