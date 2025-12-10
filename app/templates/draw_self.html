@@ -188,18 +188,19 @@
     
     .main-avatar,
     .bg-container .element.bell-button {
-        width: 32%;
+        width: 26%;
         aspect-ratio: 1;
-        max-width: 32vw;
-        max-height: 32vw;
-        min-width: 280px;
-        min-height: 280px;
+        max-width: 26vw;
+        max-height: 26vw;
+        min-width: 220px;
+        min-height: 220px;
         object-fit: contain;
         display: block;
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
         transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
         cursor: default;
         /* left 和 top 由 JavaScript 动态计算 */
+        transform: rotate(1deg);
         position: absolute;
         pointer-events: auto;
         z-index: 998;
@@ -669,19 +670,19 @@
     .tier-image-1,
     .bg-container .element.sock1 {
         /* left 和 top 由 JavaScript 动态计算 */
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5);
+        transform: translate(-50%, -50%) scale(1.5);
     }
     
     .tier-image-2,
     .bg-container .element.sock2 {
         /* left 和 top 由 JavaScript 动态计算 */
-        transform: translate(-50%, -50%) rotate(-15deg) translateY(-35px) scale(1.5);
+        transform: translate(-50%, -50%) scale(1.5);
     }
     
     .tier-image-3,
     .bg-container .element.sock3 {
         /* left 和 top 由 JavaScript 动态计算 */
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5);
+        transform: translate(-50%, -50%) scale(1.5);
     }
     
     .tier-image::before,
@@ -703,7 +704,7 @@
     .bg-container .element.sock1:hover {
         opacity: 1;
         visibility: visible;
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px);
+        transform: translate(-50%, -50%) scale(1.5) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
@@ -711,7 +712,7 @@
     .bg-container .element.sock2:hover {
         opacity: 1;
         visibility: visible;
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-40px);
+        transform: translate(-50%, -50%) scale(1.5) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
@@ -719,7 +720,7 @@
     .bg-container .element.sock3:hover {
         opacity: 1;
         visibility: visible;
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px);
+        transform: translate(-50%, -50%) scale(1.5) translateY(-5px);
         filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
@@ -735,7 +736,7 @@
     .bg-container .element.sock1.selected {
         opacity: 1 !important;
         visibility: visible !important;
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px) !important;
+        transform: translate(-50%, -50%) scale(1.5) translateY(-5px) !important;
         filter: 
             drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
             drop-shadow(0 0 25px rgba(255, 215, 0, 0.5))
@@ -751,7 +752,7 @@
     .bg-container .element.sock2.selected {
         opacity: 1 !important;
         visibility: visible !important;
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-40px) !important;
+        transform: translate(-50%, -50%) scale(1.5) translateY(-5px) !important;
         filter: 
             drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
             drop-shadow(0 0 25px rgba(255, 215, 0, 0.5))
@@ -767,7 +768,7 @@
     .bg-container .element.sock3.selected {
         opacity: 1 !important;
         visibility: visible !important;
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1.5) translateY(-5px) !important;
+        transform: translate(-50%, -50%) scale(1.5) translateY(-5px) !important;
         filter: 
             drop-shadow(0 0 15px rgba(255, 215, 0, 0.9))
             drop-shadow(0 0 25px rgba(255, 215, 0, 0.5))
@@ -1214,8 +1215,10 @@
       <script>
         // 背景图配置
         const bgConfig = {
-          originalWidth: 1920,  // 背景图原始宽度，需要根据实际图片调整
-          originalHeight: 1080, // 背景图原始高度，需要根据实际图片调整
+          //originalWidth: 1920,  // 背景图原始宽度，需要根据实际图片调整
+          //originalHeight: 1080, // 背景图原始高度，需要根据实际图片调整
+          originalWidth: 3840, 
+          originalHeight: 2160, 
           imageUrl: "{{ url_for('static', filename='background/board.png') }}"
         };
         
@@ -1225,7 +1228,7 @@
         const elementPositions = [
           {
             selector: '.main-avatar, .bg-container .element.bell-button',
-            targetX: 1000,  // ⬅️ 修改这个值调整头像的X位置
+            targetX: 950,  // ⬅️ 修改这个值调整头像的X位置
             targetY: 1160,  // ⬅️ 修改这个值调整头像的Y位置
             anchorX: 0.5,  // 0.5 = 中心对齐
             anchorY: 0.5
@@ -1233,28 +1236,28 @@
           {
             selector: '.element.points-display',
             targetX: 2300,  // ⬅️ 修改这个值调整分数显示的X位置
-            targetY: 400,  // ⬅️ 修改这个值调整分数显示的Y位置（在头像下方）
+            targetY: 430,  // ⬅️ 修改这个值调整分数显示的Y位置（在头像下方）
             anchorX: 0.5,
             anchorY: 0.5
           },
           {
             selector: '.element.sock1, .tier-image-1',
-            targetX: 2350, // ⬅️ 修改这个值调整第一个袜子的X位置
-            targetY: 1280,  // ⬅️ 修改这个值调整第一个袜子的Y位置
+            targetX: 2330, // ⬅️ 修改这个值调整第一个袜子的X位置
+            targetY: 1380,  // ⬅️ 修改这个值调整第一个袜子的Y位置
             anchorX: 0.5,
             anchorY: 0.5
           },
           {
             selector: '.element.sock2, .tier-image-2',
-            targetX: 2953, // ⬅️ 修改这个值调整第二个袜子的X位置
-            targetY: 1245,  // ⬅️ 修改这个值调整第二个袜子的Y位置
+            targetX: 2885, // ⬅️ 修改这个值调整第二个袜子的X位置
+            targetY: 1270,  // ⬅️ 修改这个值调整第二个袜子的Y位置
             anchorX: 0.5,
             anchorY: 0.5
           },
           {
             selector: '.element.sock3, .tier-image-3',
-            targetX: 3560, // ⬅️ 修改这个值调整第三个袜子的X位置
-            targetY: 1300,  // ⬅️ 修改这个值调整第三个袜子的Y位置
+            targetX: 3495, // ⬅️ 修改这个值调整第三个袜子的X位置
+            targetY: 1410,  // ⬅️ 修改这个值调整第三个袜子的Y位置
             anchorX: 0.5,
             anchorY: 0.5
           }
