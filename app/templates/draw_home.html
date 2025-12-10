@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Main Page</title>
   <!-- 预加载关键图片 -->
-  <link rel="preload" as="image" href="{{ url_for('static', filename='background/board.png') }}">
-  <link rel="preload" as="image" href="{{ url_for('static', filename='draw_button.png') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='background/board_no_text.png') }}">
   <style>
     * {
         box-sizing: border-box;
@@ -21,7 +20,7 @@
         margin: 0; 
         padding: 0; 
         background-color: #fafafa;
-        background-image: url('../static/background/board.png');
+        background-image: url('../static/background/board_no_text.png');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
