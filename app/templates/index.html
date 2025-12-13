@@ -165,7 +165,19 @@
     <main>
         <form method="POST" action="{{ url_for('main.admin_home') }}" id="adminForm">
             <h2>Manage User Points</h2>
-            
+            <div style="
+                text-align:center;
+                margin-bottom:20px;
+                padding:10px;
+                background:#eef3f7;
+                border-radius:6px;
+                color:#2c3e50;
+                font-size:1.2em;
+                line-height:1.6;
+            ">
+                💡 Tip: Click on a user name to view the gifts that user has received.<br>
+                Use the <strong>Records</strong> button in the top right to view all records.
+            </div>
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="🔍 Search user by name..." autocomplete="off">
             </div>
@@ -182,7 +194,12 @@
                 <tbody id="userTableBody">
                     {% for user in users %}
                     <tr data-name="{{ user.name|lower }}" data-user-id="{{ user.id }}">
-                        <td>{{ user.name }}</td>
+                        <td>
+                            <a href="{{ url_for('main.receive_records') }}?user_name={{ user.name }}"
+                            style="color:#2c3e50; text-decoration:underline; font-weight:600;">
+                                {{ user.name }}
+                            </a>
+                        </td>
                         <td>{{ user.points }}</td>
                         <td>{{ user.update_time }}</td>
                         <td>

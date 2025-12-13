@@ -26,3 +26,12 @@ class Administrator:
             record = "%s drew a %s-tier %s for %s at %s" % (row['from_name'],row['tier'],row['prize_name'],row['to_name'],time_to_string(row['create_time']))
             records.append(record)
         return records
+    
+    def get_user_records(self, user_name):
+        sql = "SELECT r.id, r.from_id,fu.name AS from_name,r.to_id,tu.name AS to_name,r.prize_id,p.name AS prize_name,r.tier,r.create_time FROM tbl_records r JOIN tbl_users fu ON r.from_id = fu.id JOIN tbl_users tu ON r.to_id = tu.id JOIN tbl_prize p ON r.prize_id = p.id where tu.name = %s ORDER BY r.create_time DESC"
+        rows = self.db_proxy.run_sql_select(sql, params=(user_name,))
+        records = []
+        for row in rows:
+            record = "%s received a %s-tier %s from %s at %s" % (row['to_name'],row['tier'],row['prize_name'],row['from_name'],time_to_string(row['create_time']))
+            records.append(record)
+        return records
