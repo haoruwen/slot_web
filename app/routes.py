@@ -135,15 +135,6 @@ def records():
     if request.method == 'GET':
         all_records = admin.get_all_records()
         return render_template('records.html', records=all_records)
-    
-@main_bp.route('/receive_records', methods=['GET'])
-@login_required
-def receive_records():
-    admin = Administrator()
-    if request.method == 'GET':
-        user_name = request.args.get("user_name")
-        all_records = admin.get_user_records(user_name)
-        return render_template('receive_records.html', records=all_records)
 
 @main_bp.route('/talent_records', methods=['GET'])
 @login_required
