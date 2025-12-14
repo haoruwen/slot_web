@@ -247,6 +247,26 @@
             min-width: 100px;
         }
     }
+    
+    /* 响应式设计 - 大屏幕设备 */
+    @media (min-width: 1200px) {
+        .my-gifts-btn, .logout-btn {
+            max-width: 8vw;
+            max-height: 8vw;
+            font-size: clamp(1rem, 2.2vw, 1.25rem);
+            padding: clamp(0.625rem, 1.8vw, 0.75rem) clamp(0.875rem, 2.2vw, 1.25rem);
+        }
+    }
+    
+    /* 响应式设计 - 超大屏幕设备 */
+    @media (min-width: 2560px) {
+        .my-gifts-btn, .logout-btn {
+            max-width: 10vw;
+            max-height: 10vw;
+            font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+            padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
+        }
+    }
   </style>
 </head>
 <body>
