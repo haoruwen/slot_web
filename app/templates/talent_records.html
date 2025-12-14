@@ -37,35 +37,6 @@
             left: 0;
         }
         
-        /* 圣诞雪花动画 */
-        .snowflake {
-            position: fixed;
-            color: white;
-            font-size: 1.5em;
-            font-family: Arial;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-            z-index: 1;
-            animation: snowfall linear infinite;
-            pointer-events: none;
-        }
-        
-        @keyframes snowfall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
         * {
             font-size: inherit;
         }
@@ -251,9 +222,6 @@
         <img src="{{ url_for('static', filename='background/board_no_text.png') }}" alt="Background" class="bg-img">
     </div>
     
-    <!-- 圣诞雪花 -->
-    <div id="snowflakes"></div>
-    
     <!-- Home and Logout Buttons -->
     {% if session.username %}
         <a href="{{ url_for('main.draw') }}" class="home-btn">Home</a>
@@ -261,12 +229,12 @@
     {% endif %}
 
     <main>
-        <h2>Latest Records (Pacific Time)</h2>
+        <h2>Latest Gifts (Pacific Time)</h2>
         <table id="recordsTable">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Record</th>
+                    <th>Your Draw Records</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -285,30 +253,6 @@
         </script>
 
         <script>
-            // 圣诞雪花动画
-            function createSnowflake() {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.innerHTML = '❄';
-                snowflake.style.left = Math.random() * 100 + '%';
-                snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                snowflake.style.opacity = Math.random();
-                snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-                document.getElementById('snowflakes').appendChild(snowflake);
-                
-                setTimeout(() => {
-                    snowflake.remove();
-                }, 5000);
-            }
-            
-            // 持续创建雪花
-            setInterval(createSnowflake, 300);
-            
-            // 初始创建一些雪花
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => createSnowflake(), i * 150);
-            }
-            
             const recordList = JSON.parse(document.getElementById('records-json').textContent || '[]');
             const pageSize = 20;
             let currentPage = 1;
@@ -323,11 +267,15 @@
                 for (let i = start; i < end; i++) {
                     let words = recordList[i].split(/\s+/);
 
-                    // indices: 第1 5 7个单词 → index: 0, 4, 6
-                    const redIndices = [0, 4, 6];
+                    // indices: index 4 和 6 标红
+                    const redIndices = [5, 7];
 
                     for (let idx of redIndices) {
                         if (idx < words.length) {
+                            // 如果 index 6 的单词是 "yourself"，不变成红色和加粗
+                            if (idx === 7 && words[idx].toLowerCase() === 'yourself') {
+                                continue;
+                            }
                             words[idx] = `<span style="color:red; font-weight:bold; font-size: 1.2em;">${words[idx]}</span>`;
                         }
                     }
