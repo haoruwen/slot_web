@@ -23,6 +23,10 @@ class Administrator:
         rows = self.db_proxy.run_sql_select(sql)
         records = []
         for row in rows:
+            if row['tier'] == "first":
+                row['tier'] = "third"
+            elif row['tier'] == "third":
+                row['tier'] = "first"
             record = "%s drew a %s-tier %s for %s at %s" % (row['from_name'],row['tier'],row['prize_name'],row['to_name'],time_to_string(row['create_time']))
             records.append(record)
         return records
@@ -40,6 +44,10 @@ class Administrator:
         records = []
         for row in rows:
             time_str = self._format_time(row['create_time'])
+            if row['tier'] == "first":
+                row['tier'] = "third"
+            elif row['tier'] == "third":
+                row['tier'] = "first"
             if row['to_name'] == row['from_name']:
                 record = "✨ You drew a %s-tier %s for yourself at %s" % (row['tier'], row['prize_name'], time_str)
                 records.append(record)
