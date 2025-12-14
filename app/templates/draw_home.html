@@ -3,33 +3,67 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Main Page</title>
-  <!-- 预加载关键图片 -->
-  <link rel="preload" as="image" href="{{ url_for('static', filename='background/board_no_text.png') }}">
+  <title>Home Page</title>
   <style>
-    * {
-        box-sizing: border-box;
-    }
-    
     html {
-        font-size: 16px;
+        overflow: hidden;
+        height: 100%;
     }
     
     body { 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
         margin: 0; 
         padding: 0; 
-        background-color: #fafafa;
-        background-image: url('../static/background/board_no_text.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        min-height: 100vh;
-        font-size: clamp(0.875rem, 2vw, 1rem);
+        background-color: #fafafa; 
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
     }
     
-    .talent-records-btn, .logout-btn {
+    .bg-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+    
+    .bg-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    
+    .bg-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 30%, rgba(220, 53, 69, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(40, 167, 69, 0.04) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: 1;
+        animation: shimmer 10s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+        0%, 100% {
+            opacity: 0.4;
+        }
+        50% {
+            opacity: 0.8;
+        }
+    }
+    
+    .my-gifts-btn, .logout-btn {
         position: fixed;
         top: clamp(0.75rem, 2vw, 1rem);
         z-index: 1000;
@@ -57,7 +91,7 @@
         white-space: nowrap;
     }
     
-    .talent-records-btn {
+    .my-gifts-btn {
         right: clamp(7rem, 15vw, 10rem);
         width: auto;
         min-width: clamp(80px, 12vw, 120px);
@@ -65,16 +99,13 @@
     }
     
     .logout-btn {
+        right: clamp(1rem, 4vw, 1.25rem);
         width: 15%;
         max-width: 6vw;
         min-width: 40px;
     }
     
-    .logout-btn {
-        right: clamp(1rem, 4vw, 1.25rem);
-    }
-    
-    .talent-records-btn:hover, .logout-btn:hover {
+    .my-gifts-btn:hover, .logout-btn:hover {
         background: linear-gradient(135deg, rgba(220, 53, 69, 0.95), rgba(200, 35, 51, 0.95));
         border-color: rgba(255, 215, 0, 0.8);
         transform: translateY(-2px);
@@ -93,9 +124,15 @@
         min-height: 100vh;
         position: relative;
         padding-top: clamp(8vh, 12vw, 15vh);
+        z-index: 100;
+        pointer-events: none;
     }
     
-    h1 {
+    main * {
+        pointer-events: auto;
+    }
+    
+    .welcome-title {
         margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
         font-size: clamp(1.75rem, 5vw, 3rem);
         font-weight: 700;
@@ -111,9 +148,10 @@
         padding: clamp(0.5rem, 1.5vw, 1rem);
         width: 100%;
         max-width: min(90vw, 1200px);
+        pointer-events: none;
     }
     
-    h1::before {
+    .welcome-title::before {
         content: '✨';
         position: absolute;
         left: clamp(-5%, -2rem, -8%);
@@ -123,7 +161,7 @@
         pointer-events: none;
     }
     
-    h1::after {
+    .welcome-title::after {
         content: '✨';
         position: absolute;
         right: clamp(-5%, -2rem, -8%);
@@ -142,15 +180,6 @@
         }
     }
     
-    @keyframes swing {
-        0%, 100% {
-            transform: translateY(-50%) rotate(-10deg);
-        }
-        50% {
-            transform: translateY(-50%) rotate(10deg);
-        }
-    }
-    
     @keyframes twinkle {
         0%, 100% {
             opacity: 1;
@@ -162,366 +191,363 @@
         }
     }
     
-    .button-container {
-        display: flex;
-        flex-direction: column;
-        gap: clamp(1rem, 3vw, 1.5rem);
-        width: 90%;
-        max-width: clamp(300px, 80vw, 550px);
-        margin-top: clamp(1.5rem, 4vw, 2.5rem);
-        position: relative;
-    }
-    
-    .button-container a {
-        text-decoration: none;
-        width: 100%;
-    }
-    
-    .button-container button {
-        width: 100%;
-        padding: clamp(0.875rem, 2.5vw, 1.25rem) clamp(1.5rem, 4vw, 2rem);
-        font-size: clamp(0.95rem, 2.5vw, 1.25rem);
-        color: white;
-        border: clamp(2px, 0.3vw, 4px) solid;
-        border-radius: clamp(0.75rem, 2vw, 1.25rem);
+    .button-image-1,
+    .button-image-2,
+    .bg-container .element.button-image-1,
+    .bg-container .element.button-image-2 {
+        width: 20%;
+        max-width: 20vw;
+        height: auto;
+        min-width: 120px;
+        object-fit: contain;
         cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 700;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        position: relative;
-        overflow: hidden;
-        text-transform: uppercase;
-        letter-spacing: clamp(0.05rem, 0.2vw, 0.12rem);
-        min-height: clamp(48px, 8vw, 65px);
-    }
-    
-    .button-container a:first-child button {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 50%, #bd2130 100%);
-        border-color: #ffc107;
-        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5), 0 0 30px rgba(255, 193, 7, 0.3);
-    }
-    
-    .button-container a:first-child button {
-        padding-left: clamp(2.5rem, 6vw, 3.5rem);
-    }
-    
-    .button-container a:first-child button::before {
-        content: '❄️';
+        transition: 
+            transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.3s ease,
+            visibility 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+        filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4));
+        will-change: transform, filter;
+        transform-origin: center center;
         position: absolute;
-        left: clamp(0.75rem, 2.5vw, 1.5rem);
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1rem, 2.5vw, 1.5rem);
-        animation: twinkle 1.5s ease-in-out infinite;
-        pointer-events: none;
+        pointer-events: auto;
+        z-index: 998;
+        display: block;
+        text-decoration: none;
     }
     
-    .button-container a:first-child button:hover {
-        background: linear-gradient(135deg, #ff4757 0%, #dc3545 50%, #c82333 100%);
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.6), 0 0 40px rgba(255, 193, 7, 0.4);
-        border-color: #ffc107;
-    }
-    
-    .button-container a:nth-child(2) button {
-        background: linear-gradient(135deg, #28a745 0%, #218838 50%, #1e7e34 100%);
-        border-color: #ffc107;
-        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5), 0 0 30px rgba(255, 193, 7, 0.3);
-    }
-    
-    .button-container a:nth-child(2) button {
-        padding-left: clamp(2.5rem, 6vw, 3.5rem);
-    }
-    
-    .button-container a:nth-child(2) button::before {
-        content: '⭐';
-        position: absolute;
-        left: clamp(0.75rem, 2.5vw, 1.5rem);
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1rem, 2.5vw, 1.5rem);
-        animation: twinkle 1.5s ease-in-out infinite 0.75s;
-        pointer-events: none;
-    }
-    
-    .button-container a:nth-child(2) button:hover {
-        background: linear-gradient(135deg, #34ce57 0%, #28a745 50%, #218838 100%);
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.6), 0 0 40px rgba(255, 193, 7, 0.4);
-        border-color: #ffc107;
-    }
-    
-    .button-container a:last-child button {
-        background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 50%, #4a2c8a 100%);
-        border-color: #ffc107;
-        box-shadow: 0 6px 20px rgba(111, 66, 193, 0.5), 0 0 30px rgba(255, 193, 7, 0.3);
-    }
-    
-    .button-container a:last-child button {
-        padding-left: clamp(2.5rem, 6vw, 3.5rem);
-    }
-    
-    .button-container a:last-child button::before {
-        content: '📋';
-        position: absolute;
-        left: clamp(0.75rem, 2.5vw, 1.5rem);
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: clamp(1rem, 2.5vw, 1.5rem);
-        animation: twinkle 1.5s ease-in-out infinite 1.5s;
-        pointer-events: none;
-    }
-    
-    .button-container a:last-child button:hover {
-        background: linear-gradient(135deg, #7d4cdb 0%, #6f42c1 50%, #5a32a3 100%);
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6), 0 0 40px rgba(255, 193, 7, 0.4);
-        border-color: #ffc107;
-    }
-    
-    .button-container button:active {
-        transform: translateY(-2px) scale(0.98);
-    }
-    
-    form {
-        width: 90%;
-        max-width: clamp(400px, 80vw, 800px);
-        background: rgba(255, 255, 255, 0.95);
-        padding: clamp(1.25rem, 4vw, 2rem);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-        border-radius: clamp(0.75rem, 2vw, 1rem);
-        backdrop-filter: blur(10px);
-    }
-    
-    select, button {
+    .button-image-1 img,
+    .button-image-2 img,
+    .bg-container .element.button-image-1 img,
+    .bg-container .element.button-image-2 img {
         width: 100%;
-        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.25rem);
-        margin-bottom: clamp(0.75rem, 2vw, 1rem);
-        font-size: clamp(0.875rem, 2vw, 1rem);
+        height: auto;
+        display: block;
+        object-fit: contain;
     }
     
-    .result { 
-        margin-top: clamp(1rem, 3vw, 1.5rem); 
-        background: rgba(240, 255, 240, 0.95); 
-        padding: clamp(1rem, 3vw, 1.25rem); 
-        border: 2px solid #4caf50; 
-        border-radius: clamp(0.5rem, 1.5vw, 0.75rem); 
-        width: 90%;
-        max-width: clamp(400px, 80vw, 800px);
-        font-size: clamp(0.875rem, 2vw, 1rem);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    .button-image-1.positioned,
+    .button-image-2.positioned,
+    .bg-container .element.button-image-1.positioned,
+    .bg-container .element.button-image-2.positioned {
+        opacity: 0.8;
+        visibility: visible;
     }
     
-    .error { 
-        margin-top: clamp(1rem, 3vw, 1.5rem); 
-        background: rgba(255, 240, 240, 0.95); 
-        padding: clamp(1rem, 3vw, 1.25rem); 
-        border: 2px solid #f44336; 
-        border-radius: clamp(0.5rem, 1.5vw, 0.75rem); 
-        color: #c62828; 
-        width: 90%;
-        max-width: clamp(400px, 80vw, 800px);
-        font-size: clamp(0.875rem, 2vw, 1rem);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    .button-image-1,
+    .bg-container .element.button-image-1 {
+        /* left 和 top 由 JavaScript 动态计算 */
+        transform: translate(-50%, -50%) scale(1.8);
+    }
+    
+    .button-image-2,
+    .bg-container .element.button-image-2 {
+        /* left 和 top 由 JavaScript 动态计算 */
+        transform: translate(-50%, -50%) scale(1.8);
+    }
+    
+    .button-image-1:hover,
+    .bg-container .element.button-image-1:hover {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1.8) translateY(-5px);
+        filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+    }
+    
+    .button-image-2:hover,
+    .bg-container .element.button-image-2:hover {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1.8) translateY(-5px);
+        filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     }
     
     /* 响应式设计 - 移动设备 */
     @media (max-width: 768px) {
-        html {
-            font-size: 14px;
+        main {
+            padding: clamp(2.5rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem) clamp(2rem, 8vw, 3rem);
+            padding-top: clamp(6vh, 10vw, 12vh);
         }
         
-        h1 {
+        .welcome-title {
             font-size: clamp(1.5rem, 7vw, 2.25rem);
             margin-bottom: clamp(1.25rem, 5vw, 2rem);
         }
         
-        h1::before,
-        h1::after {
+        .welcome-title::before,
+        .welcome-title::after {
             display: none;
         }
         
-        .button-container {
-            width: 95%;
-            max-width: 95vw;
-            gap: clamp(0.875rem, 4vw, 1.25rem);
-            margin-top: clamp(1.25rem, 4vw, 2rem);
-        }
-        
-        .button-container button {
-            font-size: clamp(0.85rem, 3.5vw, 1.1rem);
-            padding: clamp(0.75rem, 3.5vw, 1.1rem) clamp(1.25rem, 4.5vw, 1.75rem);
-        }
-        
-        main {
-            padding: clamp(2.5rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem) clamp(2rem, 8vw, 3rem);
-            padding-top: clamp(6vh, 10vw, 12vh);
+        .button-image-1,
+        .button-image-2,
+        .bg-container .element.button-image-1,
+        .bg-container .element.button-image-2 {
+            min-width: 120px;
         }
     }
     
     /* 响应式设计 - 小屏幕设备 */
     @media (max-width: 480px) {
-        html {
-            font-size: 12px;
-        }
-        
         main {
             padding: clamp(1.5rem, 6vw, 3rem) clamp(0.75rem, 3vw, 1.5rem);
             justify-content: flex-start;
             padding-top: clamp(5vh, 10vw, 10vh);
         }
         
-        h1 {
+        .welcome-title {
             font-size: clamp(1.25rem, 6vw, 1.75rem);
             margin-bottom: clamp(1rem, 4vw, 1.5rem);
         }
         
-        .button-container {
-            width: 100%;
-            max-width: 100%;
-            margin-top: clamp(1.25rem, 4vw, 2rem);
-            gap: clamp(0.75rem, 3.5vw, 1rem);
+        .welcome-title::before,
+        .welcome-title::after {
+            display: none;
         }
         
-        .button-container button {
-            font-size: clamp(0.8rem, 3.5vw, 1rem);
-            padding: clamp(0.7rem, 3.5vw, 0.95rem) clamp(1rem, 3.5vw, 1.25rem);
-            min-height: clamp(42px, 10vw, 55px);
-        }
-        
-        .talent-records-btn, .logout-btn {
+        .my-gifts-btn, .logout-btn {
+            min-width: 35px;
+            min-height: 35px;
             font-size: clamp(0.75rem, 3vw, 0.875rem);
             padding: clamp(0.4rem, 2vw, 0.5rem) clamp(0.6rem, 3vw, 0.75rem);
         }
         
-        .talent-records-btn {
+        .my-gifts-btn {
             min-width: clamp(70px, 15vw, 100px);
             padding: clamp(0.4rem, 2vw, 0.5rem) clamp(0.8rem, 2.5vw, 1.2rem);
         }
-    }
-    
-    /* 响应式设计 - 平板设备 */
-    @media (min-width: 769px) and (max-width: 1024px) {
-        main {
-            padding-top: clamp(7vh, 10vw, 12vh);
-        }
         
-        .button-container {
-            max-width: clamp(400px, 70vw, 550px);
-        }
-        
-        h1 {
-            font-size: clamp(2rem, 6vw, 2.75rem);
-        }
-    }
-    
-    /* 响应式设计 - 大屏幕设备 */
-    @media (min-width: 1200px) {
-        html {
-            font-size: 18px;
-        }
-        
-        main {
-            padding: clamp(4rem, 8vw, 6rem) clamp(2rem, 5vw, 4rem) clamp(3rem, 8vw, 5rem);
-            padding-top: clamp(10vh, 12vw, 18vh);
-        }
-        
-        h1 {
-            font-size: clamp(2.25rem, 5vw, 3.25rem);
-            margin-bottom: clamp(2rem, 4vw, 3rem);
-        }
-        
-        .button-container {
-            max-width: clamp(450px, 55vw, 600px);
-            gap: clamp(1.25rem, 3vw, 1.75rem);
-            margin-top: clamp(2rem, 4vw, 3rem);
-        }
-        
-        .button-container button {
-            font-size: clamp(1rem, 2.5vw, 1.4rem);
-            padding: clamp(1rem, 2.5vw, 1.4rem) clamp(1.75rem, 3.5vw, 2.5rem);
-            min-height: clamp(55px, 8vw, 70px);
-        }
-        
-        .button-container a:first-child button::before,
-        .button-container a:last-child button::before {
-            font-size: clamp(1.1rem, 2.2vw, 1.5rem);
-            left: clamp(1rem, 2.2vw, 1.5rem);
-        }
-    }
-    
-    /* 响应式设计 - 超大屏幕设备 (2560px+) */
-    @media (min-width: 2560px) {
-        html {
-            font-size: 20px;
-        }
-        
-        main {
-            padding: clamp(5rem, 10vw, 8rem) clamp(3rem, 6vw, 6rem) clamp(4rem, 10vw, 8rem);
-            padding-top: clamp(12vh, 15vw, 20vh);
-        }
-        
-        h1 {
-            font-size: clamp(2.75rem, 6vw, 4rem);
-            margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
-            max-width: min(85vw, 1400px);
-        }
-        
-        .button-container {
-            max-width: clamp(550px, 45vw, 750px);
-            gap: clamp(1.5rem, 3vw, 2rem);
-            margin-top: clamp(2.5rem, 5vw, 3.5rem);
-        }
-        
-        .button-container button {
-            font-size: clamp(1.15rem, 3vw, 1.6rem);
-            padding: clamp(1.15rem, 3vw, 1.6rem) clamp(2rem, 4vw, 3rem);
-            min-height: clamp(60px, 10vw, 80px);
-            border-width: clamp(3px, 0.4vw, 5px);
-        }
-        
-        .button-container a:first-child button::before,
-        .button-container a:last-child button::before {
-            font-size: clamp(1.2rem, 2.8vw, 1.6rem);
-            left: clamp(1.1rem, 2.5vw, 1.75rem);
-        }
-        
-        .talent-records-btn, .logout-btn {
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            padding: clamp(0.625rem, 1.5vw, 0.875rem) clamp(1rem, 2.5vw, 1.5rem);
-        }
-        
-        .talent-records-btn {
-            min-width: clamp(100px, 12vw, 140px);
-            padding: clamp(0.625rem, 1.5vw, 0.875rem) clamp(1.2rem, 2.5vw, 1.8rem);
+        .button-image-1,
+        .button-image-2,
+        .bg-container .element.button-image-1,
+        .bg-container .element.button-image-2 {
+            min-width: 100px;
         }
     }
   </style>
 </head>
 <body>
-  <!-- Talent Records and Logout Buttons -->
+  <!-- My Gifts and Logout Buttons -->
   {% if session.username %}
-      <a href="{{ url_for('main.talent_records') }}" class="talent-records-btn">My Gifts</a>
-      <a href="{{ url_for('user.logout') }}" class="logout-btn">Logout</a>
+    <a href="{{ url_for('main.talent_records') }}" class="my-gifts-btn">My Gifts</a>
+    <a href="{{ url_for('user.logout') }}" class="logout-btn">Logout</a>
   {% endif %}
 
+  <div class="bg-container">
+      <img src="{{ url_for('static', filename='background/board_no_text.png') }}" class="bg-img" alt="background">
+      
+      {% if session.username %}
+      <a href="{{ url_for('main.draw_self') }}" class="element button-image-1">
+          <img src="{{ url_for('static', filename='draw_home_buttons/' + session.username + '.png') }}" alt="Draw for Self">
+      </a>
+      <a href="{{ url_for('main.draw_others') }}" class="element button-image-2">
+          <img src="{{ url_for('static', filename='draw_home_buttons/draw_for_others.png') }}" alt="Draw for Others">
+      </a>
+      {% endif %}
+  </div>
+
   <main>
-    {% if session.username %}
-        <h1>🎅 Welcome, {{ session.username }} 🎄</h1>
-    {% else %}
-        <h1>🎅 Welcome 🎄</h1>
-    {% endif %}
-
-    <div class="button-container">
-        <a href="{{ url_for('main.draw_self') }}">
-            <button type="button">🎰 Draw for Self</button>
-        </a>
-
-        <a href="{{ url_for('main.draw_others') }}">
-            <button type="button">🎁 Draw for Others</button>
-        </a>
-    </div>
+      {% if session.username %}
+      <h1 class="welcome-title">🎅 Welcome, {{ session.username }} 🎄</h1>
+      {% endif %}
   </main>
+  
+  <script>
+    // 背景图配置
+    const bgConfig = {
+      originalWidth: 3840, 
+      originalHeight: 2160, 
+      imageUrl: "{{ url_for('static', filename='background/board_no_text.png') }}"
+    };
+    
+    // 元素位置配置
+    // targetX/targetY: 元素在背景图上的坐标（像素）
+    // anchorX/anchorY: 元素的锚点 (0=左上, 0.5=中心, 1=右下)
+    const elementPositions = [
+      {
+        selector: '.element.button-image-1',
+        targetX: 2300, // ⬅️ 修改这个值调整第一张图片的X位置
+        targetY: 1050,  // ⬅️ 修改这个值调整第一张图片的Y位置
+        anchorX: 0.5,
+        anchorY: 0.5
+      },
+      {
+        selector: '.element.button-image-2',
+        targetX: 2300, // ⬅️ 修改这个值调整第二张图片的X位置
+        targetY: 1550,  // ⬅️ 修改这个值调整第二张图片的Y位置
+        anchorX: 0.5,
+        anchorY: 0.5
+      }
+    ];
+    
+    // 计算元素在 cover 模式下的位置
+    function calculateElementPosition(element, targetX, targetY, anchorX, anchorY) {
+      const container = document.querySelector('.bg-container');
+      if (!container || !element) return;
+      
+      // 确保元素已经渲染
+      if (element.offsetWidth === 0 || element.offsetHeight === 0) {
+        // 如果元素还没有尺寸，延迟计算（最多重试3次）
+        const retryCount = parseInt(element.dataset.positionRetry || '0');
+        if (retryCount < 3) {
+          element.dataset.positionRetry = String(retryCount + 1);
+          setTimeout(() => calculateElementPosition(element, targetX, targetY, anchorX, anchorY), 50);
+        } else {
+          // 如果重试3次仍然没有尺寸，强制显示元素（位置可能不准确，但至少可见）
+          element.classList.add('positioned');
+        }
+        return;
+      }
+      
+      // 清除重试计数
+      if (element.dataset.positionRetry) {
+        delete element.dataset.positionRetry;
+      }
+      
+      const containerWidth = container.offsetWidth;
+      const containerHeight = container.offsetHeight;
+      
+      if (containerWidth === 0 || containerHeight === 0) return;
+      
+      // 计算背景图的宽高比
+      const bgAspectRatio = bgConfig.originalWidth / bgConfig.originalHeight;
+      const containerAspectRatio = containerWidth / containerHeight;
+      
+      let displayWidth, displayHeight, offsetX = 0, offsetY = 0;
+      
+      // 计算 cover 模式下的实际显示尺寸和偏移
+      if (bgAspectRatio > containerAspectRatio) {
+        // 背景图宽度填满，高度被裁剪（上下有黑边）
+        displayHeight = containerHeight;
+        displayWidth = displayHeight * bgAspectRatio;
+        offsetX = (displayWidth - containerWidth) / 2;
+      } else {
+        // 背景图高度填满，宽度被裁剪（左右有黑边）
+        displayWidth = containerWidth;
+        displayHeight = displayWidth / bgAspectRatio;
+        offsetY = (displayHeight - containerHeight) / 2;
+      }
+      
+      // 计算目标点在容器中的实际位置
+      const targetPixelX = (targetX / bgConfig.originalWidth) * displayWidth - offsetX;
+      const targetPixelY = (targetY / bgConfig.originalHeight) * displayHeight - offsetY;
+      
+      // 获取元素的原始尺寸（不考虑 transform）
+      const elementWidth = element.offsetWidth;
+      const elementHeight = element.offsetHeight;
+      
+      // 检查元素是否有 translate(-50%, -50%) 的 transform
+      const computedStyle = window.getComputedStyle(element);
+      const transform = computedStyle.transform;
+      let hasTranslateCenter = false;
+      
+      if (transform && transform !== 'none') {
+        // 检查是否包含 translate(-50%, -50%)
+        if (transform.includes('translate(-50%') || transform.includes('translate(-50%')) {
+          hasTranslateCenter = true;
+        }
+      }
+      
+      // 计算元素的左上角位置（考虑锚点和 transform）
+      let elementLeft, elementTop;
+      
+      if (hasTranslateCenter) {
+        // 如果元素有 translate(-50%, -50%)，元素中心会对齐到目标点
+        // 所以直接设置目标点位置，transform 会自动居中
+        elementLeft = targetPixelX;
+        elementTop = targetPixelY;
+      } else {
+        // 正常计算，考虑锚点
+        elementLeft = targetPixelX - (elementWidth * anchorX);
+        elementTop = targetPixelY - (elementHeight * anchorY);
+      }
+      
+      // 应用位置
+      element.style.left = elementLeft + 'px';
+      element.style.top = elementTop + 'px';
+      
+      // 标记元素已定位，显示元素
+      element.classList.add('positioned');
+    }
+    
+    // 更新所有元素位置
+    function updateAllElementPositions() {
+      elementPositions.forEach(config => {
+        const elements = document.querySelectorAll(config.selector);
+        elements.forEach(element => {
+          calculateElementPosition(
+            element,
+            config.targetX,
+            config.targetY,
+            config.anchorX,
+            config.anchorY
+          );
+        });
+      });
+    }
+    
+    // 防抖函数
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+    
+    // 创建防抖版本的位置更新函数
+    const debouncedUpdatePositions = debounce(updateAllElementPositions, 100);
+    
+    // 初始位置计算（快速计算，不等待图片加载）
+    function calculateInitialPositions() {
+      // 使用配置的默认尺寸快速计算位置
+      const bgImg = document.querySelector('.bg-img');
+      if (bgImg && bgImg.naturalWidth > 0) {
+        // 如果背景图已加载，使用实际尺寸
+        bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
+        bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
+      }
+      // 否则使用配置中的默认尺寸
+      
+      // 立即计算并显示元素位置
+      updateAllElementPositions();
+    }
+    
+    // 等待 DOM 加载完成
+    document.addEventListener('DOMContentLoaded', function() {
+      // 立即计算初始位置（不等待图片加载）
+      // 使用 requestAnimationFrame 确保 DOM 已渲染
+      requestAnimationFrame(function() {
+        setTimeout(calculateInitialPositions, 0);
+      });
+      
+      // 如果背景图稍后加载完成，更新尺寸（但不再重新计算位置）
+      const bgImg = document.querySelector('.bg-img');
+      if (bgImg && !bgImg.complete) {
+        bgImg.addEventListener('load', function() {
+          // 更新配置中的实际尺寸，供 resize 时使用
+          bgConfig.originalWidth = bgImg.naturalWidth || bgConfig.originalWidth;
+          bgConfig.originalHeight = bgImg.naturalHeight || bgConfig.originalHeight;
+          // 如果窗口大小已改变，重新计算一次
+          if (window.innerWidth !== window.initialWidth || window.innerHeight !== window.initialHeight) {
+            debouncedUpdatePositions();
+          }
+        }, { once: true });
+      }
+      
+      // 记录初始窗口尺寸
+      window.initialWidth = window.innerWidth;
+      window.initialHeight = window.innerHeight;
+      
+      // 只在窗口大小变化时重新计算位置
+      window.addEventListener('resize', debouncedUpdatePositions);
+    });
+  </script>
 </body>
 </html>
+
