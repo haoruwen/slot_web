@@ -91,18 +91,22 @@
         white-space: nowrap;
     }
     
-    .my-gifts-btn {
-        right: clamp(7rem, 15vw, 10rem);
-        width: auto;
-        min-width: clamp(80px, 12vw, 120px);
-        padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.5rem);
-    }
-    
     .logout-btn {
         right: clamp(1rem, 4vw, 1.25rem);
         width: 15%;
         max-width: 6vw;
         min-width: 40px;
+    }
+    
+    .my-gifts-btn {
+        /* 确保 my-gifts-btn 永远在 logout-btn 的左边，不重叠 */
+        /* logout-btn 的 right: clamp(1rem, 4vw, 1.25rem) + max-width: 6vw + 间距 */
+        /* 所以 my-gifts-btn 的 right 至少需要: 1.25rem + 6vw + 1rem = 约 2.25rem + 6vw */
+        /* 为了安全，使用更大的值: clamp(8rem, 18vw, 12rem) */
+        right: clamp(8rem, 18vw, 12rem);
+        width: auto;
+        min-width: clamp(80px, 12vw, 120px);
+        padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2.5vw, 1.5rem);
     }
     
     .my-gifts-btn:hover, .logout-btn:hover {
@@ -422,6 +426,34 @@
     // 创建防抖版本的位置更新函数
     const debouncedUpdatePositions = debounce(updateAllElementPositions, 100);
     
+    // 确保 my-gifts-btn 和 logout-btn 不重叠
+    function adjustButtonPositions() {
+      const logoutBtn = document.querySelector('.logout-btn');
+      const myGiftsBtn = document.querySelector('.my-gifts-btn');
+      
+      if (logoutBtn && myGiftsBtn) {
+        // 获取 logout-btn 的位置和宽度
+        const logoutRect = logoutBtn.getBoundingClientRect();
+        const logoutRight = window.innerWidth - logoutRect.right; // logout-btn 距离右边的距离（px）
+        const logoutWidth = logoutRect.width; // logout-btn 的宽度（px）
+        
+        // 获取 my-gifts-btn 的宽度
+        const myGiftsBtnRect = myGiftsBtn.getBoundingClientRect();
+        const myGiftsBtnWidth = myGiftsBtnRect.width; // my-gifts-btn 的宽度（px）
+        
+        // 计算 my-gifts-btn 应该的 right 值（像素）
+        // 需要确保 my-gifts-btn 的右边缘在 logout-btn 的左边缘左边，并留出间距
+        const spacing = 16; // 16px 的间距（约 1rem）
+        const myGiftsBtnRight = logoutRight + logoutWidth + spacing;
+        
+        // 设置 my-gifts-btn 的 right 值（使用像素值，更精确）
+        myGiftsBtn.style.right = myGiftsBtnRight + 'px';
+      }
+    }
+    
+    // 创建防抖版本的按钮位置调整函数
+    const debouncedAdjustButtons = debounce(adjustButtonPositions, 100);
+    
     // 初始位置计算（快速计算，不等待图片加载）
     function calculateInitialPositions() {
       // 使用配置的默认尺寸快速计算位置
@@ -443,6 +475,8 @@
       // 使用 requestAnimationFrame 确保 DOM 已渲染
       requestAnimationFrame(function() {
         setTimeout(calculateInitialPositions, 0);
+        // 调整按钮位置，确保不重叠
+        setTimeout(adjustButtonPositions, 50);
       });
       
       // 如果背景图稍后加载完成，更新尺寸（但不再重新计算位置）
@@ -456,6 +490,8 @@
           if (window.innerWidth !== window.initialWidth || window.innerHeight !== window.initialHeight) {
             debouncedUpdatePositions();
           }
+          // 调整按钮位置
+          adjustButtonPositions();
         }, { once: true });
       }
       
@@ -464,7 +500,10 @@
       window.initialHeight = window.innerHeight;
       
       // 只在窗口大小变化时重新计算位置
-      window.addEventListener('resize', debouncedUpdatePositions);
+      window.addEventListener('resize', function() {
+        debouncedUpdatePositions();
+        debouncedAdjustButtons();
+      });
     });
   </script>
 </body>
