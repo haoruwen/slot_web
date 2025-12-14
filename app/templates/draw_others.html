@@ -188,12 +188,12 @@
     
     .main-avatar,
     .bg-container .element.bell-button {
-        width: 37%;
+        width: 34%;
         aspect-ratio: 1;
-        max-width: 37vw;
-        max-height: 37vw;
-        min-width: 320px;
-        min-height: 320px;
+        max-width: 34vw;
+        max-height: 34vw;
+        min-width: 300px;
+        min-height: 300px;
         object-fit: contain;
         display: block;
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
@@ -1079,8 +1079,8 @@
         }
         
         .main-avatar {
-            min-width: 200px;
-            min-height: 200px;
+            min-width: 190px;
+            min-height: 190px;
         }
 
         .right-content {
@@ -1315,8 +1315,8 @@
         const elementPositions = [
           {
             selector: '.main-avatar, .bg-container .element.bell-button',
-            targetX: 1000,  // ⬅️ 修改这个值调整头像的X位置
-            targetY: 1200,  // ⬅️ 修改这个值调整头像的Y位置
+            targetX: 950,  // ⬅️ 修改这个值调整头像的X位置
+            targetY: 1190,  // ⬅️ 修改这个值调整头像的Y位置
             anchorX: 0.5,  // 0.5 = 中心对齐
             anchorY: 0.5
           },
@@ -1855,18 +1855,24 @@
           
           const avatarImg = document.getElementById('selectedUserAvatar');
           if (avatarImg) {
-            const basePath = "{{ url_for('static', filename='avatars/') }}";
-            const avatarPath = basePath + username + ".png";
-            const defaultAvatarPath = "{{ url_for('static', filename='avatars/default.png') }}";
+            const defaultAvatarPath = "{{ url_for('static', filename='selectors/default.png') }}";
             
-            const testImg = new Image();
-            testImg.onload = function() {
-              avatarImg.src = avatarPath;
-            };
-            testImg.onerror = function() {
+            if (username === 'random') {
+              // 选择 random 用户时，直接使用默认头像
               avatarImg.src = defaultAvatarPath;
-            };
-            testImg.src = avatarPath;
+            } else {
+              const basePath = "{{ url_for('static', filename='selectors/') }}";
+              const avatarPath = basePath + username + ".png";
+              
+              const testImg = new Image();
+              testImg.onload = function() {
+                avatarImg.src = avatarPath;
+              };
+              testImg.onerror = function() {
+                avatarImg.src = defaultAvatarPath;
+              };
+              testImg.src = avatarPath;
+            }
           }
           
           updateSelectedUserHighlight();
@@ -2017,30 +2023,36 @@
               }
               
               if (selectedUser && avatarImg) {
-                // 使用正确的路径格式
-                const basePath = "{{ url_for('static', filename='avatars/') }}";
-                const avatarPath = basePath + selectedUser + ".png";
-                const defaultAvatarPath = "{{ url_for('static', filename='avatars/default.png') }}";
+                const defaultAvatarPath = "{{ url_for('static', filename='selectors/default.png') }}";
                 
-                // 创建新的图片对象来测试头像是否存在
-                const testImg = new Image();
-                
-                testImg.onload = function() {
-                  // 头像存在，使用用户头像
-                  avatarImg.src = avatarPath;
-                };
-                
-                testImg.onerror = function() {
-                  // 头像不存在，使用默认头像
+                if (selectedUser === 'random') {
+                  // 选择 random 用户时，直接使用默认头像
                   avatarImg.src = defaultAvatarPath;
-                };
-                
-                // 尝试加载头像
-                testImg.src = avatarPath;
+                } else {
+                  // 使用正确的路径格式
+                  const basePath = "{{ url_for('static', filename='selectors/') }}";
+                  const avatarPath = basePath + selectedUser + ".png";
+                  
+                  // 创建新的图片对象来测试头像是否存在
+                  const testImg = new Image();
+                  
+                  testImg.onload = function() {
+                    // 头像存在，使用用户头像
+                    avatarImg.src = avatarPath;
+                  };
+                  
+                  testImg.onerror = function() {
+                    // 头像不存在，使用默认头像
+                    avatarImg.src = defaultAvatarPath;
+                  };
+                  
+                  // 尝试加载头像
+                  testImg.src = avatarPath;
+                }
               }
             });
             
-            // 初始化：设置隐藏字段，并处理头像加载失败
+            // 初始化：设置隐藏字段，并根据选中的用户更新头像
             if (userSelect.value) {
               // 初始化隐藏字段
               const userHidden = document.getElementById('userHidden');
@@ -2049,11 +2061,32 @@
                 currentSelectedUser = userSelect.value;
               }
               
-              // 处理初始头像加载失败的情况
+              // 根据当前选中的用户更新头像
               const avatarImg = document.getElementById('selectedUserAvatar');
               if (avatarImg) {
+                const selectedUser = userSelect.value;
+                const defaultAvatarPath = "{{ url_for('static', filename='selectors/default.png') }}";
+                
+                if (selectedUser === 'random') {
+                  // 选择 random 用户时，直接使用默认头像
+                  avatarImg.src = defaultAvatarPath;
+                } else {
+                  // 其他用户，加载对应的头像
+                  const basePath = "{{ url_for('static', filename='selectors/') }}";
+                  const avatarPath = basePath + selectedUser + ".png";
+                  
+                  const testImg = new Image();
+                  testImg.onload = function() {
+                    avatarImg.src = avatarPath;
+                  };
+                  testImg.onerror = function() {
+                    avatarImg.src = defaultAvatarPath;
+                  };
+                  testImg.src = avatarPath;
+                }
+                
+                // 处理头像加载失败的情况（备用）
                 avatarImg.addEventListener('error', function() {
-                  const defaultAvatarPath = "{{ url_for('static', filename='avatars/default.png') }}";
                   if (this.src !== defaultAvatarPath) {
                     this.src = defaultAvatarPath;
                   }

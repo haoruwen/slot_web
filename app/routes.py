@@ -145,6 +145,16 @@ def receive_records():
         all_records = admin.get_user_records(user_name)
         return render_template('receive_records.html', records=all_records)
 
+@main_bp.route('/talent_records', methods=['GET'])
+@login_required
+def talent_records():
+    current_user_name = session.get('username')
+    print(current_user_name)
+    admin = Administrator()
+    if request.method == 'GET':
+        all_records = admin.get_user_records(current_user_name)
+        return render_template('talent_records.html', records=all_records)
+
 def get_client_ip():
     # 获取真实 IP（支持反向代理）
     if request.headers.get('X-Forwarded-For'):
