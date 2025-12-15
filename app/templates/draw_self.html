@@ -1405,6 +1405,34 @@
         // 创建防抖版本的位置更新函数
         const debouncedUpdatePositions = debounce(updateAllElementPositions, 100);
         
+        // 确保 home-btn 和 logout-btn 不重叠
+        function adjustButtonPositions() {
+          const logoutBtn = document.querySelector('.logout-btn');
+          const homeBtn = document.querySelector('.home-btn');
+          
+          if (logoutBtn && homeBtn) {
+            // 获取 logout-btn 的位置和宽度
+            const logoutRect = logoutBtn.getBoundingClientRect();
+            const logoutRight = window.innerWidth - logoutRect.right; // logout-btn 距离右边的距离（px）
+            const logoutWidth = logoutRect.width; // logout-btn 的宽度（px）
+            
+            // 获取 home-btn 的宽度
+            const homeBtnRect = homeBtn.getBoundingClientRect();
+            const homeBtnWidth = homeBtnRect.width; // home-btn 的宽度（px）
+            
+            // 计算 home-btn 应该的 right 值（像素）
+            // 需要确保 home-btn 的右边缘在 logout-btn 的左边缘左边，并留出间距
+            const spacing = 16; // 16px 的间距（约 1rem）
+            const homeBtnRight = logoutRight + logoutWidth + spacing;
+            
+            // 设置 home-btn 的 right 值（使用像素值，更精确）
+            homeBtn.style.right = homeBtnRight + 'px';
+          }
+        }
+        
+        // 创建防抖版本的按钮位置调整函数
+        const debouncedAdjustButtons = debounce(adjustButtonPositions, 100);
+        
         function selectTier(tier) {
           // 更新隐藏的input值
           document.getElementById('tier').value = tier;
@@ -1448,6 +1476,8 @@
           // 使用 requestAnimationFrame 确保 DOM 已渲染
           requestAnimationFrame(function() {
             setTimeout(calculateInitialPositions, 0);
+            // 调整按钮位置，确保不重叠
+            setTimeout(adjustButtonPositions, 50);
           });
           
           // 如果背景图稍后加载完成，更新尺寸（但不再重新计算位置）
@@ -1461,6 +1491,8 @@
               if (window.innerWidth !== window.initialWidth || window.innerHeight !== window.initialHeight) {
                 debouncedUpdatePositions();
               }
+              // 调整按钮位置
+              adjustButtonPositions();
             }, { once: true });
           }
           
@@ -1469,7 +1501,10 @@
           window.initialHeight = window.innerHeight;
           
           // 只在窗口大小变化时重新计算位置
-          window.addEventListener('resize', debouncedUpdatePositions);
+          window.addEventListener('resize', function() {
+            debouncedUpdatePositions();
+            debouncedAdjustButtons();
+          });
           
           // 表单提交前检查是否选择了tier
           const tierForm = document.getElementById('tierForm');

@@ -274,6 +274,47 @@
         </script>
 
         <script>
+            // 防抖函数
+            function debounce(func, wait) {
+              let timeout;
+              return function executedFunction(...args) {
+                const later = () => {
+                  clearTimeout(timeout);
+                  func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+              };
+            }
+            
+            // 确保 home-btn 和 logout-btn 不重叠
+            function adjustButtonPositions() {
+              const logoutBtn = document.querySelector('.logout-btn');
+              const homeBtn = document.querySelector('.home-btn');
+              
+              if (logoutBtn && homeBtn) {
+                // 获取 logout-btn 的位置和宽度
+                const logoutRect = logoutBtn.getBoundingClientRect();
+                const logoutRight = window.innerWidth - logoutRect.right; // logout-btn 距离右边的距离（px）
+                const logoutWidth = logoutRect.width; // logout-btn 的宽度（px）
+                
+                // 获取 home-btn 的宽度
+                const homeBtnRect = homeBtn.getBoundingClientRect();
+                const homeBtnWidth = homeBtnRect.width; // home-btn 的宽度（px）
+                
+                // 计算 home-btn 应该的 right 值（像素）
+                // 需要确保 home-btn 的右边缘在 logout-btn 的左边缘左边，并留出间距
+                const spacing = 16; // 16px 的间距（约 1rem）
+                const homeBtnRight = logoutRight + logoutWidth + spacing;
+                
+                // 设置 home-btn 的 right 值（使用像素值，更精确）
+                homeBtn.style.right = homeBtnRight + 'px';
+              }
+            }
+            
+            // 创建防抖版本的按钮位置调整函数
+            const debouncedAdjustButtons = debounce(adjustButtonPositions, 100);
+            
             const recordList = JSON.parse(document.getElementById('records-json').textContent || '[]');
             const pageSize = 20;
             let currentPage = 1;
@@ -330,6 +371,17 @@
             }
 
             renderTable();
+            
+            // 等待 DOM 加载完成后调整按钮位置
+            document.addEventListener('DOMContentLoaded', function() {
+              // 立即调整按钮位置
+              requestAnimationFrame(function() {
+                setTimeout(adjustButtonPositions, 50);
+              });
+              
+              // 窗口大小改变时重新调整按钮位置
+              window.addEventListener('resize', debouncedAdjustButtons);
+            });
         </script>
     </main>
 </body>
