@@ -329,16 +329,15 @@
                 for (let i = start; i < end; i++) {
                     let words = recordList[i].split(/\s+/);
 
-                    // indices: index 4 和 6 标红
-                    const redIndices = [5, 7];
-
-                    for (let idx of redIndices) {
-                        if (idx < words.length) {
-                            // 如果 index 6 的单词是 "yourself"，不变成红色和加粗
-                            if (idx === 7 && words[idx].toLowerCase() === 'yourself') {
-                                continue;
-                            }
-                            words[idx] = `<span style="color:red; font-weight:bold; font-size: 1.2em;">${words[idx]}</span>`;
+                    // index 5: 圣诞绿色
+                    if (5 < words.length) {
+                        words[5] = `<span style="color:#228B22; font-weight:bold; font-size: 1.2em;">${words[5]}</span>`;
+                    }
+                    
+                    // index 7: 红色（如果单词是 "yourself"，不变成红色和加粗）
+                    if (7 < words.length) {
+                        if (words[7].toLowerCase() !== 'yourself') {
+                            words[7] = `<span style="color:red; font-weight:bold; font-size: 1.2em;">${words[7]}</span>`;
                         }
                     }
 
