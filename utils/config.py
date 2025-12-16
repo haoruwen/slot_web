@@ -18,3 +18,6 @@ RANDOM_USER = "random"
 
 POINTS_ERROR_MESSAGE = "Your points aren't enough to join this round."
 PRIZE_ERROR_MESSAGE = "All prizes in this tier have been claimed."
+
+TALENTS = ["Hina","Memory"]
+T1_REWARDS = ["Dakimakura_Design", "Laptop", "Staff_Choice_Newoutfit", "1_Key_Illustraion_From_Your_Artist", "5070_GPU"]

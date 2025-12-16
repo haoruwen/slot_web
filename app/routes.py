@@ -60,7 +60,7 @@ def draw_others():
         if selected_tier == 'first':
             if not slot.check_points(FIRST_TIER_POINTS):
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
-            prize = slot.get_first_prize()
+            prize = slot.get_first_prize(selected_user)
             if not prize:
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
             slot.update_points(FIRST_TIER_POINTS)
@@ -115,7 +115,7 @@ def draw_self():
         if selected_tier == 'first':
             if not slot.check_self_points(FIRST_TIER_POINTS):
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
-            prize = slot.get_first_prize()
+            prize = slot.get_first_prize(current_user_name)
             if not prize:
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
             slot.update_self_points(FIRST_TIER_POINTS)

@@ -1,6 +1,7 @@
 import random
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from utils.config import *
 
 
 class Slot:
@@ -34,12 +35,19 @@ class Slot:
         row = self.db_proxy.run_sql_select(sql, params=(self.user_id,),fetch_one=True)
         return row['avatar_path']
 
-    def get_first_prize(self):
+    def get_first_prize(self, user_name):
         sql = "SELECT id, name, first_tier_prob FROM tbl_prize WHERE is_first_tier=1 and stock > 0"
         rows = self.db_proxy.run_sql_select(sql)
-        if not rows:
+        allowed_prizes = []
+        for row in rows:
+            if user_name in TALENTS and row['name'] in T1_REWARDS:
+                continue
+            else:
+                allowed_prizes.append(row)
+        print(allowed_prizes)
+        if not allowed_prizes:
             return False
-        return self._pick_prize_by_probability(rows, 'first_tier_prob')
+        return self._pick_prize_by_probability(allowed_prizes, 'first_tier_prob')
     
     def get_second_prize(self):
         sql = "SELECT id, name, second_tier_prob FROM tbl_prize WHERE is_second_tier=1 and stock > 0"
