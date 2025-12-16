@@ -25,10 +25,10 @@ class Slot:
         row = self.db_proxy.run_sql_select(sql, params=(self.user_id,),fetch_one=True)
         return row['points']
 
-    def get_self_points(self):
-        sql = "SELECT self_points FROM tbl_users WHERE id=%s"
-        row = self.db_proxy.run_sql_select(sql, params=(self.user_id,),fetch_one=True)
-        return row['self_points']
+    # def get_self_points(self):
+    #     sql = "SELECT self_points FROM tbl_users WHERE id=%s"
+    #     row = self.db_proxy.run_sql_select(sql, params=(self.user_id,),fetch_one=True)
+    #     return row['self_points']
 
     def get_avatar_path(self):
         sql = "SELECT avatar_path FROM tbl_users WHERE id=%s"
@@ -44,7 +44,6 @@ class Slot:
                 continue
             else:
                 allowed_prizes.append(row)
-        print(allowed_prizes)
         if not allowed_prizes:
             return False
         return self._pick_prize_by_probability(allowed_prizes, 'first_tier_prob')
@@ -95,9 +94,9 @@ class Slot:
         sql = "UPDATE tbl_users SET points = points -%s WHERE id = %s"
         self.db_proxy.run_sql_update(sql, params=(points, self.user_id))
 
-    def update_self_points(self, points):
-        sql = "UPDATE tbl_users SET self_points = self_points -%s WHERE id = %s"
-        self.db_proxy.run_sql_update(sql, params=(points, self.user_id))
+    # def update_self_points(self, points):
+    #     sql = "UPDATE tbl_users SET self_points = self_points -%s WHERE id = %s"
+    #     self.db_proxy.run_sql_update(sql, params=(points, self.user_id))
 
     def check_points(self, points):
         sql = "SELECT points FROM tbl_users WHERE id =%s"
@@ -106,25 +105,25 @@ class Slot:
             return False
         return True
 
-    def check_self_points(self, points):
-        sql = "SELECT self_points FROM tbl_users WHERE id =%s"
-        row = self.db_proxy.run_sql_select(sql, params=(self.user_id,), fetch_one=True)
-        if row['self_points'] < points:
-            return False
-        return True
+    # def check_self_points(self, points):
+    #     sql = "SELECT self_points FROM tbl_users WHERE id =%s"
+    #     row = self.db_proxy.run_sql_select(sql, params=(self.user_id,), fetch_one=True)
+    #     if row['self_points'] < points:
+    #         return False
+    #     return True
 
-    def get_bonus_points(self, bonus_points):
-        sql = "UPDATE tbl_users SET self_points = self_points + %s WHERE id = %s"
-        self.db_proxy.run_sql_update(sql, params=(bonus_points, self.user_id))
+    # def get_bonus_points(self, bonus_points):
+    #     sql = "UPDATE tbl_users SET self_points = self_points + %s WHERE id = %s"
+    #     self.db_proxy.run_sql_update(sql, params=(bonus_points, self.user_id))
 
-    def is_first(self):
-        sql = "SELECT is_first FROM tbl_users WHERE id =%s"
-        row = self.db_proxy.run_sql_select(sql, params=(self.user_id,), fetch_one=True)
-        return row['is_first'] == 1
+    # def is_first(self):
+    #     sql = "SELECT is_first FROM tbl_users WHERE id =%s"
+    #     row = self.db_proxy.run_sql_select(sql, params=(self.user_id,), fetch_one=True)
+    #     return row['is_first'] == 1
     
-    def update_is_first(self):
-        sql = "UPDATE tbl_users SET is_first = 0 WHERE id = %s"
-        self.db_proxy.run_sql_update(sql, params=(self.user_id,))
+    # def update_is_first(self):
+    #     sql = "UPDATE tbl_users SET is_first = 0 WHERE id = %s"
+    #     self.db_proxy.run_sql_update(sql, params=(self.user_id,))
 
     def get_random_user(self):
         sql = "SELECT name FROM tbl_users WHERE id!=%s and role=%s"

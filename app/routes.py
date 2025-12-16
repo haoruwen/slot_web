@@ -64,11 +64,6 @@ def draw_others():
             if not prize:
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
             slot.update_points(FIRST_TIER_POINTS)
-            if slot.is_first():
-                slot.update_is_first()
-                slot.get_bonus_points(FIRST_TIER_POINTS)
-            else:
-                slot.get_bonus_points(FIRST_TIER_BONUS_POINTS)
         elif selected_tier == 'second':
             if not slot.check_points(SECOND_TIER_POINTS):
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
@@ -76,11 +71,6 @@ def draw_others():
             if not prize:
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
             slot.update_points(SECOND_TIER_POINTS)
-            if slot.is_first():
-                slot.update_is_first()
-                slot.get_bonus_points(SECOND_TIER_POINTS)
-            else:
-                slot.get_bonus_points(SECOND_TIER_BONUS_POINTS)
         else:
             if not slot.check_points(THIRD_TIER_POINTS):
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
@@ -88,11 +78,6 @@ def draw_others():
             if not prize:
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
             slot.update_points(THIRD_TIER_POINTS)
-            if slot.is_first():
-                slot.update_is_first()
-                slot.get_bonus_points(THIRD_TIER_POINTS)
-            else:
-                slot.get_bonus_points(THIRD_TIER_BONUS_POINTS)
         slot.update_stock(prize['id'])
         slot.update_record(selected_user, selected_tier, prize['id'])
         return render_template('result.html', prize=prize['name'], mode="others")
@@ -106,33 +91,33 @@ def draw_self():
         return redirect(url_for('user.login'))
     slot = Slot(current_user_id)
     avatar_path = slot.get_avatar_path()
-    user_self_points = slot.get_self_points()
+    user_self_points = slot.get_points()
     if request.method == 'GET':
         return render_template('draw_self.html', points = user_self_points, tiers=TIERS, avatar_path = avatar_path)
     if request.method == 'POST':
         selected_tier = request.form.get('tier')
         prize = None
         if selected_tier == 'first':
-            if not slot.check_self_points(FIRST_TIER_POINTS):
+            if not slot.check_points(FIRST_TIER_POINTS):
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_first_prize(current_user_name)
             if not prize:
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
-            slot.update_self_points(FIRST_TIER_POINTS)
+            slot.update_points(FIRST_TIER_POINTS)
         elif selected_tier == 'second':
-            if not slot.check_self_points(SECOND_TIER_POINTS):
+            if not slot.check_points(SECOND_TIER_POINTS):
                 return render_template('draw_self.html',points = user_self_points, tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_second_prize()
             if not prize:
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
-            slot.update_self_points(SECOND_TIER_POINTS)
+            slot.update_points(SECOND_TIER_POINTS)
         else:
-            if not slot.check_self_points(THIRD_TIER_POINTS):
+            if not slot.check_points(THIRD_TIER_POINTS):
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=POINTS_ERROR_MESSAGE, avatar_path = avatar_path)
             prize = slot.get_third_prize()
             if not prize:
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
-            slot.update_self_points(THIRD_TIER_POINTS)
+            slot.update_points(THIRD_TIER_POINTS)
 
         slot.update_stock(prize['id'])
         slot.update_record(current_user_name, selected_tier, prize['id'])
