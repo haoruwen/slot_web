@@ -14,9 +14,11 @@ class Administrator:
         return rows
 
     def update_user_points(self, user_id, user_points):
+        sql = "SELECT points FROM tbl_users WHERE id=%s"
+        row = self.db_proxy.run_sql_select(sql, params=(user_id,),fetch_one=True)
         pacific_time = datetime.now(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d %H:%M:%S")
         sql = "UPDATE tbl_users SET points = %s, update_time = %s WHERE id=%s"
-        self.db_proxy.run_sql_update(sql, params=(user_points, pacific_time, user_id,))
+        self.db_proxy.run_sql_update(sql, params=(int(row['points']) + int(user_points), pacific_time, user_id,))
     
     def get_all_records(self):
         sql = "SELECT r.id, r.from_id,fu.name AS from_name,r.to_id,tu.name AS to_name,r.prize_id,p.name AS prize_name,r.tier,r.create_time FROM tbl_records r JOIN tbl_users fu ON r.from_id = fu.id JOIN tbl_users tu ON r.to_id = tu.id JOIN tbl_prize p ON r.prize_id = p.id ORDER BY r.create_time DESC"

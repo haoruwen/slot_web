@@ -61,7 +61,7 @@
             font-weight: 600;
         }
         input[type="number"] {
-            width: 100px;
+            width: 260px;
             padding: 8px;
             font-size: 1.2em;
         }
@@ -175,7 +175,12 @@
                         <th>Name</th>
                         <th>Points</th>
                         <th>Last Updated (Pacific Time)</th>
-                        <th>Modify Points</th>
+                        <th>Modify Points (±)</th>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 10px; background-color: #ecf0f1; font-size: 0.9em; color: red;">
+                            Applied to current points (+ to add, - to deduct).
+                        </td>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
@@ -185,8 +190,8 @@
                         <td>{{ user.points }}</td>
                         <td>{{ user.update_time }}</td>
                         <td>
-                            <input type="number" name="points_{{ user.id }}" placeholder="New points">
-                            <button type="submit" name="update_user" value="{{ user.id }}">Update</button>
+                            <input type="number" name="points_{{ user.id }}" placeholder="Current: {{ user.points }}">
+                            <button type="submit" name="update_user" value="{{ user.id }}">Apply Change</button>
                         </td>
                     </tr>
                     {% endfor %}
