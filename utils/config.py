@@ -17,3 +17,4 @@ THIRD_TIER_BONUS_POINTS = 1
 RANDOM_USER = "random"
 
 POINTS_ERROR_MESSAGE = "Your points aren't enough to join this round."
+PRIZE_ERROR_MESSAGE = "All prizes in this tier have been claimed."

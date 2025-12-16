@@ -37,16 +37,22 @@ class Slot:
     def get_first_prize(self):
         sql = "SELECT id, name, first_tier_prob FROM tbl_prize WHERE is_first_tier=1 and stock > 0"
         rows = self.db_proxy.run_sql_select(sql)
+        if not rows:
+            return False
         return self._pick_prize_by_probability(rows, 'first_tier_prob')
     
     def get_second_prize(self):
         sql = "SELECT id, name, second_tier_prob FROM tbl_prize WHERE is_second_tier=1 and stock > 0"
         rows = self.db_proxy.run_sql_select(sql)
+        if not rows:
+            return False
         return self._pick_prize_by_probability(rows, 'second_tier_prob')
     
     def get_third_prize(self):
         sql = "SELECT id, name, third_tier_prob FROM tbl_prize WHERE is_third_tier=1 and stock > 0"
         rows = self.db_proxy.run_sql_select(sql)
+        if not rows:
+            return False
         return self._pick_prize_by_probability(rows, 'third_tier_prob')
 
     def _pick_prize_by_probability(self, prizes, prob_field):
