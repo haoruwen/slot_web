@@ -140,6 +140,11 @@
                 for (let i = start; i < end; i++) {
                     let words = recordList[i].split(/\s+/);
 
+                    // Replace underscores with spaces in prize name (index 4)
+                    if (4 < words.length) {
+                        words[4] = words[4].replace(/_/g, ' ');
+                    }
+
                     // indices: 第1 5 7个单词 → index: 0, 4, 6
                     const redIndices = [0, 4, 6];
 

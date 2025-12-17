@@ -329,8 +329,9 @@
                 for (let i = start; i < end; i++) {
                     let words = recordList[i].split(/\s+/);
 
-                    // index 5: 圣诞绿色
+                    // index 5: 圣诞绿色 (prize name - replace underscores with spaces)
                     if (5 < words.length) {
+                        words[5] = words[5].replace(/_/g, ' ');
                         words[5] = `<span style="color:#228B22; font-weight:bold; font-size: 1.2em;">${words[5]}</span>`;
                     }
                     

@@ -537,14 +537,14 @@
       <div class="congratulations-text" id="congratulationsText">
         <div class="finding-text" id="findingText">✨ Finding the perfect gift... ✨</div>
         <h2 id="congratulationsTitle" style="display: none;">🎉 Congratulations! 🎉</h2>
-        <div class="prize-name" id="prizeName" style="display: none;">You won: <span id="prizeNameDisplay">{{ prize }}</span></div>
+        <div class="prize-name" id="prizeName" style="display: none;">You won: <span id="prizeNameDisplay">{{ prize|replace('_', ' ') }}</span></div>
       </div>
       <div class="prize-carousel" id="prizeCarousel">
         <div class="prize-carousel-container" id="prizeCarouselContainer">
           <!-- Images will be loaded by JavaScript -->
         </div>
       </div>
-      <div class="prize" style="display: none;">{{ prize }}</div>
+      <div class="prize" style="display: none;">{{ prize|replace('_', ' ') }}</div>
     {% else %}
       <h1>No Result</h1>
       <div class="prize" style="color:rgba(255, 248, 220, 0.6);">No Result</div>
