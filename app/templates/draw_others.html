@@ -1906,7 +1906,7 @@
           
           const avatarImg = document.getElementById('selectedUserAvatar');
           if (avatarImg) {
-            const defaultAvatarPath = "{{ url_for('static', filename='selectors/default.png') }}";
+            const defaultAvatarPath = "{{ url_for('static', filename='selectors/random.png') }}";
             
             if (username === 'random') {
               // 选择 random 用户时，直接使用默认头像
@@ -2081,7 +2081,7 @@
               }
               
               if (selectedUser && avatarImg) {
-                const defaultAvatarPath = "{{ url_for('static', filename='selectors/default.png') }}";
+                const defaultAvatarPath = "{{ url_for('static', filename='selectors/random.png') }}";
                 
                 if (selectedUser === 'random') {
                   // 选择 random 用户时，直接使用默认头像
@@ -2123,7 +2123,7 @@
               const avatarImg = document.getElementById('selectedUserAvatar');
               if (avatarImg) {
                 const selectedUser = userSelect.value;
-                const defaultAvatarPath = "{{ url_for('static', filename='selectors/default.png') }}";
+                const defaultAvatarPath = "{{ url_for('static', filename='selectors/random.png') }}";
                 
                 if (selectedUser === 'random') {
                   // 选择 random 用户时，直接使用默认头像
