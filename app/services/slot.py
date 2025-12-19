@@ -82,11 +82,8 @@ class Slot:
         return prizes[-1]
 
     def update_stock(self, prize_id):
-        '''
         sql = "UPDATE tbl_prize SET stock = stock -1 WHERE id = %s"
         self.db_proxy.run_sql_update(sql, params=(prize_id,))
-        '''
-        return
 
     def update_record(self, selected_user, selected_tier, prize_id):
         sql = "SELECT id FROM tbl_users WHERE name =%s"
