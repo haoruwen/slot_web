@@ -16,4 +16,4 @@ POINTS_ERROR_MESSAGE = "Your points aren't enough to join this round."
 PRIZE_ERROR_MESSAGE = "All prizes in this tier have been claimed."
 
 TALENTS = ["Hina","Memory"]
-T1_REWARDS = ["Dakimakura_Design", "Laptop", "Staff_Choice_Newoutfit", "1_Key_Illustration_From_Your_Artist", "5070_GPU"]
+T1_REWARDS = ["Dakimakura_Design", "Alienware_18_Area-51_Gaming_Laptop", "Staff_Choice_Newoutfit", "1_Key_Illustration_from_your_Artist", "GeForce_RTX_5070_GPU"]

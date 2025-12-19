@@ -4,9 +4,22 @@ from app.services.administrator import Administrator
 from app.services.slot import Slot
 from utils.decorators import login_required
 from utils.config import *
+import os
 
 # 创建页面蓝图
 main_bp = Blueprint('main', __name__)
+
+def get_prize_images():
+    """获取 static/prizes/ 文件夹中的所有图片文件"""
+    prizes_dir = os.path.join(os.path.dirname(__file__), 'static', 'prizes')
+    prize_images = []
+    
+    if os.path.exists(prizes_dir):
+        for filename in os.listdir(prizes_dir):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                prize_images.append(filename)
+    
+    return sorted(prize_images)[:20]  # 排序以确保一致性
 
 # 首页路由
 @main_bp.route('/', methods=['GET', 'POST'])
@@ -78,9 +91,12 @@ def draw_others():
             if not prize:
                 return render_template('draw_others.html', users=user_names, points = user_points,tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
             slot.update_points(THIRD_TIER_POINTS)
+        if prize['name'] == "Get_100_points":
+            slot.update_points(-100)
         slot.update_stock(prize['id'])
         slot.update_record(selected_user, selected_tier, prize['id'])
-        return render_template('result.html', prize=prize['name'], mode="others")
+        prize_images = get_prize_images()
+        return render_template('result.html', prize=prize['name'], mode="others", prize_images=prize_images)
     
 @main_bp.route('/draw/self', methods=['GET', 'POST'])
 @login_required
@@ -118,10 +134,12 @@ def draw_self():
             if not prize:
                 return render_template('draw_self.html', points = user_self_points, tiers=TIERS, error=PRIZE_ERROR_MESSAGE, avatar_path = avatar_path)
             slot.update_points(THIRD_TIER_POINTS)
-
+        if prize['name'] == "Get_100_points":
+            slot.update_points(-100)
         slot.update_stock(prize['id'])
         slot.update_record(current_user_name, selected_tier, prize['id'])
-        return render_template('result.html', prize=prize['name'], mode="self")
+        prize_images = get_prize_images()
+        return render_template('result.html', prize=prize['name'], mode="self", prize_images=prize_images)
 
 @main_bp.route('/records', methods=['GET'])
 @login_required

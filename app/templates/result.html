@@ -561,33 +561,13 @@
   
   <script>
     {% if prize %}
-    // List of all prize images
+    // List of all prize images - dynamically loaded from static/prizes/ folder
     const prizeImages = [
-      "{{ url_for('static', filename='prizes/BLESSING_OF_PHASE_SHOP.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_APOLOGIES.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_CHRISTMAS_JOLLY.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_MEMORY_LOSS.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_MINECRAFT_STREAM.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_NICENESS.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_NO_SWEARING.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_PASTA.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_PHASE_COFFEE_BOT.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_REINDEER.png') }}",
-      "{{ url_for('static', filename='prizes/CURSE_OF_SIMILISH.png') }}",
-      "{{ url_for('static', filename='prizes/CURSSE_OF_RICHMAN_10.png') }}",
-      "{{ url_for('static', filename='prizes/Dakimakura.png') }}",
-      "{{ url_for('static', filename='prizes/Gift_Card_100_Amazon.png') }}",
-      "{{ url_for('static', filename='prizes/Gift_Card_150_Best_Buy.png') }}",
-      "{{ url_for('static', filename='prizes/Gift_Card_25_Chipotle.png') }}",
-      "{{ url_for('static', filename='prizes/Gift_Card_25_Starbucks.png') }}",
-      "{{ url_for('static', filename='prizes/Graphic card.png') }}",
-      "{{ url_for('static', filename='prizes/headset.png') }}",
-      "{{ url_for('static', filename='prizes/keyboard.png') }}",
-      "{{ url_for('static', filename='prizes/laptop.png') }}",
-      "{{ url_for('static', filename='prizes/Mic.png') }}",
-      "{{ url_for('static', filename='prizes/Mouse.png') }}",
-      "{{ url_for('static', filename='prizes/Secret_lap_gaming_chair.png') }}",
-      "{{ url_for('static', filename='prizes/stream_deck.png') }}"
+      {% if prize_images %}
+        {% for image_name in prize_images %}
+      "{{ url_for('static', filename='prizes/' + image_name) }}"{% if not loop.last %},{% endif %}
+        {% endfor %}
+      {% endif %}
     ];
     
     // Shuffle images randomly
@@ -603,56 +583,15 @@
     // Get prize name from template
     const prizeName = "{{ prize }}";
     
-    // Find the prize image that matches the prize name
-    function findPrizeImageIndex(prizeName, imageSources) {
-      if (!prizeName) return -1;
-      
-      // Normalize prize name for matching
-      const normalizedPrizeName = prizeName.toLowerCase().trim();
-      
-      for (let i = 0; i < imageSources.length; i++) {
-        const imagePath = imageSources[i];
-        // Extract filename from path and normalize
-        const filename = imagePath.split('/').pop().replace('.png', '').toLowerCase();
-        
-        // Try different matching strategies
-        // 1. Direct match (filename equals prize name)
-        if (filename === normalizedPrizeName || 
-            filename === normalizedPrizeName.replace(/\s+/g, '_') ||
-            filename === normalizedPrizeName.replace(/\s+/g, '')) {
-          return i;
-        }
-        
-        // 2. Contains match (filename contains prize name or vice versa)
-        const filenameNoUnderscore = filename.replace(/_/g, ' ');
-        const prizeNameNoSpace = normalizedPrizeName.replace(/\s+/g, '');
-        const filenameNoUnderscoreNoSpace = filename.replace(/_/g, '').replace(/\s+/g, '');
-        
-        if (filename.includes(normalizedPrizeName.replace(/\s+/g, '_')) ||
-            filenameNoUnderscore.includes(normalizedPrizeName) ||
-            normalizedPrizeName.includes(filenameNoUnderscore) ||
-            filenameNoUnderscoreNoSpace.includes(prizeNameNoSpace) ||
-            prizeNameNoSpace.includes(filenameNoUnderscoreNoSpace)) {
-          return i;
-        }
-      }
-      
-      // If no match found, return -1
-      return -1;
-    }
+    // Build prize image path directly: static/prizes/{prize}.png
+    const prizeImagePath = "{{ url_for('static', filename='prizes/' + prize + '.png') }}";
     
     // Single cycle with random order, but ensure prize image is at the end
     let shuffledImages = shuffleArray(prizeImages);
-    const prizeImageIndex = findPrizeImageIndex(prizeName, prizeImages);
     
-    // If prize image found, move it to the end
-    if (prizeImageIndex !== -1) {
-      const prizeImagePath = prizeImages[prizeImageIndex];
-      // Remove prize image from shuffled array
-      shuffledImages = shuffledImages.filter(img => img !== prizeImagePath);
-      // Add it at the end
-      shuffledImages.push(prizeImagePath);
-    }
+    // Remove prize image from shuffled array if it exists, then add it at the end
+    shuffledImages = shuffledImages.filter(img => img !== prizeImagePath);
+    shuffledImages.push(prizeImagePath);
     
     const allImages = shuffledImages;
     
