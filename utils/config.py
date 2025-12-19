@@ -17,3 +17,4 @@ PRIZE_ERROR_MESSAGE = "All prizes in this tier have been claimed."
 
 TALENTS = ["Hina","Memory"]
 T1_REWARDS = ["Dakimakura_Design", "Alienware_18_Area-51_Gaming_Laptop", "Staff_Choice_Newoutfit", "1_Key_Illustration_from_your_Artist", "GeForce_RTX_5070_GPU"]
+T1_LIST = ["Become_reindeer", "Nice_try_-_Thanks_for_playing!","Sell_coffee!", "Phase_Connect_Shop_Giftcard_100", "Become_cat_and_say_~nyan","Sing_a_Christmas_Song", "Wear_a_red_nose","Tell_a_joke"]

@@ -39,13 +39,15 @@ class Slot:
         sql = "SELECT id, name, first_tier_prob FROM tbl_prize WHERE is_first_tier=1 and stock > 0"
         rows = self.db_proxy.run_sql_select(sql)
         allowed_prizes = []
+        if not rows:
+            return False
         for row in rows:
             if user_name in TALENTS and row['name'] in T1_REWARDS:
                 continue
             else:
                 allowed_prizes.append(row)
         if not allowed_prizes:
-            return False
+            return random.choice(T1_LIST)
         return self._pick_prize_by_probability(allowed_prizes, 'first_tier_prob')
     
     def get_second_prize(self):
@@ -80,8 +82,11 @@ class Slot:
         return prizes[-1]
 
     def update_stock(self, prize_id):
+        '''
         sql = "UPDATE tbl_prize SET stock = stock -1 WHERE id = %s"
         self.db_proxy.run_sql_update(sql, params=(prize_id,))
+        '''
+        return
 
     def update_record(self, selected_user, selected_tier, prize_id):
         sql = "SELECT id FROM tbl_users WHERE name =%s"
